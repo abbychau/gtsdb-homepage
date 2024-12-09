@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download } from 'lucide-react'
+import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download, Pen, Pencil, Book, Key, Rss, Timer, Presentation, Star } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -103,10 +103,22 @@ function HeroSection() {
         >
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Golang Dead Simple Timeseries Database</h1>
           <p className="text-xl mb-8">A simple, efficient, and easy-to-use timeseries database for IoT and more.</p>
+
           <Button className="bg-white text-blue-600 hover:bg-blue-100" onClick={
             () => window.location.href = "/#features"
           }>
+            <Star className="h-4 w-4" />
             Get Started
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+
+          <Button className="ml-4 bg-white text-blue-600 hover:bg-blue-100" onClick={
+            () => {
+              alert("Demo is not available yet.")
+            }
+          }>
+            <Presentation className="h-4 w-4" />
+            Demo
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </motion.div>
@@ -155,13 +167,13 @@ function FeaturesSection() {
         >
           <FeatureCard
             icon={<Database className="h-10 w-10" />}
-            title="Simple Design"
-            description="Utilizes Write Ahead Log (WAL) for everything, reducing IO and memory usage."
+            title="Innovative Design"
+            description="Utilizes Write Ahead Log (WAL) for records, reducing IO and memory usage."
           />
           <FeatureCard
             icon={<Zap className="h-10 w-10" />}
             title="High Performance"
-            description="Efficient read and write operations with optimized indexing."
+            description="MAXIMUM write operations with passive indexing."
           />
           <FeatureCard
             icon={<Code className="h-10 w-10" />}
@@ -211,17 +223,27 @@ function UsageSection() {
         <h2 className="text-3xl font-bold mb-12 text-center">Usage</h2>
         <Tabs defaultValue="http" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="http" className="text-lg">HTTP API</TabsTrigger>
-            <TabsTrigger value="tcp" className="text-lg">TCP Interface</TabsTrigger>
+            <TabsTrigger value="http" className="text-lg"><Globe className="h-5 w-5 mr-2" /> HTTP API</TabsTrigger>
+            <TabsTrigger value="tcp" className="text-lg">
+              <Code className="h-5 w-5 mr-2" />
+              TCP Interface</TabsTrigger>
           </TabsList>
           <div className="mt-4">
             <TabsContent value="http">
               <Tabs defaultValue="write" className="w-full">
                 <TabsList className="grid w-full grid-cols-4 mb-4">
-                  <TabsTrigger value="write">Write</TabsTrigger>
-                  <TabsTrigger value="read">Read</TabsTrigger>
-                  <TabsTrigger value="keys">Get All Keys</TabsTrigger>
-                  <TabsTrigger value="subscribe">Subscribe</TabsTrigger>
+                  <TabsTrigger value="write">
+                    <Pencil className="h-5 w-5 mr-2" />
+                    Write</TabsTrigger>
+                  <TabsTrigger value="read">
+                    <Book className="h-5 w-5 mr-2" />
+                    Read</TabsTrigger>
+                  <TabsTrigger value="keys">
+                    <Key className="h-5 w-5 mr-2" />
+                    Get All Keys</TabsTrigger>
+                  <TabsTrigger value="subscribe">
+                    <Rss className="h-5 w-5 mr-2" />
+                    Subscribe</TabsTrigger>
                 </TabsList>
                 <div className="mt-4 bg-gray-800 text-white p-6 rounded-lg overflow-x-auto">
                   <TabsContent value="write">
@@ -301,10 +323,18 @@ POST /
             <TabsContent value="tcp">
               <Tabs defaultValue="write" className="w-full">
                 <TabsList className="grid w-full grid-cols-4 mb-4">
-                  <TabsTrigger value="write">Write</TabsTrigger>
-                  <TabsTrigger value="read">Read</TabsTrigger>
-                  <TabsTrigger value="keys">Get All Keys</TabsTrigger>
-                  <TabsTrigger value="subscribe">Subscribe</TabsTrigger>
+                <TabsTrigger value="write">
+                    <Pencil className="h-5 w-5 mr-2" />
+                    Write</TabsTrigger>
+                  <TabsTrigger value="read">
+                    <Book className="h-5 w-5 mr-2" />
+                    Read</TabsTrigger>
+                  <TabsTrigger value="keys">
+                    <Key className="h-5 w-5 mr-2" />
+                    Get All Keys</TabsTrigger>
+                  <TabsTrigger value="subscribe">
+                    <Rss className="h-5 w-5 mr-2" />
+                    Subscribe</TabsTrigger>
                 </TabsList>
                 <div className="mt-4 bg-gray-800 text-white p-6 rounded-lg overflow-x-auto">
                   <TabsContent value="write">
@@ -395,7 +425,9 @@ function PerformanceSection() {
   return (
     <section id="performance" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-12 text-center">Performance</h2>
+        <h2 className="text-3xl font-bold mb-12 text-center">
+          <Timer className="h-8 w-8 inline-block mr-2" />
+          Performance</h2>
         <motion.div 
           ref={ref}
           className="bg-white p-8 rounded-lg shadow-lg"
