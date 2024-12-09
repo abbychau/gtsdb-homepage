@@ -179,7 +179,13 @@ function FeaturesSection() {
   )
 }
 
-function FeatureCard({ icon, title, description }) {
+interface FeatureCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}
+
+function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
     <motion.div 
       className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
