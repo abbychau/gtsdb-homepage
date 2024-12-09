@@ -1,101 +1,446 @@
-import Image from "next/image";
+"use client"
+
+import { useEffect } from 'react'
+import Image from 'next/image'
+import { Button } from "@/components/ui/button"
+import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download } from 'lucide-react'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { motion, useAnimation } from 'framer-motion'
+import { useInView } from 'react-intersection-observer'
+// hamham.png
+import hamham from './hamham.png'
+import Link from 'next/link'
+import { buttonVariants } from "@/components/ui/button"
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-blue-600">GTSDB</h1>
+          <nav>
+            <ul className="flex space-x-6">
+              <li><a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Features</a></li>
+              <li><a href="#usage" className="text-gray-600 hover:text-blue-600 transition-colors">Usage</a></li>
+              <li><a href="#performance" className="text-gray-600 hover:text-blue-600 transition-colors">Performance</a></li>
+              <li><a href="https://github.com/abbychau/gtsdb" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <Github className="h-5 w-5" />
+              </a></li>
+              <li><a href="https://github.com/abbychau/gtsdb/releases/new" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <Download className="h-5 w-5" />
+              </a></li>
+            </ul>
+          </nav>
         </div>
+      </header>
+
+      <main className="flex-grow">
+        <HeroSection />
+        <FeaturesSection />
+        <UsageSection />
+        <PerformanceSection />
+        <CTASection />
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      <footer className="bg-gray-800 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">GTSDB</h3>
+              <p className="text-sm text-gray-400">
+                A simple, efficient, and easy-to-use timeseries database for IoT and more.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Links</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="https://github.com/abbychau/gtsdb" className="text-gray-400 hover:text-white transition-colors flex items-center">
+                    <Github className="h-5 w-5 mr-2" />
+                    GitHub
+                  </a>
+                </li>
+                <li>
+                  <a href="/#usage" className="text-gray-400 hover:text-white transition-colors flex items-center">
+                    <Code className="h-5 w-5 mr-2" />
+                    Documentation
+                  </a>
+                </li>
+                <li>
+                  <a href="https://abby.md" className="text-gray-400 hover:text-white transition-colors flex items-center">
+                    <Globe className="h-5 w-5 mr-2" />
+                    Creator Homepage
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-4">License</h3>
+              <p className="text-sm text-gray-400 flex items-start">
+                <Lock className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+                GTSDB is open-source software licensed under the MIT License.
+              </p>
+            </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-gray-700 text-center">
+            <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} GTSDB. All rights reserved.</p>
+          </div>
+        </div>
       </footer>
     </div>
-  );
+  )
 }
+
+function HeroSection() {
+  return (
+    <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 overflow-hidden">
+      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
+        <motion.div 
+          className="md:w-1/2 mb-10 md:mb-0"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Golang Dead Simple Timeseries Database</h1>
+          <p className="text-xl mb-8">A simple, efficient, and easy-to-use timeseries database for IoT and more.</p>
+          <Button className="bg-white text-blue-600 hover:bg-blue-100" onClick={
+            () => window.location.href = "/#features"
+          }>
+            Get Started
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </motion.div>
+        <motion.div 
+          className="md:w-1/2"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Image src={hamham} alt="GTSDB Illustration" width={400} height={400} className="w-full h-auto" />
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+function FeaturesSection() {
+  const controls = useAnimation()
+  const [ref, inView] = useInView()
+
+  useEffect(() => {
+    if (inView) {
+      controls.start('visible')
+    }
+  }, [controls, inView])
+
+  return (
+    <section id="features" className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold mb-12 text-center">Key Features</h2>
+        <motion.div 
+          ref={ref}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                delayChildren: 0.3,
+                staggerChildren: 0.2
+              }
+            }
+          }}
+          initial="hidden"
+          animate={controls}
+        >
+          <FeatureCard
+            icon={<Database className="h-10 w-10" />}
+            title="Simple Design"
+            description="Utilizes Write Ahead Log (WAL) for everything, reducing IO and memory usage."
+          />
+          <FeatureCard
+            icon={<Zap className="h-10 w-10" />}
+            title="High Performance"
+            description="Efficient read and write operations with optimized indexing."
+          />
+          <FeatureCard
+            icon={<Code className="h-10 w-10" />}
+            title="Easy Integration"
+            description="Simple HTTP API and TCP interface for writing, reading, and managing timeseries data."
+          />
+          <FeatureCard
+            icon={<BarChart className="h-10 w-10" />}
+            title="Downsampling"
+            description="Built-in support for data downsampling and aggregation."
+          />
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+function FeatureCard({ icon, title, description }) {
+  return (
+    <motion.div 
+      className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+      variants={{
+        hidden: { y: 20, opacity: 0 },
+        visible: {
+          y: 0,
+          opacity: 1
+        }
+      }}
+    >
+      <div className="text-blue-600 mb-4">{icon}</div>
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-gray-600">{description}</p>
+    </motion.div>
+  )
+}
+
+function UsageSection() {
+  return (
+    <section id="usage" className="py-20">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold mb-12 text-center">Usage</h2>
+        <Tabs defaultValue="http" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="http" className="text-lg">HTTP API</TabsTrigger>
+            <TabsTrigger value="tcp" className="text-lg">TCP Interface</TabsTrigger>
+          </TabsList>
+          <div className="mt-4">
+            <TabsContent value="http">
+              <Tabs defaultValue="write" className="w-full">
+                <TabsList className="grid w-full grid-cols-4 mb-4">
+                  <TabsTrigger value="write">Write</TabsTrigger>
+                  <TabsTrigger value="read">Read</TabsTrigger>
+                  <TabsTrigger value="keys">Get All Keys</TabsTrigger>
+                  <TabsTrigger value="subscribe">Subscribe</TabsTrigger>
+                </TabsList>
+                <div className="mt-4 bg-gray-800 text-white p-6 rounded-lg overflow-x-auto">
+                  <TabsContent value="write">
+                    <pre className="text-sm">
+                      <code>{`
+POST /
+{
+    "operation": "write",
+    "Write": {
+        "id": "a_sensor1",
+        "Value": 32242424243333333333.3333,
+        "Timestamp": 1617965210
+    }
+}
+                      `}</code>
+                    </pre>
+                  </TabsContent>
+                  <TabsContent value="read">
+                    <pre className="text-sm">
+                      <code>{`
+POST /
+{
+    "operation": "read",
+    "Read": {
+        "id": "a_sensor1",
+        "StartTime": 1617965210,
+        "EndTime": 1617965211,
+        "Downsample": 3,
+        "Aggregation": "avg"
+    }
+}
+
+# Or read last X records:
+POST /
+{
+    "operation": "read",
+    "Read": {
+        "id": "a_sensor1",
+        "LastX": 1
+    }
+}
+                      `}</code>
+                    </pre>
+                  </TabsContent>
+                  <TabsContent value="keys">
+                    <pre className="text-sm">
+                      <code>{`
+POST /
+{
+    "operation": "ids"
+}
+                      `}</code>
+                    </pre>
+                  </TabsContent>
+                  <TabsContent value="subscribe">
+                    <pre className="text-sm">
+                      <code>{`
+# Subscribe to a key
+POST /
+{
+  "operation": "subscribe",
+  "DeviceID": "sensor1"
+}
+
+# Unsubscribe from a key
+POST /
+{
+  "operation": "unsubscribe",
+  "DeviceID": "sensor1"
+}
+                      `}</code>
+                    </pre>
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </TabsContent>
+            <TabsContent value="tcp">
+              <Tabs defaultValue="write" className="w-full">
+                <TabsList className="grid w-full grid-cols-4 mb-4">
+                  <TabsTrigger value="write">Write</TabsTrigger>
+                  <TabsTrigger value="read">Read</TabsTrigger>
+                  <TabsTrigger value="keys">Get All Keys</TabsTrigger>
+                  <TabsTrigger value="subscribe">Subscribe</TabsTrigger>
+                </TabsList>
+                <div className="mt-4 bg-gray-800 text-white p-6 rounded-lg overflow-x-auto">
+                  <TabsContent value="write">
+                    <pre className="text-sm">
+                      <code>{`
+{
+    "operation": "write",
+    "write": {
+        "id": "a_sensor1",
+        "value": 32242424243333333333.3333,
+        "timestamp": 1617965210
+    }
+}
+                      `}</code>
+                    </pre>
+                  </TabsContent>
+                  <TabsContent value="read">
+                    <pre className="text-sm">
+                      <code>{`
+{
+    "operation": "read",
+    "read": {
+        "id": "a_sensor1",
+        "startTime": 1617965210,
+        "endTime": 1617965211,
+        "downsample": 3,
+        "aggregation": "avg"
+    }
+}
+
+# Or read last X records:
+{
+    "operation": "read",
+    "read": {
+        "id": "a_sensor1",
+        "lastx": 1
+    }
+}
+                      `}</code>
+                    </pre>
+                  </TabsContent>
+                  <TabsContent value="keys">
+                    <pre className="text-sm">
+                      <code>{`
+{
+    "operation": "ids"
+}
+                      `}</code>
+                    </pre>
+                  </TabsContent>
+                  <TabsContent value="subscribe">
+                    <pre className="text-sm">
+                      <code>{`
+# Subscribe to a key
+{
+  "operation": "subscribe",
+  "deviceId": "sensor1"
+}
+
+# Unsubscribe from a key
+{
+  "operation": "unsubscribe",
+  "deviceId": "sensor1"
+}
+                      `}</code>
+                    </pre>
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </TabsContent>
+          </div>
+        </Tabs>
+      </div>
+    </section>
+  )
+}
+
+function PerformanceSection() {
+  const controls = useAnimation()
+  const [ref, inView] = useInView()
+
+  useEffect(() => {
+    if (inView) {
+      controls.start('visible')
+    }
+  }, [controls, inView])
+
+  return (
+    <section id="performance" className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold mb-12 text-center">Performance</h2>
+        <motion.div 
+          ref={ref}
+          className="bg-white p-8 rounded-lg shadow-lg"
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            visible: { opacity: 1, y: 0 }
+          }}
+          initial="hidden"
+          animate={controls}
+          transition={{ duration: 0.5 }}
+        >
+          <h3 className="text-2xl font-semibold mb-6">Performance Benchmark</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h4 className="text-lg font-medium mb-2">Details</h4>
+              <ul className="list-disc list-inside space-y-2 text-gray-600">
+                <li>OS: Windows</li>
+                <li>Architecture: amd64</li>
+                <li>Package: gtsdb</li>
+                <li>CPU: 13th Gen Intel(R) Core(TM) i7-13700KF</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-lg font-medium mb-2">Results</h4>
+              <ul className="list-disc list-inside space-y-2 text-gray-600">
+                <li>24 Concurrency</li>
+                <li>311,648 operations</li>
+                <li>19,172 ns/op</li>
+                <li>4,245 B/op</li>
+                <li>5 allocs/op</li>
+              </ul>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+function CTASection() {
+  return (
+    <section className="py-20 bg-blue-600 text-white">
+      <div className="container mx-auto px-4 text-center">
+        <h2 className="text-3xl font-bold mb-8">Ready to Get Started?</h2>
+          <Link className={buttonVariants({ variant: "outline" }) + "bg-white text-blue-600 hover:bg-blue-100" } href="https://github.com/abbychau/gtsdb/releases/new" target='_blank'>
+            Download GTSDB
+            <ArrowRight className="ml-2 h-4 w-4" />  
+          </Link>
+          
+      </div>
+    </section>
+  )
+}
+
