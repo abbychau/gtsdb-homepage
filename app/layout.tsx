@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import favicon from "./favicon.png";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -16,6 +17,10 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "GTSDB",
   description: "A simple, efficient, and easy-to-use timeseries database for IoT and more.",
+  icons: {
+    icon: favicon.src,
+  }
+
 };
 
 export default function RootLayout({
