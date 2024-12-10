@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star } from 'lucide-react'
+import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -172,7 +172,7 @@ function FeaturesSection() {
           />
           <FeatureCard
             icon={<Zap className="h-10 w-10" />}
-            title="High Performance"
+            title="Exceptional Throughout"
             description="MAXIMUM write operations with passive indexing."
           />
           <FeatureCard
@@ -220,12 +220,14 @@ function UsageSection() {
   return (
     <section id="usage" className="py-20">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-12 text-center">Usage</h2>
+        <h2 className="text-3xl font-bold mb-12 text-center">
+          <Code className="h-8 w-8 inline-block mr-2" />
+          Usage</h2>
         <Tabs defaultValue="http" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-8">
             <TabsTrigger value="http" className="text-lg"><Globe className="h-5 w-5 mr-2" /> HTTP API</TabsTrigger>
             <TabsTrigger value="tcp" className="text-lg">
-              <Code className="h-5 w-5 mr-2" />
+              <Plug className="h-5 w-5 mr-2" />
               TCP Interface</TabsTrigger>
           </TabsList>
           <div className="mt-4">
