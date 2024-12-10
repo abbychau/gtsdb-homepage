@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download, Pen, Pencil, Book, Key, Rss, Timer, Presentation, Star } from 'lucide-react'
+import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
