@@ -17,7 +17,9 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-blue-600">GTSDB</h1>
+          <h1 className="text-2xl font-bold text-blue-950">
+            🐹 GTSDB
+          </h1>
           <nav>
             <ul className="flex space-x-6">
               <li><a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Features</a></li>
@@ -204,7 +206,7 @@ function FeaturesSection() {
           <FeatureCard
             icon={<Shield className="h-10 w-10" />}
             title="Battle-Tested"
-            description="Trusted by IoT pioneers and used in production."
+            description="Trusted by IoT pioneers and used in production. Code Coverage for all logic."
           />
           <FeatureCard
             icon={<PuzzleIcon className="h-10 w-10" />}
