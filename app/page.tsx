@@ -11,6 +11,7 @@ import { useInView } from 'react-intersection-observer'
 import hamham from './hamham.png'
 import Link from 'next/link'
 import { buttonVariants } from "@/components/ui/button"
+import controlfree from './control-free.png'
 
 export default function Home() {
   return (
@@ -41,6 +42,7 @@ export default function Home() {
         <FeaturesSection />
         <UsageSection />
         <PerformanceSection />
+        <TrustedBySection />
         <CTASection />
       </main>
 
@@ -491,6 +493,20 @@ function PerformanceSection() {
             </div>
           </div>
         </motion.div>
+      </div>
+    </section>
+  )
+}
+
+function TrustedBySection() {
+  return (
+    <section className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4 text-center">
+        <h2 className="text-3xl font-bold mb-12">Trusted By</h2>
+        <div className="flex justify-center items-center space-x-8">
+          <Image src={controlfree} alt="ControlFree" width={200} height={100} className="w-auto h-auto brightness-0" />
+          {/* Add more logos here as needed */}
+        </div>
       </div>
     </section>
   )
