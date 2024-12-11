@@ -501,7 +501,7 @@ function CTASection() {
     <section className="py-20 bg-blue-600 text-white">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold mb-8">Ready to Get Started?</h2>
-          <Link className={buttonVariants({ variant: "outline" }) + "bg-white text-blue-600 hover:bg-blue-100" } href="https://github.com/abbychau/gtsdb/releases" target='_blank'>
+          <Link className={buttonVariants({ variant: "outline" }) + "bg-white text-blue-600 hover:text-blue-600" } href="https://github.com/abbychau/gtsdb/releases" target='_blank'>
             Download GTSDB
             <ArrowRight className="ml-2 h-4 w-4" />  
           </Link>
