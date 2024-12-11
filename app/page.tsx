@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Mail, Leaf, Shield, PuzzleIcon } from 'lucide-react'
+import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Mail, Leaf, Shield, PuzzleIcon, SquareArrowOutUpRight } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -127,7 +127,7 @@ function HeroSection() {
           }>
             <Presentation className="h-4 w-4" />
             Demo
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
           </Button>
         </motion.div>
         <motion.div 
