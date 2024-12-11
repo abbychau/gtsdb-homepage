@@ -42,7 +42,7 @@ export default function Home() {
         <FeaturesSection />
         <UsageSection />
         <PerformanceSection />
-        <TrustedBySection />
+        {/* <TrustedBySection /> */}
         <CTASection />
       </main>
 
