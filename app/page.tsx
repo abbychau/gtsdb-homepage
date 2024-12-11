@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Mail } from 'lucide-react'
+import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Mail, Leaf, Shield, PuzzleIcon } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -178,18 +178,38 @@ function FeaturesSection() {
           />
           <FeatureCard
             icon={<Zap className="h-10 w-10" />}
-            title="Exceptional Throughout"
-            description="MAXIMUM write operations with passive indexing."
+            title="Crazy Benchmark"
+            description="Top performance. 19,172 ns/op. In-memory-like speed. WAL-class durability."
           />
           <FeatureCard
             icon={<Code className="h-10 w-10" />}
-            title="Easy Integration"
-            description="Simple HTTP API and TCP interface for writing, reading, and managing timeseries data."
+            title="Super Easy Integration"
+            description="Identical HTTP API and TCP interfaces, which are all in strict JSON."
           />
           <FeatureCard
             icon={<BarChart className="h-10 w-10" />}
-            title="Downsampling"
+            title="Analytics Ready"
             description="Built-in support for data downsampling and aggregation."
+          />
+          <FeatureCard
+            icon={<Leaf className="h-10 w-10" />}
+            title="Memory Efficient"
+            description="As Low as 6MB memory. Perfect for IoT devices. Indexing is all in SSD."
+          />
+          <FeatureCard
+            icon={<Rss className="h-10 w-10" />}
+            title="Built-in Streaming"
+            description="Subscribe to keys and receive updates in real-time."
+          />
+          <FeatureCard
+            icon={<Shield className="h-10 w-10" />}
+            title="Battle-Tested"
+            description="Trusted by IoT pioneers and used in production."
+          />
+          <FeatureCard
+            icon={<PuzzleIcon className="h-10 w-10" />}
+            title="Cross-Platform"
+            description="Supports Windows, Linux/BSD, and macOS. Perfect for edge devices."
           />
         </motion.div>
       </div>
