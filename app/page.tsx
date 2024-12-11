@@ -26,10 +26,10 @@ export default function Home() {
               <li><a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Features</a></li>
               <li><a href="#usage" className="text-gray-600 hover:text-blue-600 transition-colors">Usage</a></li>
               <li><a href="#performance" className="text-gray-600 hover:text-blue-600 transition-colors">Performance</a></li>
-              <li><a href="https://github.com/abbychau/gtsdb" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <li><a href="https://github.com/abbychau/gtsdb" target='_blank' className="text-gray-600 hover:text-blue-600 transition-colors">
               <Github className="h-5 w-5" />
               </a></li>
-              <li><a href="https://github.com/abbychau/gtsdb/releases/new" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <li><a href="https://github.com/abbychau/gtsdb/releases" target='_blank' className="text-gray-600 hover:text-blue-600 transition-colors">
               <Download className="h-5 w-5" />
               </a></li>
             </ul>
