@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug } from 'lucide-react'
+import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Mail } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -70,6 +70,12 @@ export default function Home() {
                   <a href="https://abby.md" className="text-gray-400 hover:text-white transition-colors flex items-center">
                     <Globe className="h-5 w-5 mr-2" />
                     Creator Homepage
+                  </a>
+                </li>
+                <li>
+                <a href="mailto:abbychau@gmail.com" className="text-gray-400 hover:text-white transition-colors flex items-center">
+                    <Mail className="h-5 w-5 mr-2" />
+                    Commercial Support
                   </a>
                 </li>
               </ul>
