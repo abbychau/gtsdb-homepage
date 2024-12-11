@@ -224,11 +224,10 @@ function UsageSection() {
           <Code className="h-8 w-8 inline-block mr-2" />
           Usage</h2>
         <Tabs defaultValue="http" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
+          <TabsList className="grid w-full grid-cols-2 mb-8 h-12">
             <TabsTrigger value="http" className="text-lg"><Globe className="h-5 w-5 mr-2" /> HTTP API</TabsTrigger>
             <TabsTrigger value="tcp" className="text-lg">
-              <Plug className="h-5 w-5 mr-2" />
-              TCP Interface</TabsTrigger>
+              <Plug className="h-5 w-5 mr-2" />TCP Interface</TabsTrigger>
           </TabsList>
           <div className="mt-4">
             <TabsContent value="http">
