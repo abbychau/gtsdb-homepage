@@ -114,7 +114,7 @@ function HeroSection() {
 
           <Button className="ml-4 bg-white text-blue-600 hover:bg-blue-100" onClick={
             () => {
-              alert("Demo is not available yet.")
+              window.open("https://gtsdb-admin.vercel.app/", "_blank")
             }
           }>
             <Presentation className="h-4 w-4" />
