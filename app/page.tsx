@@ -477,8 +477,8 @@ function PerformanceSection() {
               <ul className="list-disc list-inside space-y-2 text-gray-600">
                 <li>OS: Windows</li>
                 <li>Architecture: amd64</li>
-                <li>Package: gtsdb</li>
                 <li>CPU: 13th Gen Intel(R) Core(TM) i7-13700KF</li>
+                <li>This benchmark does 50% read and 50% write operations to 100 different keys(devices).</li>
               </ul>
             </div>
             <div>
