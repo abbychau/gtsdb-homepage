@@ -505,8 +505,8 @@ function TrustedBySection() {
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold mb-12">Trusted By</h2>
         <div className="flex justify-center items-center space-x-8">
-          <Image src={controlfree} alt="ControlFree" height={40} className="w-auto h-auto brightness-0" />
-          <Image src={vertriqe} alt="Vertriqe" height={40} className="w-auto h-auto" />
+          <Image src={controlfree} alt="ControlFree" height={45} className="w-auto h-auto mr-6" />
+          <Image src={vertriqe} alt="Vertriqe" height={45} className="w-auto h-auto" />
         </div>
       </div>
     </section>
