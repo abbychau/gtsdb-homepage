@@ -478,7 +478,7 @@ function PerformanceSection() {
                 <li>OS: Windows</li>
                 <li>Architecture: amd64</li>
                 <li>CPU: 13th Gen Intel(R) Core(TM) i7-13700KF</li>
-                <li>This benchmark does 50% read and 50% write operations to 100 different keys(devices).</li>
+                <li>50% read and 50% write operations to 100 different keys</li>
               </ul>
             </div>
             <div>
