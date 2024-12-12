@@ -9,10 +9,11 @@ import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 // hamham.png
 import hamham from './hamham.png'
-import Link from 'next/link'
 import { buttonVariants } from "@/components/ui/button"
 import controlfree from './control-free.png'
 import vertriqe from './vertriqe.png'
+import Link from 'next/link'
+
 
 export default function Home() {
   return (
@@ -27,9 +28,15 @@ export default function Home() {
               <li><a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Features</a></li>
               <li><a href="#usage" className="text-gray-600 hover:text-blue-600 transition-colors">Usage</a></li>
               <li><a href="#performance" className="text-gray-600 hover:text-blue-600 transition-colors">Performance</a></li>
-              <li><a href="https://github.com/abbychau/gtsdb" target='_blank' className="text-gray-600 hover:text-blue-600 transition-colors">
-              <Github className="h-5 w-5" />
-              </a></li>
+              
+              <li>
+                <Link href="/Documentation" className="text-gray-600 hover:text-blue-600 transition-colors flex">
+                  <Book className="h-5 w-5 mr-2" />
+                  Documentation
+                </Link>
+              </li>
+              <li><a href="https://github.com/abbychau/gtsdb" target='_blank' className="text-gray-600 hover:text-blue-600 transition-colors"><Github className="h-5 w-5" /></a></li>
+              
               <li><a href="https://github.com/abbychau/gtsdb/releases" target='_blank' className="text-gray-600 hover:text-blue-600 transition-colors">
               <Download className="h-5 w-5" />
               </a></li>
@@ -66,7 +73,7 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
-                  <a href="/#usage" className="text-gray-400 hover:text-white transition-colors flex items-center">
+                  <a href="/Documentation" className="text-gray-400 hover:text-white transition-colors flex items-center">
                     <Code className="h-5 w-5 mr-2" />
                     Documentation
                   </a>
@@ -515,7 +522,7 @@ function TrustedBySection() {
 
 function CTASection() {
   return (
-    <section className="py-20 bg-blue-600 text-white">
+    <section id="CTA" className="py-20 bg-blue-600 text-white">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold mb-8">Ready to Get Started?</h2>
           <Link className={buttonVariants({ variant: "outline" }) + "bg-white text-blue-600 hover:text-blue-600" } href="https://github.com/abbychau/gtsdb/releases" target='_blank'>
