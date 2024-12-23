@@ -18,7 +18,7 @@ import Link from 'next/link'
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+      <header className="sticky top-0 z-50 backdrop-blur-md border-b-4 border-gray-400 bg-slate-100/80">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-blue-950">
             🐹 GTSDB
@@ -111,7 +111,7 @@ export default function Home() {
 
 function HeroSection() {
   return (
-    <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 overflow-hidden">
+    <section className="bg-gradient-to-r from-slate-800 to-indigo-700 text-white py-20 overflow-hidden">
       <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
         <motion.div 
           className="md:w-1/2 mb-10 md:mb-0"
@@ -164,7 +164,7 @@ function FeaturesSection() {
   }, [controls, inView])
 
   return (
-    <section id="features" className="py-20 bg-gray-50">
+    <section id="features" className="py-20 bg-gray-100">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-12 text-center">Key Features</h2>
         <motion.div 
@@ -256,7 +256,7 @@ function FeatureCard({ icon, title, description }: FeatureCardProps) {
 
 function UsageSection() {
   return (
-    <section id="usage" className="py-20">
+    <section id="usage" className="py-20 bg-gradient-to-t from-slate-400 to-slate-700 text-white">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-12 text-center">
           <Code className="h-8 w-8 inline-block mr-2" />
@@ -522,10 +522,10 @@ function TrustedBySection() {
 
 function CTASection() {
   return (
-    <section id="CTA" className="py-20 bg-blue-600 text-white">
+    <section id="CTA" className="py-20 text-white bg-gradient-to-r from-slate-800 to-indigo-700">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold mb-8">Ready to Get Started?</h2>
-          <Link className={buttonVariants({ variant: "outline" }) + "bg-white text-blue-600 hover:text-blue-600" } href="https://github.com/abbychau/gtsdb/releases" target='_blank'>
+          <Link className={buttonVariants({ variant: "outline" }) + "bg-white text-blue-900 hover:text-blue-800 font-semibold" } href="https://github.com/abbychau/gtsdb/releases" target='_blank'>
             Download GTSDB
             <ArrowRight className="ml-2 h-4 w-4" />  
           </Link>
