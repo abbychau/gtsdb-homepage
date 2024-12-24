@@ -291,10 +291,10 @@ function UsageSection() {
 POST /
 {
     "operation": "write",
+    "key": "a_sensor1",
     "Write": {
-        "id": "a_sensor1",
         "Value": 32242424243333333333.3333,
-        "Timestamp": 1617965210
+        "Timestamp": 1617965210 // optional
     }
 }
                       `}</code>
@@ -306,8 +306,8 @@ POST /
 POST /
 {
     "operation": "read",
-    "Read": {
-        "id": "a_sensor1",
+    "key": "a_sensor1",
+    "Read": { //optional
         "StartTime": 1617965210,
         "EndTime": 1617965211,
         "Downsample": 3,
@@ -319,8 +319,8 @@ POST /
 POST /
 {
     "operation": "read",
+    "key": "a_sensor1",
     "Read": {
-        "id": "a_sensor1",
         "LastX": 1
     }
 }
@@ -344,14 +344,14 @@ POST /
 POST /
 {
   "operation": "subscribe",
-  "DeviceID": "sensor1"
+  "key": "sensor1"
 }
 
 # Unsubscribe from a key
 POST /
 {
   "operation": "unsubscribe",
-  "DeviceID": "sensor1"
+  "key": "sensor1"
 }
                       `}</code>
                     </pre>
@@ -381,8 +381,8 @@ POST /
                       <code>{`
 {
     "operation": "write",
+    "key": "a_sensor1",
     "write": {
-        "id": "a_sensor1",
         "value": 32242424243333333333.3333,
         "timestamp": 1617965210
     }
@@ -395,8 +395,8 @@ POST /
                       <code>{`
 {
     "operation": "read",
-    "read": {
-        "id": "a_sensor1",
+    "key": "a_sensor1",
+    "read": { // optional
         "startTime": 1617965210,
         "endTime": 1617965211,
         "downsample": 3,
@@ -407,8 +407,8 @@ POST /
 # Or read last X records:
 {
     "operation": "read",
+    "key": "a_sensor1",
     "read": {
-        "id": "a_sensor1",
         "lastx": 1
     }
 }
@@ -430,13 +430,13 @@ POST /
 # Subscribe to a key
 {
   "operation": "subscribe",
-  "deviceId": "sensor1"
+  "key": "sensor1"
 }
 
 # Unsubscribe from a key
 {
   "operation": "unsubscribe",
-  "deviceId": "sensor1"
+  "key": "sensor1"
 }
                       `}</code>
                     </pre>
