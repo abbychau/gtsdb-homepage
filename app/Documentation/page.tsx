@@ -1,6 +1,6 @@
 "use client"
 
-import { Code, BarChart, Github, Globe, Lock, Download, Mail, HomeIcon } from 'lucide-react'
+import { Code, Github, Globe, Lock, Download, Mail, HomeIcon } from 'lucide-react'
 import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
@@ -170,8 +170,8 @@ function DocumentationPage() {
                 endpoint="POST /"
                 requestBody={{
                   operation: "write",
+                  key: "a_sensor1",
                   Write: {
-                    id: "a_sensor1",
                     Value: 32242424243333333333.3333
                   }
                 }}
@@ -185,8 +185,8 @@ function DocumentationPage() {
                 endpoint="POST /"
                 requestBody={{
                   operation: "read",
+                  key: "a_sensor1",
                   Read: {
-                    id: "a_sensor1",
                     start_timestamp: 1717965210,
                     end_timestamp: 1717965211,
                     downsampling: 3
@@ -199,8 +199,8 @@ function DocumentationPage() {
                 endpoint="POST /"
                 requestBody={{
                   operation: "read",
+                  key: "a_sensor1",
                   Read: {
-                    id: "a_sensor1",
                     lastx: 1
                   }
                 }}
@@ -243,7 +243,7 @@ function DocumentationPage() {
                 endpoint="POST /"
                 requestBody={{
                   operation: "initkey",
-                  deviceId: "new_sensor"
+                  key: "new_sensor"
                 }}
               />
               <ApiEndpoint
@@ -252,8 +252,8 @@ function DocumentationPage() {
                 endpoint="POST /"
                 requestBody={{
                   operation: "renamekey",
-                  deviceId: "old_sensor_name",
-                  toDeviceId: "new_sensor_name"
+                  key: "old_sensor_name",
+                  toKey: "new_sensor_name"
                 }}
               />
               <ApiEndpoint
@@ -262,7 +262,7 @@ function DocumentationPage() {
                 endpoint="POST /"
                 requestBody={{
                   operation: "deletekey",
-                  deviceId: "sensor_to_delete"
+                  key: "sensor_to_delete"
                 }}
               />
             </TabsContent>
