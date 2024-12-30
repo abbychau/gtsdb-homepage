@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🐹 GTSDB (Golang Time Series Database)
 
-## Getting Started
+A simple, efficient, and easy-to-use time series database designed for IoT and real-time applications.
 
-First, run the development server:
+## ✨ Key Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Innovative Design**: Utilizes Write Ahead Log (WAL) for records, reducing IO and memory usage
+- **High Performance**: 19,172 ns/op with in-memory-like speed and WAL-class durability
+- **Memory Efficient**: As low as 6MB memory usage, perfect for IoT devices
+- **Easy Integration**: Identical HTTP API and TCP interfaces using JSON
+- **Built-in Streaming**: Real-time data subscriptions support
+- **Analytics Ready**: Built-in support for data downsampling and aggregation
+- **Cross-Platform**: Supports Windows, Linux/BSD, and macOS
+
+## 🚀 Quick Start
+
+1. Download the latest release from [GitHub Releases](https://github.com/abbychau/gtsdb/releases)
+2. Run the GTSDB server
+3. Start using either the HTTP API or TCP interface
+
+## 📡 API Usage
+
+### HTTP API Example
+
+```json
+// Write data
+POST /
+{
+    "operation": "write",
+    "key": "sensor1",
+    "Write": {
+        "Value": 32242424243333333333.3333,
+        "Timestamp": 1617965210
+    }
+}
+
+// Read data
+POST /
+{
+    "operation": "read",
+    "key": "sensor1",
+    "Read": {
+        "StartTime": 1617965210,
+        "EndTime": 1617965211,
+        "Downsample": 3
+    }
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### TCP Interface
+Uses the same JSON format as HTTP API but over TCP connection.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📊 Performance
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- 24 Concurrent operations
+- 311,648 operations tested
+- 19,172 ns/op
+- 4,245 B/op
+- 5 allocs/op
 
-## Learn More
+## 📚 Documentation
 
-To learn more about Next.js, take a look at the following resources:
+For detailed documentation, visit our [Documentation Page](https://gtsdb.abby.md/Documentation).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🤝 Commercial Support
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+For commercial support, please contact: [abbychau@gmail.com](mailto:abbychau@gmail.com)
 
-## Deploy on Vercel
+## 📜 License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+GTSDB is open-source software licensed under the MIT License.
