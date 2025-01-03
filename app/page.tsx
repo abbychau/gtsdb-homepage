@@ -291,10 +291,9 @@ function UsageSection() {
 POST /
 {
     "operation": "write",
-    "key": "a_sensor1",
     "Write": {
-        "Value": 32242424243333333333.3333,
-        "Timestamp": 1617965210 // optional
+        "id": "a_sensor1",
+        "Value": 32242424243333333333.3333
     }
 }
                       `}</code>
@@ -303,25 +302,47 @@ POST /
                   <TabsContent value="read">
                     <pre className="text-sm">
                       <code>{`
+# Read with time range:
 POST /
 {
     "operation": "read",
-    "key": "a_sensor1",
-    "Read": { //optional
-        "StartTime": 1617965210,
-        "EndTime": 1617965211,
-        "Downsample": 3,
-        "Aggregation": "avg"
+    "Read": {
+        "id": "a_sensor1",
+        "start_timestamp": 1717965210,
+        "end_timestamp": 1717965211,
+        "downsampling": 3
     }
 }
 
-# Or read last X records:
+# Read last X records:
 POST /
 {
     "operation": "read",
-    "key": "a_sensor1",
     "Read": {
-        "LastX": 1
+        "id": "a_sensor1",
+        "lastx": 1
+    }
+}
+
+# Multi-read with time range:
+POST /
+{
+    "operation": "multi-read",
+    "keys": ["sensor1", "sensor2", "sensor3"],
+    "read": {
+        "start_timestamp": 1717965210,
+        "end_timestamp": 1717965211,
+        "downsampling": 3
+    }
+}
+
+# Multi-read last X records:
+POST /
+{
+    "operation": "multi-read",
+    "keys": ["sensor1", "sensor2", "sensor3"],
+    "read": {
+        "lastx": 1
     }
 }
                       `}</code>
@@ -352,6 +373,18 @@ POST /
 {
   "operation": "unsubscribe",
   "key": "sensor1"
+}
+                      `}</code>
+                    </pre>
+                  </TabsContent>
+                  <TabsContent value="patch">
+                    <pre className="text-sm">
+                      <code>{`
+POST /
+{
+    "operation": "data-patch",
+    "key": "sensor1",
+    "data": "1717965210,123.45\\n1717965211,123.46\\n1717965212,123.47"
 }
                       `}</code>
                     </pre>
@@ -446,6 +479,19 @@ POST /
             </TabsContent>
           </div>
         </Tabs>
+        
+        {/* Add this new section below the tabs */}
+        <div className="mt-12 text-center">
+          <p className="text-lg mb-4">Need more details? Check out our complete API documentation.</p>
+          <Link 
+            href="/Documentation" 
+            className="inline-flex items-center px-6 py-3 bg-white text-gray-800 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+          >
+            <Book className="h-5 w-5 mr-2" />
+            View Full API Documentation
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Link>
+        </div>
       </div>
     </section>
   )
