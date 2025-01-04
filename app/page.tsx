@@ -13,6 +13,7 @@ import { buttonVariants } from "@/components/ui/button"
 import controlfree from './control-free.png'
 import vertriqe from './vertriqe.png'
 import Link from 'next/link'
+import { ResponsiveBar } from "@nivo/bar"
 
 
 export default function Home() {
@@ -501,21 +502,72 @@ function PerformanceSection() {
   const controls = useAnimation()
   const [ref, inView] = useInView()
 
+  const writeData = [
+    { db: "GTSDB", milliseconds: 730.19 },
+    { db: "InfluxDB", milliseconds: 10920.92 }
+  ]
+
+  const readData = [
+    { db: "GTSDB", milliseconds: 5.36 },
+    { db: "InfluxDB", milliseconds: 16.68 }
+  ]
+
+  const multiWriteData = [
+    { db: "GTSDB", milliseconds: 535.32 },
+    { db: "InfluxDB", milliseconds: 1608.69 }
+  ]
+
   useEffect(() => {
     if (inView) {
       controls.start('visible')
     }
   }, [controls, inView])
 
+  const BarChartComponent = ({ data, title }: { data: { db: string, milliseconds: number }[], title: string }) => (
+    <div className="h-[250px]">
+      <h4 className="text-lg font-medium mb-4 text-center">{title}</h4>
+      <ResponsiveBar
+      data={data}
+      keys={['milliseconds']}
+      indexBy="db"
+      margin={{ top: 20, right: 20, bottom: 80, left: 60 }}
+      padding={0.3}
+      valueScale={{ type: 'linear' }}
+      indexScale={{ type: 'band', round: true }}
+      colors={({ data }) => data.db === 'GTSDB' ? '#3B82F6' : '#94A3B8'}
+      borderWidth={1}
+      borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
+      axisLeft={{
+        tickSize: 1,
+        tickValues: 5,
+        tickPadding: 5,
+        tickRotation: 0,
+        legend: 'Time (ms)',
+        legendPosition: 'middle',
+        legendOffset: -40
+      }}
+      axisBottom={{
+        tickSize: 5,
+        tickPadding: 5,
+        tickRotation: 0,
+      }}
+      labelFormat={value => `${Number(value).toFixed(2)}ms`}
+      labelSkipWidth={12}
+      labelSkipHeight={12}
+      />
+    </div>
+  )
+
   return (
     <section id="performance" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-12 text-center">
           <Timer className="h-8 w-8 inline-block mr-2" />
-          Performance</h2>
+          Performance Comparison
+        </h2>
         <motion.div 
           ref={ref}
-          className="bg-white p-8 rounded-lg shadow-lg"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8"
           variants={{
             hidden: { opacity: 0, y: 20 },
             visible: { opacity: 1, y: 0 }
@@ -524,26 +576,59 @@ function PerformanceSection() {
           animate={controls}
           transition={{ duration: 0.5 }}
         >
-          <h3 className="text-2xl font-semibold mb-6">Performance Benchmark</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h4 className="text-lg font-medium mb-2">Details</h4>
-              <ul className="list-disc list-inside space-y-2 text-gray-600">
-                <li>OS: Windows</li>
-                <li>Architecture: amd64</li>
-                <li>CPU: 13th Gen Intel(R) Core(TM) i7-13700KF</li>
-                <li>50% read and 50% write operations to 100 different keys</li>
-              </ul>
+          <div className="bg-white p-8 rounded-lg shadow-lg">
+            <h3 className="text-2xl font-semibold mb-6">Benchmark Results</h3>
+            <div className="space-y-8">
+              <BarChartComponent data={writeData} title="Write Performance (ms)" />
+              <BarChartComponent data={readData} title="Read Performance (ms)" />
+              <BarChartComponent data={multiWriteData} title="Multi-Write Performance (ms)" />
             </div>
-            <div>
-              <h4 className="text-lg font-medium mb-2">Results</h4>
-              <ul className="list-disc list-inside space-y-2 text-gray-600">
-                <li>24 Concurrency</li>
-                <li>311,648 operations</li>
-                <li>19,172 ns/op</li>
-                <li>4,245 B/op</li>
-                <li>5 allocs/op</li>
-              </ul>
+          </div>
+
+          <div className="bg-white p-8 rounded-lg shadow-lg">
+            <h3 className="text-2xl font-semibold mb-6">Test Configuration</h3>
+            <div className="space-y-6">
+              <div>
+                <h4 className="text-lg font-medium mb-2">Test Parameters</h4>
+                <ul className="list-disc list-inside space-y-2 text-gray-600">
+                  <li>Total Data Points: 10,000</li>
+                  <li>Points per Sensor: 1,000</li>
+                  <li>Sensor Count: 10</li>
+                  <li>Success Rate: 100%</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="text-lg font-medium mb-2">Environment</h4>
+                <ul className="list-disc list-inside space-y-2 text-gray-600">
+                  <li>OS: Windows</li>
+                  <li>Architecture: amd64</li>
+                  <li>CPU: 13th Gen Intel(R) Core(TM) i7-13700KF</li>
+                  <li>24 Concurrent Operations</li>
+                </ul>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h4 className="text-lg font-medium mb-2 text-blue-800">Key Note</h4>
+                <ul className="list-disc list-inside space-y-2 text-blue-700">
+                  <li>GTSDB shows 15x faster write performance</li>
+                  <li>3x faster read operations</li>
+                  <li>3x faster multi-write operations</li>
+                  <li>Only 7MB Memory Usage</li>
+                </ul>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <a 
+                  href="https://github.com/abbychau/gtsdb-benchmark" 
+                  target="_blank"
+                  className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                  <Github className="h-5 w-5 mr-2" />
+                  View Benchmark Repository
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+              </div>
             </div>
           </div>
         </motion.div>
