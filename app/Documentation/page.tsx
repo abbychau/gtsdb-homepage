@@ -232,8 +232,8 @@ function DocumentationPage() {
                 requestBody={{
                   operation: "write",
                   Write: {
-                    id: "a_sensor1",
-                    Value: 32242424243333333333.3333
+                    key: "a_sensor1",
+                    Value: 3224242424333.3333
                   }
                 }}
               />

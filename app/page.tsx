@@ -292,8 +292,8 @@ function UsageSection() {
 POST /
 {
     "operation": "write",
+    "key": "a_sensor1",
     "Write": {
-        "id": "a_sensor1",
         "Value": 32242424243333333333.3333
     }
 }
@@ -307,8 +307,8 @@ POST /
 POST /
 {
     "operation": "read",
+    "key": "a_sensor1",
     "Read": {
-        "id": "a_sensor1",
         "start_timestamp": 1717965210,
         "end_timestamp": 1717965211,
         "downsampling": 3
@@ -319,8 +319,8 @@ POST /
 POST /
 {
     "operation": "read",
+    "key": "a_sensor1",
     "Read": {
-        "id": "a_sensor1",
         "lastx": 1
     }
 }
@@ -330,7 +330,7 @@ POST /
 {
     "operation": "multi-read",
     "keys": ["sensor1", "sensor2", "sensor3"],
-    "read": {
+    "Read": {
         "start_timestamp": 1717965210,
         "end_timestamp": 1717965211,
         "downsampling": 3
@@ -342,7 +342,7 @@ POST /
 {
     "operation": "multi-read",
     "keys": ["sensor1", "sensor2", "sensor3"],
-    "read": {
+    "Read": {
         "lastx": 1
     }
 }
@@ -354,7 +354,7 @@ POST /
                       <code>{`
 POST /
 {
-    "operation": "ids"
+    "operation": "keys"
 }
                       `}</code>
                     </pre>
@@ -365,22 +365,40 @@ POST /
 # Subscribe to a key
 POST /
 {
-  "operation": "subscribe",
-  "key": "sensor1"
+    "operation": "subscribe",
+    "key": "sensor1"
 }
 
 # Unsubscribe from a key
 POST /
 {
-  "operation": "unsubscribe",
-  "key": "sensor1"
+    "operation": "unsubscribe",
+    "key": "sensor1"
 }
-                      `}</code>
-                    </pre>
-                  </TabsContent>
-                  <TabsContent value="patch">
-                    <pre className="text-sm">
-                      <code>{`
+
+# Initialize a new key
+POST /
+{
+    "operation": "init",
+    "key": "new_sensor"
+}
+
+# Rename a key
+POST /
+{
+    "operation": "renamekey",
+    "key": "old_sensor_name",
+    "toKey": "new_sensor_name"
+}
+
+# Delete a key
+POST /
+{
+    "operation": "delete",
+    "key": "sensor_to_delete"
+}
+
+# Patch data points
 POST /
 {
     "operation": "data-patch",
