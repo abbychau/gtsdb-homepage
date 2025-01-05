@@ -1,11 +1,11 @@
 "use client"
 
-import { Code, Github, Globe, Lock, Download, Mail, HomeIcon } from 'lucide-react'
+import { Github, Download, HomeIcon, Copy, Check } from 'lucide-react'
 import { useEffect, useRef, useState } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import { Edit, BookOpen, Bell, Key, MoreHorizontal } from 'lucide-react'
 import Footer from '@/components/Footer'
+import SyntaxHighlighter from 'react-syntax-highlighter';
 
 
 
@@ -19,12 +19,12 @@ export default function Home() {
           </h1>
           <nav>
             <ul className="flex space-x-6">
-              
+
               <li><a href="https://github.com/abbychau/gtsdb" target='_blank' className="text-gray-600 hover:text-blue-600 transition-colors">
-              <Github className="h-5 w-5" />
-              </a></li>              
+                <Github className="h-5 w-5" />
+              </a></li>
               <li><a href="https://github.com/abbychau/gtsdb/releases" target='_blank' className="text-gray-600 hover:text-blue-600 transition-colors">
-              <Download className="h-5 w-5" />
+                <Download className="h-5 w-5" />
               </a></li>
               <li>
                 <a href="/" className="text-gray-600 hover:text-blue-600 transition-colors">
@@ -358,6 +358,30 @@ function DocumentationPage() {
   )
 }
 
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const copy = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <button
+      className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-700 transition-colors"
+      onClick={copy}
+    >
+      {copied ? (
+        <Check className="h-4 w-4 text-green-400" />
+      ) : (
+        <Copy className="h-4 w-4 text-gray-400" />
+      )}
+    </button>
+  )
+}
+
 interface ApiEndpointProps {
   title: string;
   description: string;
@@ -372,9 +396,18 @@ function ApiEndpoint({ title, description, requestBody }: ApiEndpointProps) {
       <p className="mb-4 text-gray-600">{description}</p>
       <div>
         <h3 className="text-lg font-medium mb-2">Request Body</h3>
-        <pre className="bg-gray-100 p-4 rounded overflow-x-auto">
-          <code>{JSON.stringify(requestBody, null, 2)}</code>
-        </pre>
+        <div className="relative">
+          <div
+            className="bg-gray-100 p-3 rounded overflow-x-auto">
+
+            <SyntaxHighlighter
+              language="json"
+              customStyle={{ backgroundColor: 'transparent', color: '#222' }}
+            >{JSON.stringify(requestBody, null, 2)}</SyntaxHighlighter>
+          </div>
+
+          <CopyButton text={JSON.stringify(requestBody, null, 2)} />
+        </div>
       </div>
     </div>
   )
