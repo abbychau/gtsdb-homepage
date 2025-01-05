@@ -26,9 +26,9 @@ export default function Home() {
           </h1>
           <nav>
             <ul className="flex space-x-6">
-                <li className="hidden md:block"><a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Key Features</a></li>
-                <li className="hidden md:block"><a href="#usages" className="text-gray-600 hover:text-blue-600 transition-colors">Usages</a></li>
-                <li className="hidden md:block"><a href="#performance" className="text-gray-600 hover:text-blue-600 transition-colors">Performance</a></li>
+              <li className="hidden md:block"><a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Key Features</a></li>
+              <li className="hidden md:block"><a href="#usages" className="text-gray-600 hover:text-blue-600 transition-colors">Usages</a></li>
+              <li className="hidden md:block"><a href="#performance" className="text-gray-600 hover:text-blue-600 transition-colors">Performance</a></li>
               <li>
                 <Link href="/Documentation" className="text-gray-600 hover:text-blue-600 transition-colors flex">
                   <Book className="h-5 w-5 mr-2" />
@@ -36,9 +36,9 @@ export default function Home() {
                 </Link>
               </li>
               <li><a href="https://github.com/abbychau/gtsdb" target='_blank' className="text-gray-600 hover:text-blue-600 transition-colors"><Github className="h-5 w-5" /></a></li>
-              
+
               <li><a href="https://github.com/abbychau/gtsdb/releases" target='_blank' className="text-gray-600 hover:text-blue-600 transition-colors">
-              <Download className="h-5 w-5" />
+                <Download className="h-5 w-5" />
               </a></li>
             </ul>
           </nav>
@@ -63,7 +63,7 @@ function HeroSection() {
   return (
     <section className="bg-gradient-to-r from-slate-800 to-indigo-700 text-white py-20 overflow-hidden">
       <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
-        <motion.div 
+        <motion.div
           className="md:w-1/2 mb-10 md:mb-0"
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -71,13 +71,13 @@ function HeroSection() {
         >
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Golang Dead Simple Timeseries Database</h1>
           <p className="text-xl mb-8">A simple, efficient, and easy-to-use timeseries database for IoT and more.</p>
-          
-          <Button 
-          className="bg-blue-50 text-blue-800 hover:bg-blue-300 shadow-slate-200"
-          onClick={
-            () => window.location.href = "/#features"
-          }
-          size={"lg"}
+
+          <Button
+            className="bg-blue-50 text-blue-800 hover:bg-blue-300 shadow-slate-200"
+            onClick={
+              () => window.location.href = "/#features"
+            }
+            size={"lg"}
           >
             <Star className="h-4 w-4" />
             Get Started
@@ -85,19 +85,19 @@ function HeroSection() {
           </Button>
 
           <Button
-          className="ml-4 bg-blue-50 text-blue-800 hover:bg-blue-300 shadow-slate-200"
-          size={"lg"}
-          onClick={
-            () => {
-              window.open("https://gtsdb-admin.vercel.app/", "_blank")
-            }
-          }>
+            className="ml-4 bg-blue-50 text-blue-800 hover:bg-blue-300 shadow-slate-200"
+            size={"lg"}
+            onClick={
+              () => {
+                window.open("https://gtsdb-admin.vercel.app/", "_blank")
+              }
+            }>
             <Presentation className="h-4 w-4" />
             Demo
             <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
           </Button>
         </motion.div>
-        <motion.div 
+        <motion.div
           className="md:w-1/2"
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -124,7 +124,7 @@ function FeaturesSection() {
     <section id="features" className="py-20 bg-gray-100">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-12 text-center">Key Features</h2>
-        <motion.div 
+        <motion.div
           ref={ref}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
           variants={{
@@ -150,7 +150,7 @@ function FeaturesSection() {
             title="Crazy Benchmark"
             description={
               <>
-              Top performance. <b>19,172 ns/op.</b> In-memory-like speed. WAL-class durability.
+                Top performance. <b>19,172 ns/op.</b> In-memory-like speed. WAL-class durability.
               </>
             }
           />
@@ -184,7 +184,7 @@ function FeaturesSection() {
             title="Cross-Platform"
             description={
               <>
-              Supports Windows, Linux/BSD, and macOS. Perfect for edge devices.
+                Supports Windows, Linux/BSD, and macOS. Perfect for edge devices.
               </>
             }
           />
@@ -202,7 +202,7 @@ interface FeatureCardProps {
 
 function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
-    <motion.div 
+    <motion.div
       className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
       variants={{
         hidden: { y: 20, opacity: 0 },
@@ -378,7 +378,7 @@ POST /
             <TabsContent value="tcp">
               <Tabs defaultValue="write" className="w-full">
                 <TabsList className="grid w-full grid-cols-4 mb-4">
-                <TabsTrigger value="write">
+                  <TabsTrigger value="write">
                     <Pencil className="h-5 w-5 mr-2" />
                     Write</TabsTrigger>
                   <TabsTrigger value="read">
@@ -462,12 +462,12 @@ POST /
             </TabsContent>
           </div>
         </Tabs>
-        
+
         {/* Add this new section below the tabs */}
         <div className="mt-12 text-center">
           <p className="text-lg mb-4">Need more details? Check out our complete API documentation.</p>
-          <Link 
-            href="/Documentation" 
+          <Link
+            href="/Documentation"
             className="inline-flex items-center px-6 py-3 bg-white text-gray-800 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
           >
             <Book className="h-5 w-5 mr-2" />
@@ -509,33 +509,33 @@ function PerformanceSection() {
     <div className="h-[250px]">
       <h4 className="text-lg font-medium mb-4 text-center">{title}</h4>
       <ResponsiveBar
-      data={data}
-      keys={['milliseconds']}
-      indexBy="db"
-      margin={{ top: 20, right: 20, bottom: 80, left: 60 }}
-      padding={0.3}
-      valueScale={{ type: 'linear' }}
-      indexScale={{ type: 'band', round: true }}
-      colors={({ data }) => data.db === 'GTSDB' ? '#3B82F6' : '#94A3B8'}
-      borderWidth={1}
-      borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
-      axisLeft={{
-        tickSize: 1,
-        tickValues: 5,
-        tickPadding: 5,
-        tickRotation: 0,
-        legend: 'Time (ms)',
-        legendPosition: 'middle',
-        legendOffset: -40
-      }}
-      axisBottom={{
-        tickSize: 5,
-        tickPadding: 5,
-        tickRotation: 0,
-      }}
-      labelFormat={value => `${Number(value).toFixed(2)}ms`}
-      labelSkipWidth={12}
-      labelSkipHeight={12}
+        data={data}
+        keys={['milliseconds']}
+        indexBy="db"
+        margin={{ top: 20, right: 20, bottom: 80, left: 60 }}
+        padding={0.3}
+        valueScale={{ type: 'linear' }}
+        indexScale={{ type: 'band', round: true }}
+        colors={({ data }) => data.db === 'GTSDB' ? '#3B82F6' : '#94A3B8'}
+        borderWidth={1}
+        borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
+        axisLeft={{
+          tickSize: 1,
+          tickValues: 5,
+          tickPadding: 5,
+          tickRotation: 0,
+          legend: 'Time (ms)',
+          legendPosition: 'middle',
+          legendOffset: -40
+        }}
+        axisBottom={{
+          tickSize: 5,
+          tickPadding: 5,
+          tickRotation: 0,
+        }}
+        labelFormat={value => `${Number(value).toFixed(2)}ms`}
+        labelSkipWidth={12}
+        labelSkipHeight={12}
       />
     </div>
   )
@@ -547,7 +547,7 @@ function PerformanceSection() {
           <Timer className="h-8 w-8 inline-block mr-2" />
           Performance Comparison
         </h2>
-        <motion.div 
+        <motion.div
           ref={ref}
           className="grid grid-cols-1 lg:grid-cols-2 gap-8"
           variants={{
@@ -570,34 +570,40 @@ function PerformanceSection() {
           <div className="bg-white p-8 rounded-lg shadow-lg">
             <h3 className="text-2xl font-semibold mb-6">Test Configuration</h3>
             <div className="space-y-6">
-              <div>
-                <h4 className="text-lg font-medium mb-2">Test Parameters</h4>
-                <ul className="list-disc list-inside space-y-2 text-gray-600">
-                  <li>
-                    Total Data Points: 10,000
-                  </li>
-                  <li>
-                    Points per Sensor: 1,000
-                  </li>
-                  <li>
-                    Sensor Count: 10
-                  </li>
-                  <li>
-                    Success Rate: 100%
-                  </li>
-                </ul>
-              </div>
-              
-              <div>
-                <h4 className="text-lg font-medium mb-2">Environment</h4>
-                <ul className="list-disc list-inside space-y-2 text-gray-600">
-                  <li>OS: Windows</li>
-                  <li>Architecture: amd64</li>
-                  <li>CPU: 13th Gen Intel(R) Core(TM) i7-13700KF</li>
-                  <li>24 Concurrent Operations</li>
-                </ul>
-              </div>
 
+              <table className="min-w-full bg-white border border-gray-200 text-sm">
+                <tbody>
+
+                  <tr>
+                    <td className="py-2 px-4 border-b">Total Data Points</td>
+                    <td className="py-2 px-4 border-b font-bold">10,000</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-4 border-b">Points per Sensor</td>
+                    <td className="py-2 px-4 border-b font-bold">1,000</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-4 border-b">Sensor Count</td>
+                    <td className="py-2 px-4 border-b font-bold">10</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-4 border-b">Success Rate</td>
+                    <td className="py-2 px-4 border-b font-bold">100%</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-4 border-b">OS</td>
+                    <td className="py-2 px-4 border-b font-bold">Windows</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-4 border-b">Architecture</td>
+                    <td className="py-2 px-4 border-b font-bold">amd64</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-4 border-b">CPU</td>
+                    <td className="py-2 px-4 border-b font-bold">Core(TM) i7-13700KF</td>
+                  </tr>
+                </tbody>
+              </table>
               <div className="bg-blue-50 p-4 rounded-lg">
                 <h4 className="text-lg font-bold mb-2 text-blue-800">Key Note</h4>
                 <ul className="list-disc list-inside space-y-2 text-blue-700">
@@ -607,10 +613,9 @@ function PerformanceSection() {
                   <li>Only <strong>7MB</strong> Memory Usage</li>
                 </ul>
               </div>
-
               <div className="mt-6 pt-6 border-t border-gray-200">
-                <a 
-                  href="https://github.com/abbychau/gtsdb-benchmark" 
+                <a
+                  href="https://github.com/abbychau/gtsdb-benchmark"
                   target="_blank"
                   className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
                 >
@@ -646,11 +651,11 @@ function CTASection() {
     <section id="CTA" className="py-20 text-white bg-gradient-to-r from-slate-800 to-indigo-700">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold mb-8">Ready to Get Started?</h2>
-          <Link className={buttonVariants({ variant: "outline" }) + "bg-white text-blue-900 hover:text-blue-800 font-semibold" } href="https://github.com/abbychau/gtsdb/releases" target='_blank'>
-            Download GTSDB
-            <ArrowRight className="ml-2 h-4 w-4" />  
-          </Link>
-          
+        <Link className={buttonVariants({ variant: "outline" }) + "bg-white text-blue-900 hover:text-blue-800 font-semibold"} href="https://github.com/abbychau/gtsdb/releases" target='_blank'>
+          Download GTSDB
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Link>
+
       </div>
     </section>
   )
