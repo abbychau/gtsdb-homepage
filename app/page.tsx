@@ -62,6 +62,8 @@ export default function Home() {
               <h3 className="text-lg font-semibold mb-4">GTSDB</h3>
               <p className="text-sm text-gray-400">
                 A simple, efficient, and easy-to-use timeseries database for IoT and more.
+                <br /><br />
+                <a href="//www.dmca.com/Protection/Status.aspx?ID=1740cd4b-670e-483e-b367-12946cc5b770" title="DMCA.com Protection Status" className="dmca-badge"> <img src ="https://images.dmca.com/Badges/dmca-badge-w100-5x1-08.png?ID=1740cd4b-670e-483e-b367-12946cc5b770"  alt="DMCA.com Protection Status" /></a>  <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"> </script>
               </p>
             </div>
             <div>
