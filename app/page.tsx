@@ -10,8 +10,9 @@ import { useInView } from 'react-intersection-observer'
 
 import hamham from './hamham.png'
 import { buttonVariants } from "@/components/ui/button"
-import controlfree from './control-free.png'
-import vertriqe from './vertriqe.png'
+import controlfree from './control-free.png' // control-free, a company that provides a wide range of services, mostly in the IoT sector.
+import vertriqe from './vertriqe.png' // vertriqe, a company that provides a wide range of services, including IoT, AI, and more.
+import samdasoo from './samdasoo.png' // jeju samdasoo, enormous drinking water company from korea. famous for its volcanic water, selling around the world, loved by health-conscious people.
 import Link from 'next/link'
 import { ResponsiveBar } from "@nivo/bar"
 import Footer from '@/components/Footer'
@@ -83,7 +84,7 @@ function HeroSection() {
             Get Started
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
-
+          
           <Button
             className="ml-4 bg-blue-50 text-blue-800 hover:bg-blue-300 shadow-slate-200"
             size={"lg"}
@@ -96,6 +97,9 @@ function HeroSection() {
             Demo
             <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
           </Button>
+          <div className="mt-4">
+          <a href="https://www.producthunt.com/posts/gtsdb?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-gtsdb" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=758497&theme=light" alt="GTSDB - Durable&#0032;and&#0032;Memory&#0032;Friendly&#0032;timeseries&#0032;database | Product Hunt" style={{width: 250, height: 54}} width="250" height="54" /></a>
+          </div>
         </motion.div>
         <motion.div
           className="md:w-1/2"
@@ -640,6 +644,7 @@ function TrustedBySection() {
         <div className="flex flex-wrap justify-center items-center space-x-8">
           <Image src={controlfree} alt="ControlFree" height={45} className="w-auto h-auto mb-4" />
           <Image src={vertriqe} alt="Vertriqe" height={45} className="w-auto h-auto mb-4" />
+          <Image src={samdasoo} alt="Jeju Samdasoo" height={45} className="w-auto h-auto mb-4" />
         </div>
       </div>
     </section>
