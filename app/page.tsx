@@ -63,7 +63,7 @@ export default function Home() {
               <p className="text-sm text-gray-400">
                 A simple, efficient, and easy-to-use timeseries database for IoT and more.
                 <br /><br />
-                <a href="//www.dmca.com/Protection/Status.aspx?ID=1740cd4b-670e-483e-b367-12946cc5b770" title="DMCA.com Protection Status" className="dmca-badge"> <img src ="https://images.dmca.com/Badges/dmca-badge-w100-5x1-08.png?ID=1740cd4b-670e-483e-b367-12946cc5b770"  alt="DMCA.com Protection Status" /></a>  <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"> </script>
+                <a href="https://www.dmca.com/Protection/Status.aspx?id=1740cd4b-670e-483e-b367-12946cc5b770&refurl=https%3a%2f%2fgtsdb.abby.md%2f&rlo=true" title="DMCA.com Protection Status" className="dmca-badge"> <img src ="https://images.dmca.com/Badges/dmca-badge-w100-5x1-08.png?ID=1740cd4b-670e-483e-b367-12946cc5b770"  alt="DMCA.com Protection Status" /></a>  <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"> </script>
               </p>
             </div>
             <div>
@@ -124,16 +124,23 @@ function HeroSection() {
         >
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Golang Dead Simple Timeseries Database</h1>
           <p className="text-xl mb-8">A simple, efficient, and easy-to-use timeseries database for IoT and more.</p>
-
-          <Button className="bg-white text-blue-600 hover:bg-blue-100" onClick={
+          
+          <Button 
+          className="bg-blue-100 text-blue-800 hover:bg-blue-300 shadow-slate-200"
+          onClick={
             () => window.location.href = "/#features"
-          }>
+          }
+          size={"lg"}
+          >
             <Star className="h-4 w-4" />
             Get Started
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
 
-          <Button className="ml-4 bg-white text-blue-600 hover:bg-blue-100" onClick={
+          <Button
+          className="ml-4 bg-blue-100 text-blue-800 hover:bg-blue-300 shadow-slate-200"
+          size={"lg"}
+          onClick={
             () => {
               window.open("https://gtsdb-admin.vercel.app/", "_blank")
             }
