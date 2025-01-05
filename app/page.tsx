@@ -7,14 +7,14 @@ import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Downloa
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-// hamham.png
+
 import hamham from './hamham.png'
 import { buttonVariants } from "@/components/ui/button"
 import controlfree from './control-free.png'
 import vertriqe from './vertriqe.png'
 import Link from 'next/link'
 import { ResponsiveBar } from "@nivo/bar"
-
+import Footer from '@/components/Footer'
 
 export default function Home() {
   return (
@@ -26,10 +26,9 @@ export default function Home() {
           </h1>
           <nav>
             <ul className="flex space-x-6">
-              <li><a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Features</a></li>
-              <li><a href="#usage" className="text-gray-600 hover:text-blue-600 transition-colors">Usage</a></li>
-              <li><a href="#performance" className="text-gray-600 hover:text-blue-600 transition-colors">Performance</a></li>
-              
+                <li className="hidden md:block"><a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Key Features</a></li>
+                <li className="hidden md:block"><a href="#usages" className="text-gray-600 hover:text-blue-600 transition-colors">Usages</a></li>
+                <li className="hidden md:block"><a href="#performance" className="text-gray-600 hover:text-blue-600 transition-colors">Performance</a></li>
               <li>
                 <Link href="/Documentation" className="text-gray-600 hover:text-blue-600 transition-colors flex">
                   <Book className="h-5 w-5 mr-2" />
@@ -55,59 +54,7 @@ export default function Home() {
         <CTASection />
       </main>
 
-      <footer className="bg-gray-800 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">GTSDB</h3>
-              <p className="text-sm text-gray-400">
-                A simple, efficient, and easy-to-use timeseries database for IoT and more.
-                <br /><br />
-                <a href="https://www.dmca.com/Protection/Status.aspx?id=1740cd4b-670e-483e-b367-12946cc5b770&refurl=https%3a%2f%2fgtsdb.abby.md%2f&rlo=true" title="DMCA.com Protection Status" className="dmca-badge"> <img src ="https://images.dmca.com/Badges/dmca-badge-w100-5x1-08.png?ID=1740cd4b-670e-483e-b367-12946cc5b770"  alt="DMCA.com Protection Status" /></a>  <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"> </script>
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Links</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="https://github.com/abbychau/gtsdb" className="text-gray-400 hover:text-white transition-colors flex items-center">
-                    <Github className="h-5 w-5 mr-2" />
-                    GitHub
-                  </a>
-                </li>
-                <li>
-                  <a href="/Documentation" className="text-gray-400 hover:text-white transition-colors flex items-center">
-                    <Code className="h-5 w-5 mr-2" />
-                    Documentation
-                  </a>
-                </li>
-                <li>
-                  <a href="https://abby.md" className="text-gray-400 hover:text-white transition-colors flex items-center">
-                    <Globe className="h-5 w-5 mr-2" />
-                    Creator Homepage
-                  </a>
-                </li>
-                <li>
-                <a href="mailto:abbychau@gmail.com" className="text-gray-400 hover:text-white transition-colors flex items-center">
-                    <Mail className="h-5 w-5 mr-2" />
-                    Commercial Support
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">License</h3>
-              <p className="text-sm text-gray-400 flex items-start">
-                <Lock className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
-                GTSDB is open-source software licensed under the MIT License.
-              </p>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-gray-700 text-center">
-            <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} GTSDB. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
@@ -126,7 +73,7 @@ function HeroSection() {
           <p className="text-xl mb-8">A simple, efficient, and easy-to-use timeseries database for IoT and more.</p>
           
           <Button 
-          className="bg-blue-100 text-blue-800 hover:bg-blue-300 shadow-slate-200"
+          className="bg-blue-50 text-blue-800 hover:bg-blue-300 shadow-slate-200"
           onClick={
             () => window.location.href = "/#features"
           }
@@ -138,7 +85,7 @@ function HeroSection() {
           </Button>
 
           <Button
-          className="ml-4 bg-blue-100 text-blue-800 hover:bg-blue-300 shadow-slate-200"
+          className="ml-4 bg-blue-50 text-blue-800 hover:bg-blue-300 shadow-slate-200"
           size={"lg"}
           onClick={
             () => {
@@ -201,7 +148,11 @@ function FeaturesSection() {
           <FeatureCard
             icon={<Zap className="h-10 w-10" />}
             title="Crazy Benchmark"
-            description="Top performance. 19,172 ns/op. In-memory-like speed. WAL-class durability."
+            description={
+              <>
+              Top performance. <b>19,172 ns/op.</b> In-memory-like speed. WAL-class durability.
+              </>
+            }
           />
           <FeatureCard
             icon={<Code className="h-10 w-10" />}
@@ -231,7 +182,11 @@ function FeaturesSection() {
           <FeatureCard
             icon={<PuzzleIcon className="h-10 w-10" />}
             title="Cross-Platform"
-            description="Supports Windows, Linux/BSD, and macOS. Perfect for edge devices."
+            description={
+              <>
+              Supports Windows, Linux/BSD, and macOS. Perfect for edge devices.
+              </>
+            }
           />
         </motion.div>
       </div>
@@ -242,7 +197,7 @@ function FeaturesSection() {
 interface FeatureCardProps {
   icon: React.ReactNode;
   title: string;
-  description: string;
+  description: React.ReactNode;
 }
 
 function FeatureCard({ icon, title, description }: FeatureCardProps) {
@@ -259,18 +214,18 @@ function FeatureCard({ icon, title, description }: FeatureCardProps) {
     >
       <div className="text-blue-600 mb-4">{icon}</div>
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+      <div className="text-gray-600">{description}</div>
     </motion.div>
   )
 }
 
 function UsageSection() {
   return (
-    <section id="usage" className="py-20 bg-gradient-to-t from-slate-400 to-slate-700 text-white">
+    <section id="usages" className="py-20 bg-gradient-to-t from-slate-400 to-slate-700 text-white">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-12 text-center">
           <Code className="h-8 w-8 inline-block mr-2" />
-          Usage</h2>
+          Usages</h2>
         <Tabs defaultValue="http" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-8 h-12">
             <TabsTrigger value="http" className="text-lg"><Globe className="h-5 w-5 mr-2" /> HTTP API</TabsTrigger>
@@ -618,10 +573,18 @@ function PerformanceSection() {
               <div>
                 <h4 className="text-lg font-medium mb-2">Test Parameters</h4>
                 <ul className="list-disc list-inside space-y-2 text-gray-600">
-                  <li>Total Data Points: 10,000</li>
-                  <li>Points per Sensor: 1,000</li>
-                  <li>Sensor Count: 10</li>
-                  <li>Success Rate: 100%</li>
+                  <li>
+                    Total Data Points: 10,000
+                  </li>
+                  <li>
+                    Points per Sensor: 1,000
+                  </li>
+                  <li>
+                    Sensor Count: 10
+                  </li>
+                  <li>
+                    Success Rate: 100%
+                  </li>
                 </ul>
               </div>
               
@@ -636,12 +599,12 @@ function PerformanceSection() {
               </div>
 
               <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="text-lg font-medium mb-2 text-blue-800">Key Note</h4>
+                <h4 className="text-lg font-bold mb-2 text-blue-800">Key Note</h4>
                 <ul className="list-disc list-inside space-y-2 text-blue-700">
-                  <li>GTSDB shows 15x faster write performance</li>
-                  <li>3x faster read operations</li>
-                  <li>3x faster multi-write operations</li>
-                  <li>Only 7MB Memory Usage</li>
+                  <li>GTSDB shows <strong>15x faster</strong> write performance</li>
+                  <li><strong>3x faster</strong> read operations</li>
+                  <li><strong>3x faster</strong> multi-write operations</li>
+                  <li>Only <strong>7MB</strong> Memory Usage</li>
                 </ul>
               </div>
 
@@ -669,9 +632,9 @@ function TrustedBySection() {
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold mb-12">Trusted By</h2>
-        <div className="flex justify-center items-center space-x-8">
-          <Image src={controlfree} alt="ControlFree" height={45} className="w-auto h-auto mr-6" />
-          <Image src={vertriqe} alt="Vertriqe" height={45} className="w-auto h-auto" />
+        <div className="flex flex-wrap justify-center items-center space-x-8">
+          <Image src={controlfree} alt="ControlFree" height={45} className="w-auto h-auto mb-4" />
+          <Image src={vertriqe} alt="Vertriqe" height={45} className="w-auto h-auto mb-4" />
         </div>
       </div>
     </section>
