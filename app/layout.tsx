@@ -52,6 +52,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name='dmca-site-verification' content='a1RoSkN5c0RSTnVUSVZYci9rbDJoZz090' />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
