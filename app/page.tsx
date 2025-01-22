@@ -1,18 +1,19 @@
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Lock, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Mail, Leaf, Shield, PuzzleIcon, SquareArrowOutUpRight } from 'lucide-react'
+import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe,  Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Leaf, Shield, PuzzleIcon, SquareArrowOutUpRight } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 import hamham from './hamham.png'
 import { buttonVariants } from "@/components/ui/button"
-import controlfree from './control-free.png' // control-free, a company that provides a wide range of services, mostly in the IoT sector.
-import vertriqe from './vertriqe.png' // vertriqe, a company that provides a wide range of services, including IoT, AI, and more.
-import samdasoo from './samdasoo.png' // jeju samdasoo, enormous drinking water company from korea. famous for its volcanic water, selling around the world, loved by health-conscious people.
+// import controlfree from './control-free.png' // control-free, a company that provides a wide range of services, mostly in the IoT sector.
+// import vertriqe from './vertriqe.png' // vertriqe, a company that provides a wide range of services, including IoT, AI, and more.
+// import samdasoo from './samdasoo.png' // jeju samdasoo, enormous drinking water company from korea. famous for its volcanic water, selling around the world, loved by health-conscious people.
 import Link from 'next/link'
 import { ResponsiveBar } from "@nivo/bar"
 import Footer from '@/components/Footer'
@@ -51,7 +52,7 @@ export default function Home() {
         <FeaturesSection />
         <UsageSection />
         <PerformanceSection />
-        <TrustedBySection />
+        {/* <TrustedBySection /> */}
         <CTASection />
       </main>
 
@@ -636,20 +637,21 @@ function PerformanceSection() {
   )
 }
 
-function TrustedBySection() {
-  return (
-    <section className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold mb-12">Trusted By</h2>
-        <div className="flex flex-wrap justify-center items-center space-x-8">
-          <Image src={controlfree} alt="ControlFree" height={45} className="w-auto h-auto mb-4" />
-          <Image src={vertriqe} alt="Vertriqe" height={45} className="w-auto h-auto mb-4" />
-          <Image src={samdasoo} alt="Jeju Samdasoo" height={45} className="w-auto h-auto mb-4" />
-        </div>
-      </div>
-    </section>
-  )
-}
+
+// function TrustedBySection() {
+//   return (
+//     <section className="py-20 bg-gray-50">
+//       <div className="container mx-auto px-4 text-center">
+//         <h2 className="text-3xl font-bold mb-12">Trusted By</h2>
+//         <div className="flex flex-wrap justify-center items-center space-x-8">
+//           <Image src={controlfree} alt="ControlFree" height={45} className="w-auto h-auto mb-4" />
+//           <Image src={vertriqe} alt="Vertriqe" height={45} className="w-auto h-auto mb-4" />
+//           <Image src={samdasoo} alt="Jeju Samdasoo" height={45} className="w-auto h-auto mb-4" />
+//         </div>
+//       </div>
+//     </section>
+//   )
+// }
 
 function CTASection() {
   return (
