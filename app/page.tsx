@@ -22,9 +22,10 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <header className="sticky top-0 z-50 backdrop-blur-md border-b-4 border-gray-400 bg-slate-100/80">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-3 py-1 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-blue-950">
-            🐹 GTSDB
+            <Image src={hamham} alt="GTSDB Logo" className="w-14 inline-block mr-2 mb-1" />
+             GTSDB
           </h1>
           <nav>
             <ul className="flex space-x-6">
@@ -108,7 +109,7 @@ function HeroSection() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <Image src={hamham} alt="GTSDB Illustration" width={400} height={400} className="w-full h-auto" />
+          <Image src={hamham} alt="GTSDB Illustration" className="w-full h-auto" />
         </motion.div>
       </div>
     </section>

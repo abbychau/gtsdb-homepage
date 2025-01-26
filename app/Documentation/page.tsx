@@ -6,15 +6,16 @@ import { cn } from "@/lib/utils"
 import { Edit, BookOpen, Bell, Key, MoreHorizontal } from 'lucide-react'
 import Footer from '@/components/Footer'
 import SyntaxHighlighter from 'react-syntax-highlighter';
-
+import hamham from '../hamham.png'
+import Image from 'next/image'
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-4 py-1 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-blue-950">
-            🐹 GTSDB Documentation
+          <Image src={hamham} alt="GTSDB Logo" className="w-14 inline-block mr-2 mb-1" /> GTSDB Documentation
           </h1>
           <nav>
             <ul className="flex space-x-6">
