@@ -630,6 +630,7 @@ function PerformanceSection() {
                   <li><strong>3x faster</strong> multi-write operations</li>
                   <li>Comparable PubSub performance with NSQ</li>
                   <li>Only <strong>7MB</strong> Memory Usage</li>
+                  <li>Only <strong>1</strong> binary executable</li>
                 </ul>
               </div>
               <div className="mt-6 pt-6 border-t border-gray-200">
