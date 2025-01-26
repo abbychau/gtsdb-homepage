@@ -427,19 +427,22 @@ function ApiEndpoint({ title, description, requestBody, responseBody }: ApiEndpo
       <p className="mb-4 text-gray-600">{description}</p>
       <div>
         <h3 className="text-lg font-medium mb-2">Request Body</h3>
-        <div className="relative">
-          <div
-            className="bg-gray-100 p-3 rounded overflow-x-auto">
 
-            <SyntaxHighlighter
-              language="json"
-              customStyle={{ backgroundColor: 'transparent', color: '#222' }}
-            >{JSON.stringify(requestBody, null, 2)}</SyntaxHighlighter>
+        {requestBody && (
+          <div className="relative">
+            <div
+              className="bg-gray-100 p-3 rounded overflow-x-auto">
+
+              <SyntaxHighlighter
+                language="json"
+                customStyle={{ backgroundColor: 'transparent', color: '#222' }}
+              >{JSON.stringify(requestBody, null, 2)}</SyntaxHighlighter>
+            </div>
+
+            <CopyButton text={JSON.stringify(requestBody, null, 2)} />
+
           </div>
-
-          <CopyButton text={JSON.stringify(requestBody, null, 2)} />
-
-        </div>
+        )}
 
         {responseBody && (
           <div className="relative">
