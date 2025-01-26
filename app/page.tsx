@@ -601,8 +601,12 @@ function PerformanceSection() {
                     <td className="py-2 px-4 border-b font-bold">10</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 border-b">Success Rate</td>
+                    <td className="py-2 px-4 border-b">Read-Write Success Rate</td>
                     <td className="py-2 px-4 border-b font-bold">100%</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-4 border-b">PubSub message Count</td>
+                    <td className="py-2 px-4 border-b font-bold">1,000,000</td>
                   </tr>
                   <tr>
                     <td className="py-2 px-4 border-b">OS</td>
@@ -624,7 +628,7 @@ function PerformanceSection() {
                   <li>GTSDB shows <strong>15x faster</strong> write performance</li>
                   <li><strong>3x faster</strong> read operations</li>
                   <li><strong>3x faster</strong> multi-write operations</li>
-                  <li>Comparable PubSub performance with NSQ!</li>
+                  <li>Comparable PubSub performance with NSQ</li>
                   <li>Only <strong>7MB</strong> Memory Usage</li>
                 </ul>
               </div>
