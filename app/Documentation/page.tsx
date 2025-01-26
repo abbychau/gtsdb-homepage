@@ -191,6 +191,22 @@ function DocumentationPage() {
               />
             </div>
 
+            {/* Patch Operations */}
+            <div ref={sectionRefs['patch']} id="patch">
+              <h2 className="text-2xl font-bold mb-6">Patch Operations</h2>
+              <ApiEndpoint
+                title="Patch Data Points"
+                description="Update or insert multiple data points for a specific sensor using CSV format."
+                endpoint="POST /"
+                requestBody={{
+                  operation: "data-patch",
+                  key: "sensor1",
+                  data: "1717965210,123.45\n1717965211,123.46\n1717965212,123.47"
+                }}
+                responseBody={{ success: true, message: "Patched 13 data points" }}
+              />
+            </div>
+
             {/* Read Operations */}
             <div ref={sectionRefs['read-range']} id="read-range">
               <h2 className="text-2xl font-bold mb-6">Read Operations</h2>
@@ -366,21 +382,7 @@ function DocumentationPage() {
               />
             </div>
 
-            {/* Patch Operations */}
-            <div ref={sectionRefs['patch']} id="patch">
-              <h2 className="text-2xl font-bold mb-6">Patch Operations</h2>
-              <ApiEndpoint
-                title="Patch Data Points"
-                description="Update or insert multiple data points for a specific sensor using CSV format."
-                endpoint="POST /"
-                requestBody={{
-                  operation: "data-patch",
-                  key: "sensor1",
-                  data: "1717965210,123.45\n1717965211,123.46\n1717965212,123.47"
-                }}
-                responseBody={{ success: true, message: "Patched 13 data points" }}
-              />
-            </div>
+
           </div>
         </div>
       </div>
