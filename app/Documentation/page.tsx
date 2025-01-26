@@ -8,7 +8,6 @@ import Footer from '@/components/Footer'
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
 
-
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -49,6 +48,7 @@ function DocumentationPage() {
   const [activeSection, setActiveSection] = useState("write-single")
   const sectionRefs = {
     'write-single': useRef<HTMLDivElement>(null),
+    'patch': useRef<HTMLDivElement>(null),
     'read-range': useRef<HTMLDivElement>(null),
     'read-last': useRef<HTMLDivElement>(null),
     'read-multi-range': useRef<HTMLDivElement>(null),
@@ -60,7 +60,7 @@ function DocumentationPage() {
     'keys-rename': useRef<HTMLDivElement>(null),
     'keys-delete': useRef<HTMLDivElement>(null),
     'flush': useRef<HTMLDivElement>(null),
-    'patch': useRef<HTMLDivElement>(null),
+    'ping': useRef<HTMLDivElement>(null),
   }
 
   useEffect(() => {
@@ -130,6 +130,7 @@ function DocumentationPage() {
       icon: <MoreHorizontal className="h-5 w-5" />,
       items: [
         { id: 'flush' as SectionId, label: 'Flush Data' },
+        { id: 'ping' as SectionId, label: 'Ping' },
       ]
     },
   ]
@@ -186,6 +187,7 @@ function DocumentationPage() {
                     Value: 3224242424333.3333
                   }
                 }}
+                responseBody={{ success: true, message: "Data written successfully" }}
               />
             </div>
 
@@ -205,6 +207,12 @@ function DocumentationPage() {
                     downsampling: 3
                   }
                 }}
+                responseBody={{
+                  success: true, data: [
+                    { timestamp: 1717965210, value: 123.45 },
+                    { timestamp: 1717965211, value: 123.46 }
+                  ]
+                }}
               />
             </div>
             <div ref={sectionRefs['read-last']} id="read-last">
@@ -218,6 +226,11 @@ function DocumentationPage() {
                   Read: {
                     lastx: 1
                   }
+                }}
+                responseBody={{
+                  success: true, data: [
+                    { timestamp: 1717965211, value: 123.46 }
+                  ]
                 }}
               />
             </div>
@@ -263,6 +276,7 @@ function DocumentationPage() {
                   operation: "subscribe",
                   key: "sensor1"
                 }}
+                responseBody={{ success: true, message: "Subscribed to sensor1" }}
               />
             </div>
             <div ref={sectionRefs['unsubscribe']} id="unsubscribe">
@@ -274,6 +288,7 @@ function DocumentationPage() {
                   operation: "unsubscribe",
                   key: "sensor1"
                 }}
+                responseBody={{ success: true, message: "Unsubscribed from sensor1" }}
               />
             </div>
 
@@ -287,6 +302,7 @@ function DocumentationPage() {
                 requestBody={{
                   operation: "ids"
                 }}
+                responseBody={{ success: true, data: ["sensor1", "sensor2", "sensor3"] }}
               />
             </div>
             <div ref={sectionRefs['keys-init']} id="keys-init">
@@ -298,6 +314,7 @@ function DocumentationPage() {
                   operation: "initkey",
                   key: "new_sensor"
                 }}
+                responseBody={{ success: true, message: "Key initialized: new_sensor" }}
               />
             </div>
             <div ref={sectionRefs['keys-rename']} id="keys-rename">
@@ -310,6 +327,7 @@ function DocumentationPage() {
                   key: "old_sensor_name",
                   toKey: "new_sensor_name"
                 }}
+                responseBody={{ success: true, message: "Key renamed: old_sensor_name -> new_sensor_name" }}
               />
             </div>
             <div ref={sectionRefs['keys-delete']} id="keys-delete">
@@ -321,6 +339,7 @@ function DocumentationPage() {
                   operation: "deletekey",
                   key: "sensor_to_delete"
                 }}
+                responseBody={{ success: true, message: "Key deleted: sensor_to_delete" }}
               />
             </div>
 
@@ -334,6 +353,16 @@ function DocumentationPage() {
                 requestBody={{
                   operation: "flush"
                 }}
+                responseBody={{ success: true, message: "Data flushed" }}
+              />
+            </div>
+
+            <div ref={sectionRefs['ping']} id="ping">
+              <ApiEndpoint
+                title="Ping"
+                description={"It is not an operation, but a message sent from the server to the client to check if the connection is still alive. You can ignore this message. (hint: determine by empty data or \"ping\" message)"}
+                endpoint="POST /"
+                responseBody={{ success: true, message: "ping" }}
               />
             </div>
 
@@ -349,6 +378,7 @@ function DocumentationPage() {
                   key: "sensor1",
                   data: "1717965210,123.45\n1717965211,123.46\n1717965212,123.47"
                 }}
+                responseBody={{ success: true, message: "Patched 13 data points" }}
               />
             </div>
           </div>
@@ -386,10 +416,11 @@ interface ApiEndpointProps {
   title: string;
   description: string;
   endpoint: string;
-  requestBody: object;
+  requestBody?: object;
+  responseBody?: object;
 }
 
-function ApiEndpoint({ title, description, requestBody }: ApiEndpointProps) {
+function ApiEndpoint({ title, description, requestBody, responseBody }: ApiEndpointProps) {
   return (
     <div className="mb-8 p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4">{title}</h2>
@@ -407,7 +438,23 @@ function ApiEndpoint({ title, description, requestBody }: ApiEndpointProps) {
           </div>
 
           <CopyButton text={JSON.stringify(requestBody, null, 2)} />
+
         </div>
+
+        {responseBody && (
+          <div className="relative">
+            <h3 className="text-lg font-medium mb-2 mt-4">Response Body</h3>
+            <div className="bg-gray-100 p-3 rounded">
+              <SyntaxHighlighter
+                language="json"
+                customStyle={{ backgroundColor: 'transparent', color: '#222' }}
+              >{JSON.stringify({ success: true }, null, 2)}</SyntaxHighlighter>
+            </div>
+
+            <CopyButton text={JSON.stringify({ success: true }, null, 2)} />
+          </div>
+        )}
+
       </div>
     </div>
   )
