@@ -81,7 +81,7 @@ function DocumentationPage() {
     )
 
     return () => observer.disconnect()
-  }, [])
+  })
 
   type SectionId = keyof typeof sectionRefs;
 

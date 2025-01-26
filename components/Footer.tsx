@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { Github, Code, Globe, Lock, Mail } from 'lucide-react'
 
 export default function Footer() {
