@@ -1,5 +1,4 @@
 import { Github, Code, Globe, Lock, Mail } from 'lucide-react'
-import Link from 'next/link'
 
 export default function Footer() {
   return (
@@ -11,7 +10,7 @@ export default function Footer() {
             <p className="text-sm text-gray-400">
               A simple, efficient, and easy-to-use timeseries database for IoT and more.
               <br /><br />
-              <a href="https://www.dmca.com/Protection/Status.aspx?id=1740cd4b-670e-483e-b367-12946cc5b770&refurl=https%3a%2f%2fgtsdb.abby.md%2f&rlo=true" title="DMCA.com Protection Status" className="dmca-badge"> <img src ="https://images.dmca.com/Badges/dmca-badge-w100-5x1-08.png?ID=1740cd4b-670e-483e-b367-12946cc5b770"  alt="DMCA.com Protection Status" /></a>  <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"> </script>
+              <a href="https://www.dmca.com/Protection/Status.aspx?id=1740cd4b-670e-483e-b367-12946cc5b770&refurl=https%3a%2f%2fgtsdb.abby.md%2f&rlo=true" title="DMCA.com Protection Status" className="dmca-badge"> <img src ="https://images.dmca.com/Badges/dmca-badge-w100-5x1-08.png?ID=1740cd4b-670e-483e-b367-12946cc5b770"  alt="DMCA.com Protection Status" /></a>  <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js" defer> </script>
             </p>
           </div>
           <div>

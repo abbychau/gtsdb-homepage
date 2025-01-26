@@ -504,18 +504,23 @@ function PerformanceSection() {
     { db: "InfluxDB", milliseconds: 1608.69 }
   ]
 
+  const pubsubData = [
+    { db: "GTSDB", seconds: 31.3844892 },
+    { db: "NSQ", seconds: 31.4873011 }
+  ]
+
   useEffect(() => {
     if (inView) {
       controls.start('visible')
     }
   }, [controls, inView])
 
-  const BarChartComponent = ({ data, title }: { data: { db: string, milliseconds: number }[], title: string }) => (
+  const BarChartComponent = ({ data, title }: { data: { db: string, milliseconds?: number, seconds?: number }[], title: string }) => (
     <div className="h-[250px]">
       <h4 className="text-lg font-medium mb-4 text-center">{title}</h4>
       <ResponsiveBar
         data={data}
-        keys={['milliseconds']}
+        keys={['milliseconds', 'seconds']}
         indexBy="db"
         margin={{ top: 20, right: 20, bottom: 80, left: 60 }}
         padding={0.3}
@@ -569,6 +574,10 @@ function PerformanceSection() {
               <BarChartComponent data={writeData} title="Write Performance (ms)" />
               <BarChartComponent data={readData} title="Read Performance (ms)" />
               <BarChartComponent data={multiWriteData} title="Multi-Write Performance (ms)" />
+              <BarChartComponent 
+                data={pubsubData.map(d => ({ ...d, seconds: Number(d.seconds.toFixed(2)) }))} 
+                title="PubSub Performance (seconds)" 
+              />
             </div>
           </div>
 
@@ -615,6 +624,7 @@ function PerformanceSection() {
                   <li>GTSDB shows <strong>15x faster</strong> write performance</li>
                   <li><strong>3x faster</strong> read operations</li>
                   <li><strong>3x faster</strong> multi-write operations</li>
+                  <li>Comparable PubSub performance with NSQ!</li>
                   <li>Only <strong>7MB</strong> Memory Usage</li>
                 </ul>
               </div>
