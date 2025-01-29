@@ -506,8 +506,8 @@ function PerformanceSection() {
   ]
 
   const pubsubData = [
-    { db: "GTSDB", seconds: 31.3844892 },
-    { db: "NSQ", seconds: 31.4873011 }
+    { db: "GTSDB", seconds: 29.400934 },
+    { db: "NSQ", seconds: 33.2795571 }
   ]
 
   useEffect(() => {
@@ -608,6 +608,14 @@ function PerformanceSection() {
                   <tr>
                     <td className="py-2 px-4 border-b">PubSub message Count</td>
                     <td className="py-2 px-4 border-b font-bold">1,000,000</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-4 border-b">Queue Order</td>
+                    <td className="py-2 px-4 border-b font-bold">Ordered</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-4 border-b">Queue Delivery Semantics</td>
+                    <td className="py-2 px-4 border-b font-bold">At most once</td>
                   </tr>
                   <tr>
                     <td className="py-2 px-4 border-b">OS</td>
