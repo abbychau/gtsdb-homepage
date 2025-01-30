@@ -506,7 +506,7 @@ function PerformanceSection() {
   ]
 
   const pubsubData = [
-    { db: "GTSDB", seconds: 29.400934 },
+    { db: "GTSDB", seconds: 32.700934 },
     { db: "NSQ", seconds: 33.2795571 }
   ]
 
@@ -615,7 +615,7 @@ function PerformanceSection() {
                   </tr>
                   <tr>
                     <td className="py-2 px-4 border-b">Queue Delivery Semantics</td>
-                    <td className="py-2 px-4 border-b font-bold">At most once</td>
+                    <td className="py-2 px-4 border-b font-bold">Exactly Once</td>
                   </tr>
                   <tr>
                     <td className="py-2 px-4 border-b">OS</td>
@@ -637,7 +637,8 @@ function PerformanceSection() {
                   <li>GTSDB shows <strong>15x faster</strong> write performance</li>
                   <li><strong>3x faster</strong> read operations</li>
                   <li><strong>3x faster</strong> multi-write operations</li>
-                  <li>Comparable PubSub performance with NSQ</li>
+                  <li>NSQ-like PubSub + Exactly Once Delivery</li>
+                  
                   <li>Only <strong>7MB</strong> Memory Usage</li>
                   <li>Only <strong>1</strong> binary executable</li>
                 </ul>
