@@ -10,10 +10,12 @@ import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 import hamham from './hamham.png'
+import oldHamham from './oldHamham.png'
+
 import { buttonVariants } from "@/components/ui/button"
-// import controlfree from './control-free.png' // control-free, a company that provides a wide range of services, mostly in the IoT sector.
-// import vertriqe from './vertriqe.png' // vertriqe, a company that provides a wide range of services, including IoT, AI, and more.
-// import samdasoo from './samdasoo.png' // jeju samdasoo, enormous drinking water company from korea. famous for its volcanic water, selling around the world, loved by health-conscious people.
+import controlfree from './control-free.png' // control-free, a company that provides a wide range of services, mostly in the IoT sector.
+import vertriqe from './vertriqe.png' // vertriqe, a company that provides a wide range of services, including IoT, AI, and more.
+import samdasoo from './samdasoo.png' // jeju samdasoo, enormous drinking water company from korea. famous for its volcanic water, selling around the world, loved by health-conscious people.
 import Link from 'next/link'
 import { ResponsiveBar } from "@nivo/bar"
 import Footer from '@/components/Footer'
@@ -53,7 +55,7 @@ export default function Home() {
         <FeaturesSection />
         <UsageSection />
         <PerformanceSection />
-        {/* <TrustedBySection /> */}
+        <TrustedBySection />
         <CTASection />
       </main>
 
@@ -92,11 +94,11 @@ function HeroSection() {
             size={"lg"}
             onClick={
               () => {
-                window.open("https://gtsdb-admin.vercel.app/", "_blank")
+                window.open("https://gtsdb-admin.vercel.app/?apiUrl=https://gtsdb-web.abby.md/", "_blank")
               }
             }>
             <Presentation className="h-4 w-4" />
-            Demo
+            Admin Tool Demo
             <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
           </Button>
           <div className="mt-4">
@@ -109,7 +111,7 @@ function HeroSection() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <Image src={hamham} alt="GTSDB Illustration" className="w-full h-auto" />
+          <Image src={oldHamham} alt="GTSDB Illustration" className="w-full h-auto" />
         </motion.div>
       </div>
     </section>
@@ -491,18 +493,18 @@ function PerformanceSection() {
   const [ref, inView] = useInView()
 
   const writeData = [
-    { db: "GTSDB", milliseconds: 730.19 },
+    { db: "GTSDB", milliseconds: 272.19 },
     { db: "InfluxDB", milliseconds: 10920.92 }
   ]
 
   const readData = [
-    { db: "GTSDB", milliseconds: 5.36 },
-    { db: "InfluxDB", milliseconds: 16.68 }
+    { db: "GTSDB", milliseconds: 4.06 },
+    { db: "InfluxDB", milliseconds: 9.78 }
   ]
 
   const multiWriteData = [
-    { db: "GTSDB", milliseconds: 535.32 },
-    { db: "InfluxDB", milliseconds: 1608.69 }
+    { db: "GTSDB", milliseconds: 66.32 },
+    { db: "InfluxDB", milliseconds: 1508.69 }
   ]
 
   const pubsubData = [
@@ -663,20 +665,20 @@ function PerformanceSection() {
 }
 
 
-// function TrustedBySection() {
-//   return (
-//     <section className="py-20 bg-gray-50">
-//       <div className="container mx-auto px-4 text-center">
-//         <h2 className="text-3xl font-bold mb-12">Trusted By</h2>
-//         <div className="flex flex-wrap justify-center items-center space-x-8">
-//           <Image src={controlfree} alt="ControlFree" height={45} className="w-auto h-auto mb-4" />
-//           <Image src={vertriqe} alt="Vertriqe" height={45} className="w-auto h-auto mb-4" />
-//           <Image src={samdasoo} alt="Jeju Samdasoo" height={45} className="w-auto h-auto mb-4" />
-//         </div>
-//       </div>
-//     </section>
-//   )
-// }
+function TrustedBySection() {
+  return (
+    <section className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4 text-center">
+        <h2 className="text-3xl font-bold mb-12">Trusted By</h2>
+        <div className="flex flex-wrap justify-center items-center space-x-8">
+          <Image src={controlfree} alt="ControlFree" height={45} className="w-auto h-auto mb-4" />
+          <Image src={vertriqe} alt="Vertriqe" height={45} className="w-auto h-auto mb-4" />
+          <Image src={samdasoo} alt="Jeju Samdasoo" height={45} className="w-auto h-auto mb-4" />
+        </div>
+      </div>
+    </section>
+  )
+}
 
 function CTASection() {
   return (
