@@ -49,17 +49,26 @@ function DocumentationPage() {
   const [activeSection, setActiveSection] = useState("write-single")
   const sectionRefs = {
     'write-single': useRef<HTMLDivElement>(null),
+    'write-batch': useRef<HTMLDivElement>(null),
     'patch': useRef<HTMLDivElement>(null),
     'read-range': useRef<HTMLDivElement>(null),
     'read-last': useRef<HTMLDivElement>(null),
     'read-multi-range': useRef<HTMLDivElement>(null),
     'read-multi-last': useRef<HTMLDivElement>(null),
+    'export': useRef<HTMLDivElement>(null),
     'subscribe': useRef<HTMLDivElement>(null),
     'unsubscribe': useRef<HTMLDivElement>(null),
     'keys-get': useRef<HTMLDivElement>(null),
+    'keys-get-with-count': useRef<HTMLDivElement>(null),
     'keys-init': useRef<HTMLDivElement>(null),
     'keys-rename': useRef<HTMLDivElement>(null),
     'keys-delete': useRef<HTMLDivElement>(null),
+    'keys-reload': useRef<HTMLDivElement>(null),
+    'delete-datapoint': useRef<HTMLDivElement>(null),
+    'compact': useRef<HTMLDivElement>(null),
+    'serverinfo': useRef<HTMLDivElement>(null),
+    'health': useRef<HTMLDivElement>(null),
+    'metrics': useRef<HTMLDivElement>(null),
     'flush': useRef<HTMLDivElement>(null),
     'ping': useRef<HTMLDivElement>(null),
   }
@@ -95,6 +104,7 @@ function DocumentationPage() {
       icon: <Edit className="h-5 w-5" />,
       items: [
         { id: 'write-single' as SectionId, label: 'Write Single Value' },
+        { id: 'write-batch' as SectionId, label: 'Batch Write' },
         { id: 'patch' as SectionId, label: 'Patch Multiple Values' },
       ]
     },
@@ -106,6 +116,7 @@ function DocumentationPage() {
         { id: 'read-last' as SectionId, label: 'Read Last X' },
         { id: 'read-multi-range' as SectionId, label: 'Multi-Read Range' },
         { id: 'read-multi-last' as SectionId, label: 'Multi-Read Last X' },
+        { id: 'export' as SectionId, label: 'Export Data' },
       ]
     },
     {
@@ -121,15 +132,22 @@ function DocumentationPage() {
       icon: <Key className="h-5 w-5" />,
       items: [
         { id: 'keys-get' as SectionId, label: 'Get All Keys' },
+        { id: 'keys-get-with-count' as SectionId, label: 'Get Keys with Count' },
         { id: 'keys-init' as SectionId, label: 'Initialize Key' },
         { id: 'keys-rename' as SectionId, label: 'Rename Key' },
         { id: 'keys-delete' as SectionId, label: 'Delete Key' },
+        { id: 'keys-reload' as SectionId, label: 'Reload Key' },
+        { id: 'delete-datapoint' as SectionId, label: 'Delete Data Points' },
+        { id: 'compact' as SectionId, label: 'Compact Key' },
       ]
     },
     {
-      group: 'Other Operations',
+      group: 'Server & Monitoring',
       icon: <MoreHorizontal className="h-5 w-5" />,
       items: [
+        { id: 'serverinfo' as SectionId, label: 'Server Info' },
+        { id: 'health' as SectionId, label: 'Health Check' },
+        { id: 'metrics' as SectionId, label: 'Metrics (Prometheus)' },
         { id: 'flush' as SectionId, label: 'Flush Data' },
         { id: 'ping' as SectionId, label: 'Ping' },
       ]
@@ -179,16 +197,34 @@ function DocumentationPage() {
               <h2 className="text-2xl font-bold mb-6">Write Operations</h2>
               <ApiEndpoint
                 title="Write Single Value"
-                description="Write a new data point for a specific sensor."
+                description="Write a new data point for a specific sensor. Timestamp can be omitted to use the current server time. Timestamps are validated to be within the range 2000-2100."
                 endpoint="POST /"
                 requestBody={{
                   operation: "write",
-                  Write: {
-                    key: "a_sensor1",
-                    Value: 3224242424333.3333
+                  key: "a_sensor1",
+                  write: {
+                    value: 3224242424333.3333
                   }
                 }}
-                responseBody={{ success: true, message: "Data written successfully" }}
+                responseBody={{ success: true, message: "Data point stored" }}
+              />
+            </div>
+
+            {/* Batch Write */}
+            <div ref={sectionRefs['write-batch']} id="write-batch">
+              <ApiEndpoint
+                title="Batch Write"
+                description="Write multiple data points across different keys in a single request. Maximum 10,000 points per batch."
+                endpoint="POST /"
+                requestBody={{
+                  operation: "batch-write",
+                  points: [
+                    { key: "sensor1", value: 42.5, timestamp: 1717965210 },
+                    { key: "sensor1", value: 43.1, timestamp: 1717965211 },
+                    { key: "sensor2", value: 99.9, timestamp: 1717965210 }
+                  ]
+                }}
+                responseBody={{ success: true, message: "Stored 3 data points" }}
               />
             </div>
 
@@ -213,15 +249,16 @@ function DocumentationPage() {
               <h2 className="text-2xl font-bold mb-6">Read Operations</h2>
               <ApiEndpoint
                 title="Read Data with Time Range and Downsampling"
-                description="Read data for a specific sensor within a time range with downsampling."
+                description="Read data for a specific sensor within a time range with downsampling. Supported aggregation types: avg (default), sum, min, max, first, last, count, median/p50, p95, p99. Timestamps are validated to be within the range 2000-2100."
                 endpoint="POST /"
                 requestBody={{
                   operation: "read",
                   key: "a_sensor1",
-                  Read: {
+                  read: {
                     start_timestamp: 1717965210,
                     end_timestamp: 1717965211,
-                    downsampling: 3
+                    downsampling: 3,
+                    aggregation: "avg"
                   }
                 }}
                 responseBody={{
@@ -282,6 +319,25 @@ function DocumentationPage() {
               />
             </div>
 
+            {/* Export */}
+            <div ref={sectionRefs['export']} id="export">
+              <ApiEndpoint
+                title="Export Data"
+                description="Export sensor data in CSV or JSON format. Supports time range filtering, last X records, and downsampling."
+                endpoint="POST /"
+                requestBody={{
+                  operation: "export",
+                  key: "sensor1",
+                  export: {
+                    format: "csv",
+                    start_timestamp: 1717965210,
+                    end_timestamp: 1717965211
+                  }
+                }}
+                responseBody={{ success: true, data: "key,timestamp,value\nsensor1,1717965210,42.50\nsensor1,1717965211,43.10\n" }}
+              />
+            </div>
+
             {/* Subscribe Operations */}
             <div ref={sectionRefs['subscribe']} id="subscribe">
               <h2 className="text-2xl font-bold mb-6">Subscribe Operations</h2>
@@ -322,6 +378,17 @@ function DocumentationPage() {
                 responseBody={{ success: true, data: ["sensor1", "sensor2", "sensor3"] }}
               />
             </div>
+            <div ref={sectionRefs['keys-get-with-count']} id="keys-get-with-count">
+              <ApiEndpoint
+                title="Get All Keys with Data Point Count"
+                description="Retrieve all sensor keys along with their data point counts."
+                endpoint="POST /"
+                requestBody={{
+                  operation: "idswithcount"
+                }}
+                responseBody={{ success: true, data: [{ key: "sensor1", count: 1500 }, { key: "sensor2", count: 320 }] }}
+              />
+            </div>
             <div ref={sectionRefs['keys-init']} id="keys-init">
               <ApiEndpoint
                 title="Initialize a New Key"
@@ -337,7 +404,7 @@ function DocumentationPage() {
             <div ref={sectionRefs['keys-rename']} id="keys-rename">
               <ApiEndpoint
                 title="Rename a Key"
-                description="Rename an existing sensor key in the database."
+                description="Rename an existing sensor key in the database. Key names are validated to prevent path traversal and unsafe characters."
                 endpoint="POST /"
                 requestBody={{
                   operation: "renamekey",
@@ -350,13 +417,111 @@ function DocumentationPage() {
             <div ref={sectionRefs['keys-delete']} id="keys-delete">
               <ApiEndpoint
                 title="Delete a Key"
-                description="Delete a sensor key from the database."
+                description="Delete a sensor key and all its data from the database."
                 endpoint="POST /"
                 requestBody={{
                   operation: "deletekey",
                   key: "sensor_to_delete"
                 }}
                 responseBody={{ success: true, message: "Key deleted: sensor_to_delete" }}
+              />
+            </div>
+            <div ref={sectionRefs['keys-reload']} id="keys-reload">
+              <ApiEndpoint
+                title="Reload a Key"
+                description="Reload a sensor key from disk. Useful after manual file changes or recovery."
+                endpoint="POST /"
+                requestBody={{
+                  operation: "reloadkey",
+                  key: "sensor1"
+                }}
+                responseBody={{ success: true, message: "Key reloaded: sensor1" }}
+              />
+            </div>
+
+            {/* Delete Data Points */}
+            <div ref={sectionRefs['delete-datapoint']} id="delete-datapoint">
+              <ApiEndpoint
+                title="Delete Data Points"
+                description="Delete data points by timestamp range and/or value condition. Timestamps are validated to be within the range 2000-2100."
+                endpoint="POST /"
+                requestBody={{
+                  operation: "deleteDataPoint",
+                  key: "sensor1",
+                  payload: {
+                    operator: ">",
+                    value: 100.0,
+                    timestampFrom: 1717965210,
+                    timestampTo: 1717965300
+                  }
+                }}
+                responseBody={{ success: true, message: "Removed 5 data points and patched data" }}
+              />
+            </div>
+
+            {/* Compact */}
+            <div ref={sectionRefs['compact']} id="compact">
+              <ApiEndpoint
+                title="Compact Key"
+                description="Manually compact a key's WAL files to reclaim disk space by removing gaps from deleted data points. The server also runs automatic background compaction every hour for files exceeding 100MB."
+                endpoint="POST /"
+                requestBody={{
+                  operation: "compact",
+                  key: "sensor1"
+                }}
+                responseBody={{ success: true, message: "Key compacted: sensor1" }}
+              />
+            </div>
+
+            {/* Server & Monitoring */}
+            <div ref={sectionRefs['serverinfo']} id="serverinfo">
+              <h2 className="text-2xl font-bold mb-6">Server &amp; Monitoring</h2>
+              <ApiEndpoint
+                title="Server Info"
+                description="Get detailed server information including version, uptime, memory usage, goroutine count, data directory, and configured listen addresses."
+                endpoint="POST /"
+                requestBody={{
+                  operation: "serverinfo"
+                }}
+                responseBody={{
+                  success: true, data: {
+                    version: "1.0",
+                    key_count: 42,
+                    health: "ok",
+                    uptime_seconds: 3600,
+                    goroutines: 12,
+                    memory_alloc_mb: 8.5,
+                    memory_total_mb: 64.0,
+                    num_cpu: 4,
+                    listen_tcp: ":5555",
+                    listen_http: ":5556",
+                    data_dir: "./data",
+                    file_handle_lru: 512
+                  }
+                }}
+              />
+            </div>
+            <div ref={sectionRefs['health']} id="health">
+              <ApiEndpoint
+                title="Health Check"
+                description="Simple health check endpoint. No authentication required. Returns service status and key count."
+                endpoint="GET /health"
+                responseBody={{
+                  status: "ok",
+                  service: "gtsdb",
+                  version: "1.0",
+                  keyCount: 42
+                }}
+              />
+            </div>
+            <div ref={sectionRefs['metrics']} id="metrics">
+              <ApiEndpoint
+                title="Prometheus Metrics"
+                description="Prometheus-compatible metrics endpoint. No authentication required. Exposes gtsdb_key_count, gtsdb_data_points_total, gtsdb_uptime_seconds, gtsdb_goroutines, and Go runtime memory/GC metrics."
+                endpoint="GET /metrics"
+                responseBody={{
+                  note: "Returns text/plain Prometheus exposition format with metrics like gtsdb_key_count, gtsdb_data_points_total, gtsdb_uptime_seconds, go_memstats_alloc_bytes, etc."
+                }}
               />
             </div>
 

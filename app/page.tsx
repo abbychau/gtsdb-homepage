@@ -151,7 +151,7 @@ function FeaturesSection() {
           <FeatureCard
             icon={<Database className="h-10 w-10" />}
             title="Innovative Design"
-            description="Utilizes Write Ahead Log (WAL) for records, reducing IO and memory usage."
+            description="Utilizes Write Ahead Log (WAL) for records, reducing IO and memory usage. Automatic background compaction reclaims disk space."
           />
           <FeatureCard
             icon={<Zap className="h-10 w-10" />}
@@ -195,6 +195,26 @@ function FeaturesSection() {
                 Supports Windows, Linux/BSD, and macOS. Perfect for edge devices.
               </>
             }
+          />
+          <FeatureCard
+            icon={<BarChart className="h-10 w-10" />}
+            title="Monitoring Ready"
+            description="Built-in /health and /metrics (Prometheus) endpoints. Monitor uptime, memory, GC, and data points in real-time."
+          />
+          <FeatureCard
+            icon={<Database className="h-10 w-10" />}
+            title="Batch Write"
+            description="Write up to 10,000 data points in a single API call. Perfect for bulk imports and migration."
+          />
+          <FeatureCard
+            icon={<Download className="h-10 w-10" />}
+            title="Data Export"
+            description="Export sensor data in CSV or JSON format with filtering by time range and downsampling."
+          />
+          <FeatureCard
+            icon={<Zap className="h-10 w-10" />}
+            title="Advanced Analytics"
+            description="Downsampling with avg, sum, min, max, first, last, count, median (p50), p95, and p99 aggregations."
           />
         </motion.div>
       </div>
@@ -243,7 +263,7 @@ function UsageSection() {
           <div className="mt-4">
             <TabsContent value="http">
               <Tabs defaultValue="write" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 mb-4">
+                <TabsList className="grid w-full grid-cols-5 mb-4">
                   <TabsTrigger value="write">
                     <Pencil className="h-5 w-5 mr-2" />
                     Write</TabsTrigger>
@@ -256,6 +276,9 @@ function UsageSection() {
                   <TabsTrigger value="subscribe">
                     <Rss className="h-5 w-5 mr-2" />
                     Subscribe</TabsTrigger>
+                  <TabsTrigger value="advanced">
+                    <Zap className="h-5 w-5 mr-2" />
+                    Advanced</TabsTrigger>
                 </TabsList>
                 <div className="mt-4 bg-gray-800 text-white p-6 rounded-lg overflow-x-auto">
                   <TabsContent value="write">
@@ -377,6 +400,48 @@ POST /
     "key": "sensor1",
     "data": "1717965210,123.45\\n1717965211,123.46\\n1717965212,123.47"
 }
+                      `}</code>
+                    </pre>
+                  </TabsContent>
+                  <TabsContent value="advanced">
+                    <pre className="text-sm">
+                      <code>{`
+# Batch write (up to 10,000 points):
+POST /
+{
+    "operation": "batch-write",
+    "points": [
+        {"key": "sensor1", "value": 42.5, "timestamp": 1717965210},
+        {"key": "sensor2", "value": 99.9, "timestamp": 1717965210}
+    ]
+}
+
+# Export data as CSV:
+POST /
+{
+    "operation": "export",
+    "key": "sensor1",
+    "export": { "format": "csv", "lastx": 100 }
+}
+
+# Compact key to reclaim disk space:
+POST /
+{
+    "operation": "compact",
+    "key": "sensor1"
+}
+
+# Server info with memory & uptime stats:
+POST /
+{
+    "operation": "serverinfo"
+}
+
+# Health check (no auth required):
+GET /health
+
+# Prometheus metrics (no auth required):
+GET /metrics
                       `}</code>
                     </pre>
                   </TabsContent>
