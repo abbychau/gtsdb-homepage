@@ -667,7 +667,7 @@ function PerformanceSection() {
             <h3 className="text-2xl font-semibold mb-6">Benchmark Results</h3>
             <div className="space-y-8">
               <BarChartComponent data={writeData} title="Write Performance (ms)" />
-              <BarChartComponent data={readData} title="Read Latest 100 Data (10ms)" />
+              <BarChartComponent data={readData} title="Read Latest 100 Data 10 times (ms)" />
               <BarChartComponent data={readManyData} title="Read: 10k Queries (ms)" />
               <BarChartComponent data={multiWriteData} title="Multi-Write Performance (ms)" />
               <BarChartComponent 
