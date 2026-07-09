@@ -4,7 +4,7 @@
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe,  Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Leaf, Shield, PuzzleIcon, SquareArrowOutUpRight } from 'lucide-react'
+import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Leaf, Shield, PuzzleIcon, SquareArrowOutUpRight, TrendingUp, Layers, Activity, Cpu } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -35,14 +35,20 @@ export default function Home() {
               <li className="hidden md:block"><a href="#usages" className="text-gray-600 hover:text-blue-600 transition-colors">Usages</a></li>
               <li className="hidden md:block"><a href="#performance" className="text-gray-600 hover:text-blue-600 transition-colors">Performance</a></li>
               <li>
+                <Link href="/architecture" className="text-gray-600 hover:text-blue-600 transition-colors flex">
+                  <Cpu className="h-5 w-5 mr-2" />
+                  Architecture
+                </Link>
+              </li>
+              <li>
                 <Link href="/Documentation" className="text-gray-600 hover:text-blue-600 transition-colors flex">
                   <Book className="h-5 w-5 mr-2" />
                   Documentation
                 </Link>
               </li>
-              <li><a href="https://github.com/abbychau/gtsdb" target='_blank' className="text-gray-600 hover:text-blue-600 transition-colors"><Github className="h-5 w-5" /></a></li>
+              <li><a href="https://github.com/abbychau/gtsdb" target='_blank' rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition-colors"><Github className="h-5 w-5" /></a></li>
 
-              <li><a href="https://github.com/abbychau/gtsdb/releases" target='_blank' className="text-gray-600 hover:text-blue-600 transition-colors">
+              <li><a href="https://github.com/abbychau/gtsdb/releases" target='_blank' rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition-colors">
                 <Download className="h-5 w-5" />
               </a></li>
             </ul>
@@ -102,7 +108,7 @@ function HeroSection() {
             <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
           </Button>
           <div className="mt-4">
-          <a href="https://www.producthunt.com/posts/gtsdb?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-gtsdb" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=758497&theme=light" alt="GTSDB - Durable&#0032;and&#0032;Memory&#0032;Friendly&#0032;timeseries&#0032;database | Product Hunt" style={{width: 250, height: 54}} width="250" height="54" /></a>
+          <a href="https://www.producthunt.com/posts/gtsdb?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-gtsdb" target="_blank" rel="noopener noreferrer"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=758497&theme=light" alt="GTSDB - Durable&#0032;and&#0032;Memory&#0032;Friendly&#0032;timeseries&#0032;database | Product Hunt" style={{width: 250, height: 54}} width="250" height="54" /></a>
           </div>
         </motion.div>
         <motion.div
@@ -197,12 +203,12 @@ function FeaturesSection() {
             }
           />
           <FeatureCard
-            icon={<BarChart className="h-10 w-10" />}
+            icon={<Activity className="h-10 w-10" />}
             title="Monitoring Ready"
             description="Built-in /health and /metrics (Prometheus) endpoints. Monitor uptime, memory, GC, and data points in real-time."
           />
           <FeatureCard
-            icon={<Database className="h-10 w-10" />}
+            icon={<Layers className="h-10 w-10" />}
             title="Batch Write"
             description="Write up to 10,000 data points in a single API call. Perfect for bulk imports and migration."
           />
@@ -212,7 +218,7 @@ function FeaturesSection() {
             description="Export sensor data in CSV or JSON format with filtering by time range and downsampling."
           />
           <FeatureCard
-            icon={<Zap className="h-10 w-10" />}
+            icon={<TrendingUp className="h-10 w-10" />}
             title="Advanced Analytics"
             description="Downsampling with avg, sum, min, max, first, last, count, median (p50), p95, and p99 aggregations."
           />
@@ -288,8 +294,8 @@ POST /
 {
     "operation": "write",
     "key": "a_sensor1",
-    "Write": {
-        "Value": 32242424243333333333.3333
+    "write": {
+        "value": 32242424243333333333.3333
     }
 }
                       `}</code>
@@ -303,7 +309,7 @@ POST /
 {
     "operation": "read",
     "key": "a_sensor1",
-    "Read": {
+    "read": {
         "start_timestamp": 1717965210,
         "end_timestamp": 1717965211,
         "downsampling": 3
@@ -315,7 +321,7 @@ POST /
 {
     "operation": "read",
     "key": "a_sensor1",
-    "Read": {
+    "read": {
         "lastx": 1
     }
 }
@@ -325,7 +331,7 @@ POST /
 {
     "operation": "multi-read",
     "keys": ["sensor1", "sensor2", "sensor3"],
-    "Read": {
+    "read": {
         "start_timestamp": 1717965210,
         "end_timestamp": 1717965211,
         "downsampling": 3
@@ -337,7 +343,7 @@ POST /
 {
     "operation": "multi-read",
     "keys": ["sensor1", "sensor2", "sensor3"],
-    "Read": {
+    "read": {
         "lastx": 1
     }
 }
@@ -349,7 +355,7 @@ POST /
                       <code>{`
 POST /
 {
-    "operation": "keys"
+    "operation": "ids"
 }
                       `}</code>
                     </pre>
@@ -374,7 +380,7 @@ POST /
 # Initialize a new key
 POST /
 {
-    "operation": "init",
+    "operation": "initkey",
     "key": "new_sensor"
 }
 
@@ -389,7 +395,7 @@ POST /
 # Delete a key
 POST /
 {
-    "operation": "delete",
+    "operation": "deletekey",
     "key": "sensor_to_delete"
 }
 
@@ -714,6 +720,7 @@ function PerformanceSection() {
                 <a
                   href="https://github.com/abbychau/gtsdb-benchmark"
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
                 >
                   <Github className="h-5 w-5 mr-2" />

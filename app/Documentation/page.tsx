@@ -1,6 +1,6 @@
 "use client"
 
-import { Github, Download, HomeIcon, Copy, Check } from 'lucide-react'
+import { Github, Download, HomeIcon, Copy, Check, Cpu } from 'lucide-react'
 import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Edit, BookOpen, Bell, Key, MoreHorizontal } from 'lucide-react'
@@ -20,10 +20,15 @@ export default function Home() {
           <nav>
             <ul className="flex space-x-6">
 
-              <li><a href="https://github.com/abbychau/gtsdb" target='_blank' className="text-gray-600 hover:text-blue-600 transition-colors">
+              <li>
+                <a href="/architecture" className="text-gray-600 hover:text-blue-600 transition-colors flex items-center">
+                  <Cpu className="h-5 w-5 mr-1" /> Architecture
+                </a>
+              </li>
+              <li><a href="https://github.com/abbychau/gtsdb" target='_blank' rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition-colors">
                 <Github className="h-5 w-5" />
               </a></li>
-              <li><a href="https://github.com/abbychau/gtsdb/releases" target='_blank' className="text-gray-600 hover:text-blue-600 transition-colors">
+              <li><a href="https://github.com/abbychau/gtsdb/releases" target='_blank' rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition-colors">
                 <Download className="h-5 w-5" />
               </a></li>
               <li>
@@ -233,7 +238,7 @@ function DocumentationPage() {
               <h2 className="text-2xl font-bold mb-6">Patch Operations</h2>
               <ApiEndpoint
                 title="Patch Data Points"
-                description="Update or insert multiple data points for a specific sensor using CSV format."
+                description='Update or insert multiple data points for a specific sensor using CSV or JSON array format. Supports both timestamp,value CSV lines and [{"timestamp":...,"value":...}] JSON arrays.'
                 endpoint="POST /"
                 requestBody={{
                   operation: "data-patch",
