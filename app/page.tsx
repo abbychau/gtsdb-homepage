@@ -578,8 +578,8 @@ function PerformanceSection() {
   ]
 
   const readData = [
-    { db: "GTSDB", milliseconds: 0.01 },
-    { db: "InfluxDB", milliseconds: 4.48 }
+    { db: "GTSDB", milliseconds: 0.1 },
+    { db: "InfluxDB", milliseconds: 40.48 }
   ]
 
   const readManyData = [
@@ -667,7 +667,7 @@ function PerformanceSection() {
             <h3 className="text-2xl font-semibold mb-6">Benchmark Results</h3>
             <div className="space-y-8">
               <BarChartComponent data={writeData} title="Write Performance (ms)" />
-              <BarChartComponent data={readData} title="Read Latest Data (ms)" />
+              <BarChartComponent data={readData} title="Read Latest 100 Data (10ms)" />
               <BarChartComponent data={readManyData} title="Read: 10k Queries (ms)" />
               <BarChartComponent data={multiWriteData} title="Multi-Write Performance (ms)" />
               <BarChartComponent 
