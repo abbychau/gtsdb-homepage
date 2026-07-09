@@ -598,10 +598,10 @@ function PerformanceSection() {
   ]
 
   const compressionData = [
-    { db: "JSON(unindexed)", kilobytes: 290 },
-    { db: "MySQL(indexed)", kilobytes: 280 },
-    { db: "GTSDB(indexed @Raw)", kilobytes: 78.1 },
-    { db: "GTSDB(indexed @Gorilla)", kilobytes: 9.8 }
+    { db: "JSON(w/o idx)", kilobytes: 290 },
+    { db: "MySQL(w/idx)", kilobytes: 280 },
+    { db: "GTSDB(w/idx@Raw)", kilobytes: 78.1 },
+    { db: "GTSDB(w/idx@Gorilla)", kilobytes: 9.8 }
   ]
 
   useEffect(() => {
