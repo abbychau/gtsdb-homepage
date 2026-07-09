@@ -621,7 +621,7 @@ function PerformanceSection() {
         padding={0.3}
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
-        colors={({ data }) => data.db === 'GTSDB' ? '#3B82F6' : data.db === 'Gorilla' ? '#22c55e' : '#94A3B8'}
+        colors={({ data }) => data.db.includes('GTSDB') ? '#3B82F6' : '#94A3B8'}
         borderWidth={1}
         borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
         axisLeft={{
