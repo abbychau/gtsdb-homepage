@@ -468,7 +468,7 @@ function DocumentationPage() {
             <div ref={sectionRefs['compact']} id="compact">
               <ApiEndpoint
                 title="Compact Key"
-                description="Manually compact a key's WAL files to reclaim disk space by removing gaps from deleted data points. The server also runs automatic background compaction every hour for files exceeding 100MB."
+                description="Manually compact a key's WAL files to reclaim disk space by removing gaps from deleted data points. When compaction_compression is enabled in gtsdb.ini, compacted files are compressed using Facebook's Gorilla algorithm (~8x space reduction). The server also runs automatic background compaction every hour for files exceeding 100MB."
                 endpoint="POST /"
                 requestBody={{
                   operation: "compact",

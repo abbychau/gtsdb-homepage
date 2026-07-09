@@ -4,7 +4,7 @@
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Leaf, Shield, PuzzleIcon, SquareArrowOutUpRight, TrendingUp, Layers, Activity, Cpu } from 'lucide-react'
+import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Leaf, Shield, PuzzleIcon, SquareArrowOutUpRight, TrendingUp, Layers, Activity, Cpu, HardDrive } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -157,7 +157,7 @@ function FeaturesSection() {
           <FeatureCard
             icon={<Database className="h-10 w-10" />}
             title="Innovative Design"
-            description="Utilizes Write Ahead Log (WAL) for records, reducing IO and memory usage. Automatic background compaction reclaims disk space."
+            description="Utilizes Write Ahead Log (WAL) for records, reducing IO and memory usage. Background compaction with Gorilla compression reclaims disk space."
           />
           <FeatureCard
             icon={<Zap className="h-10 w-10" />}
@@ -216,6 +216,15 @@ function FeaturesSection() {
             icon={<Download className="h-10 w-10" />}
             title="Data Export"
             description="Export sensor data in CSV or JSON format with filtering by time range and downsampling."
+          />
+          <FeatureCard
+            icon={<HardDrive className="h-10 w-10" />}
+            title="Gorilla Compression"
+            description={
+              <>
+                Facebook Gorilla time-series compression. <b>8x smaller</b> files, 56x faster writes during compaction.
+              </>
+            }
           />
           <FeatureCard
             icon={<TrendingUp className="h-10 w-10" />}
@@ -564,23 +573,33 @@ function PerformanceSection() {
   const [ref, inView] = useInView()
 
   const writeData = [
-    { db: "GTSDB", milliseconds: 272.19 },
-    { db: "InfluxDB", milliseconds: 10920.92 }
+    { db: "GTSDB", milliseconds: 21.76 },
+    { db: "InfluxDB", milliseconds: 5070.41 }
   ]
 
   const readData = [
-    { db: "GTSDB", milliseconds: 4.06 },
-    { db: "InfluxDB", milliseconds: 9.78 }
+    { db: "GTSDB", milliseconds: 0.01 },
+    { db: "InfluxDB", milliseconds: 4.48 }
+  ]
+
+  const readManyData = [
+    { db: "GTSDB", milliseconds: 205.24 },
+    { db: "InfluxDB", milliseconds: 966.77 }
   ]
 
   const multiWriteData = [
-    { db: "GTSDB", milliseconds: 66.32 },
-    { db: "InfluxDB", milliseconds: 1508.69 }
+    { db: "GTSDB", milliseconds: 51.21 },
+    { db: "InfluxDB", milliseconds: 851.38 }
   ]
 
   const pubsubData = [
-    { db: "GTSDB", seconds: 32.700934 },
-    { db: "NSQ", seconds: 33.2795571 }
+    { db: "GTSDB", seconds: 32.70 },
+    { db: "NSQ", seconds: 33.28 }
+  ]
+
+  const compressionData = [
+    { db: "Raw (16B/rec)", kilobytes: 78.1 },
+    { db: "Gorilla", kilobytes: 9.8 }
   ]
 
   useEffect(() => {
@@ -589,12 +608,12 @@ function PerformanceSection() {
     }
   }, [controls, inView])
 
-  const BarChartComponent = ({ data, title }: { data: { db: string, milliseconds?: number, seconds?: number }[], title: string }) => (
+  const BarChartComponent = ({ data, title }: { data: { db: string, milliseconds?: number, seconds?: number, kilobytes?: number }[], title: string }) => (
     <div className="h-[250px]">
       <h4 className="text-lg font-medium mb-4 text-center">{title}</h4>
       <ResponsiveBar
         data={data}
-        keys={['milliseconds', 'seconds']}
+        keys={['milliseconds', 'seconds', 'kilobytes']}
         indexBy="db"
         margin={{ top: 20, right: 20, bottom: 80, left: 60 }}
         padding={0.3}
@@ -646,11 +665,16 @@ function PerformanceSection() {
             <h3 className="text-2xl font-semibold mb-6">Benchmark Results</h3>
             <div className="space-y-8">
               <BarChartComponent data={writeData} title="Write Performance (ms)" />
-              <BarChartComponent data={readData} title="Read Performance (ms)" />
+              <BarChartComponent data={readData} title="Read Latest Data (ms)" />
+              <BarChartComponent data={readManyData} title="Read: 10k Queries (ms)" />
               <BarChartComponent data={multiWriteData} title="Multi-Write Performance (ms)" />
               <BarChartComponent 
                 data={pubsubData.map(d => ({ ...d, seconds: Number(d.seconds.toFixed(2)) }))} 
                 title="PubSub Performance (seconds)" 
+              />
+              <BarChartComponent 
+                data={compressionData} 
+                title="Storage per 5,000 points (KB)" 
               />
             </div>
           </div>
@@ -675,8 +699,16 @@ function PerformanceSection() {
                     <td className="py-2 px-4 border-b font-bold">10</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 border-b">Read-Write Success Rate</td>
-                    <td className="py-2 px-4 border-b font-bold">100%</td>
+                    <td className="py-2 px-4 border-b">Write Method</td>
+                    <td className="py-2 px-4 border-b font-bold">Sequential, single-point</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-4 border-b">Read Method</td>
+                    <td className="py-2 px-4 border-b font-bold">1 query (last 100 records)</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-4 border-b">Multi-Write Method</td>
+                    <td className="py-2 px-4 border-b font-bold">10 goroutines parallel</td>
                   </tr>
                   <tr>
                     <td className="py-2 px-4 border-b">PubSub message Count</td>
@@ -707,12 +739,13 @@ function PerformanceSection() {
               <div className="bg-blue-50 p-4 rounded-lg">
                 <h4 className="text-lg font-bold mb-2 text-blue-800">Key Note</h4>
                 <ul className="list-disc list-inside space-y-2 text-blue-700">
-                  <li>GTSDB shows <strong>15x faster</strong> write performance</li>
-                  <li><strong>3x faster</strong> read operations</li>
-                  <li><strong>3x faster</strong> multi-write operations</li>
-                  <li>NSQ-like PubSub + Exactly Once Delivery</li>
-                  
-                  <li>Only <strong>7MB</strong> Memory Usage</li>
+                  <li>GTSDB shows <strong>233x faster</strong> write (21.76 ms vs 5,070 ms)</li>
+                  <li><strong>Sub-millisecond</strong> single read (&lt;1 ms vs 4.48 ms)</li>
+                  <li><strong>4.7x faster</strong> on 10,000 reads (205 ms vs 967 ms)</li>
+                  <li><strong>16.6x faster</strong> parallel multi-write (51 ms vs 851 ms)</li>
+                  <li><strong>7.98x smaller</strong> storage with Gorilla compression</li>
+                  <li>NSQ-like PubSub: 1M messages in 32.7s</li>
+                  <li>Only <strong>~12MB</strong> Memory Usage</li>
                   <li>Only <strong>1</strong> binary executable</li>
                 </ul>
               </div>
