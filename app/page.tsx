@@ -778,9 +778,9 @@ function TrustedBySection() {
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold mb-12">Trusted By</h2>
         <div className="flex flex-wrap justify-center items-center space-x-8">
-          <Image src={controlfree} alt="ControlFree" height={45} className="w-auto h-auto mb-4" />
-          <Image src={vertriqe} alt="Vertriqe" height={45} className="w-auto h-auto mb-4" />
-          <Image src={samdasoo} alt="Jeju Samdasoo" height={45} className="w-auto h-auto mb-4" />
+          <Image src={controlfree} alt="ControlFree" height={45} className="w-auto mb-4" />
+          <Image src={vertriqe} alt="Vertriqe" height={45} className="w-auto mb-4" />
+          <Image src={samdasoo} alt="Jeju Samdasoo" height={45} className="w-auto mb-4" />
         </div>
       </div>
     </section>
