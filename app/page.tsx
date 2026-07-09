@@ -598,8 +598,10 @@ function PerformanceSection() {
   ]
 
   const compressionData = [
-    { db: "Raw (16B/rec)", kilobytes: 78.1 },
-    { db: "Gorilla", kilobytes: 9.8 }
+    { db: "JSON(unindexed)", kilobytes: 290 },
+    { db: "MySQL(indexed)", kilobytes: 280 },
+    { db: "GTSDB(indexed @Raw)", kilobytes: 78.1 },
+    { db: "GTSDB(indexed @Gorilla)", kilobytes: 9.8 }
   ]
 
   useEffect(() => {
@@ -619,7 +621,7 @@ function PerformanceSection() {
         padding={0.3}
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
-        colors={({ data }) => data.db === 'GTSDB' ? '#3B82F6' : '#94A3B8'}
+        colors={({ data }) => data.db === 'GTSDB' ? '#3B82F6' : data.db === 'Gorilla' ? '#22c55e' : '#94A3B8'}
         borderWidth={1}
         borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
         axisLeft={{
@@ -743,7 +745,7 @@ function PerformanceSection() {
                   <li><strong>Sub-millisecond</strong> single read (&lt;1 ms vs 4.48 ms)</li>
                   <li><strong>4.7x faster</strong> on 10,000 reads (205 ms vs 967 ms)</li>
                   <li><strong>16.6x faster</strong> parallel multi-write (51 ms vs 851 ms)</li>
-                  <li><strong>7.98x smaller</strong> storage with Gorilla compression</li>
+                  <li><strong>29.6x smaller</strong> than JSON, 7.98x smaller than raw</li>
                   <li>NSQ-like PubSub: 1M messages in 32.7s</li>
                   <li>Only <strong>~12MB</strong> Memory Usage</li>
                   <li>Only <strong>1</strong> binary executable</li>
