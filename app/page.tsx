@@ -157,14 +157,14 @@ function FeaturesSection() {
           <FeatureCard
             icon={<Database className="h-10 w-10" />}
             title="Innovative Design"
-            description="Utilizes Write Ahead Log (WAL) for records, reducing IO and memory usage. Background compaction with Gorilla compression reclaims disk space."
+            description="WAL-first architecture with per-key ring buffer cache, async dirty-key flusher, and SIMD-accelerated sonic JSON. Minimal IO, maximum speed."
           />
           <FeatureCard
             icon={<Zap className="h-10 w-10" />}
-            title="Crazy Benchmark"
+            title="Blazing Fast"
             description={
               <>
-                Top performance. <b>19,172 ns/op.</b> In-memory-like speed. WAL-class durability.
+                <b>285K ops/sec</b> batch write, <b>805K ops/sec</b> multi-write. SIMD-accelerated JSON via sonic. In-memory-like speed with WAL-class durability.
               </>
             }
           />
@@ -222,7 +222,7 @@ function FeaturesSection() {
             title="Gorilla Compression"
             description={
               <>
-                Facebook Gorilla time-series compression. <b>8x smaller</b> files, 56x faster writes during compaction.
+                Facebook Gorilla time-series compression. <b>29.6x smaller</b> than JSON, <b>8x smaller</b> than raw. Massive disk savings for IoT workloads.
               </>
             }
           />
@@ -573,28 +573,44 @@ function PerformanceSection() {
   const [ref, inView] = useInView()
 
   const writeData = [
-    { db: "GTSDB", milliseconds: 21.76 },
-    { db: "InfluxDB", milliseconds: 5070.41 }
+    { db: "GTSDB", milliseconds: 90.75 },
+    { db: "VM", milliseconds: 180.30 },
+    { db: "InfluxDB", milliseconds: 1580.00 }
   ]
 
-  const readData = [
-    { db: "GTSDB", milliseconds: 0.1 },
-    { db: "InfluxDB", milliseconds: 40.48 }
+  const batchWriteData = [
+    { db: "VM", milliseconds: 0.51 },
+    { db: "GTSDB", milliseconds: 10.50 },
+    { db: "InfluxDB", milliseconds: 11.78 }
   ]
 
-  const readManyData = [
-    { db: "GTSDB", milliseconds: 205.24 },
-    { db: "InfluxDB", milliseconds: 966.77 }
+  const pipelineData = [
+    { db: "GTSDB", milliseconds: 31.02 },
+    { db: "VM", milliseconds: 39.21 },
+    { db: "InfluxDB", milliseconds: 282.84 }
   ]
 
   const multiWriteData = [
-    { db: "GTSDB", milliseconds: 51.21 },
-    { db: "InfluxDB", milliseconds: 851.38 }
+    { db: "VM", milliseconds: 0.52 },
+    { db: "GTSDB", milliseconds: 3.73 },
+    { db: "InfluxDB", milliseconds: 9.61 }
+  ]
+
+  const readData = [
+    { db: "VM", milliseconds: 0.31 },
+    { db: "GTSDB", milliseconds: 4.08 },
+    { db: "InfluxDB", milliseconds: 8.19 }
+  ]
+
+  const readManyData = [
+    { db: "VM", milliseconds: 0.26 },
+    { db: "GTSDB", milliseconds: 9.36 },
+    { db: "InfluxDB", milliseconds: 13.03 }
   ]
 
   const pubsubData = [
-    { db: "GTSDB", seconds: 32.70 },
-    { db: "NSQ", seconds: 33.28 }
+    { db: "NSQ", seconds: 0.099 },
+    { db: "GTSDB", seconds: 0.119 }
   ]
 
   const compressionData = [
@@ -610,7 +626,7 @@ function PerformanceSection() {
     }
   }, [controls, inView])
 
-  const BarChartComponent = ({ data, title }: { data: { db: string, milliseconds?: number, seconds?: number, kilobytes?: number }[], title: string }) => (
+  const BarChartComponent = ({ data, title, unit }: { data: { db: string, milliseconds?: number, seconds?: number, kilobytes?: number }[], title: string, unit?: string }) => (
     <div className="h-[250px]">
       <h4 className="text-lg font-medium mb-4 text-center">{title}</h4>
       <ResponsiveBar
@@ -621,7 +637,12 @@ function PerformanceSection() {
         padding={0.3}
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
-        colors={({ data }) => data.db.includes('GTSDB') ? '#3B82F6' : '#94A3B8'}
+        colors={({ data }) => {
+          if (data.db.includes('GTSDB')) return '#3B82F6'
+          if (data.db.includes('VM')) return '#10B981'
+          if (data.db.includes('NSQ')) return '#F59E0B'
+          return '#94A3B8'
+        }}
         borderWidth={1}
         borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
         axisLeft={{
@@ -629,7 +650,7 @@ function PerformanceSection() {
           tickValues: 5,
           tickPadding: 5,
           tickRotation: 0,
-          legend: 'Time (ms)',
+          legend: unit || 'Time (ms)',
           legendPosition: 'middle',
           legendOffset: -40
         }}
@@ -638,7 +659,11 @@ function PerformanceSection() {
           tickPadding: 5,
           tickRotation: 0,
         }}
-        labelFormat={value => `${Number(value).toFixed(2)}ms`}
+        labelFormat={value => {
+          const n = Number(value)
+          if (n < 1 && n > 0) return n.toFixed(3) + (unit || 'ms')
+          return n.toFixed(2) + (unit || 'ms')
+        }}
         labelSkipWidth={12}
         labelSkipHeight={12}
       />
@@ -652,6 +677,9 @@ function PerformanceSection() {
           <Timer className="h-8 w-8 inline-block mr-2" />
           Performance Comparison
         </h2>
+        <div className="mb-8 text-center text-sm text-gray-500">
+          Benchmarked against VictoriaMetrics v1.147, InfluxDB v2.9, and NSQ v1.3 on Windows / i7-13700KF / 5,000 points per operation
+        </div>
         <motion.div
           ref={ref}
           className="grid grid-cols-1 lg:grid-cols-2 gap-8"
@@ -664,65 +692,119 @@ function PerformanceSection() {
           transition={{ duration: 0.5 }}
         >
           <div className="bg-white p-8 rounded-lg shadow-lg">
-            <h3 className="text-2xl font-semibold mb-6">Benchmark Results</h3>
+            <h3 className="text-2xl font-semibold mb-6">Write Benchmarks</h3>
             <div className="space-y-8">
-              <BarChartComponent data={writeData} title="Write Performance (ms)" />
-              <BarChartComponent data={readData} title="Read Latest 100 Data 10 times (ms)" />
-              <BarChartComponent data={readManyData} title="Read: 10k Queries (ms)" />
-              <BarChartComponent data={multiWriteData} title="Multi-Write Performance (ms)" />
-              <BarChartComponent 
-                data={pubsubData.map(d => ({ ...d, seconds: Number(d.seconds.toFixed(2)) }))} 
-                title="PubSub Performance (seconds)" 
-              />
-              <BarChartComponent 
-                data={compressionData} 
-                title="Storage per 5,000 points (KB)" 
-              />
+              <BarChartComponent data={writeData} title="Write (seq) — 5,000 pts" />
+              <BarChartComponent data={batchWriteData} title="Batch Write — 5,000 pts" />
+              <BarChartComponent data={pipelineData} title="Pipeline Write — 5,000 pts" />
+              <BarChartComponent data={multiWriteData} title="Multi-Sensor Write — 5 keys × 1,000 pts" />
             </div>
           </div>
 
           <div className="bg-white p-8 rounded-lg shadow-lg">
+            <h3 className="text-2xl font-semibold mb-6">Read Benchmarks</h3>
+            <div className="space-y-8">
+              <BarChartComponent data={readData} title="Single Read — Last 1 Point" />
+              <BarChartComponent data={readManyData} title="Multi-Key Read — 5 Keys × 5,000 pts" />
+              <BarChartComponent 
+                data={pubsubData.map(d => ({ ...d, seconds: Number(d.seconds.toFixed(3)) }))} 
+                title="Pub/Sub Delivery Latency (s)" 
+                unit="s"
+              />
+              <BarChartComponent 
+                data={compressionData} 
+                title="Storage per 5,000 points (KB)" 
+                unit="KB"
+              />
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="mt-12">
+          <div className="bg-white p-8 rounded-lg shadow-lg">
+            <h3 className="text-2xl font-semibold mb-6 text-center">Benchmark Report Charts</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="text-center">
+                <Image src="/charts/radar.png" alt="Radar Chart" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <p className="mt-2 text-sm text-gray-500">Performance Radar</p>
+              </div>
+              <div className="text-center">
+                <Image src="/charts/ops_per_sec.png" alt="Ops/Sec" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <p className="mt-2 text-sm text-gray-500">Throughput (ops/sec)</p>
+              </div>
+              <div className="text-center">
+                <Image src="/charts/resource_usage.png" alt="Resource Usage" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <p className="mt-2 text-sm text-gray-500">Resource Usage</p>
+              </div>
+              <div className="text-center">
+                <Image src="/charts/write_latency.png" alt="Write Latency" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <p className="mt-2 text-sm text-gray-500">Write Latency</p>
+              </div>
+              <div className="text-center">
+                <Image src="/charts/batch_comparison.png" alt="Batch Write" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <p className="mt-2 text-sm text-gray-500">Batch Write Comparison</p>
+              </div>
+              <div className="text-center">
+                <Image src="/charts/pipeline.png" alt="Pipeline Write" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <p className="mt-2 text-sm text-gray-500">Pipeline Write</p>
+              </div>
+              <div className="text-center">
+                <Image src="/charts/read_comparison.png" alt="Read Comparison" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <p className="mt-2 text-sm text-gray-500">Read Comparison</p>
+              </div>
+              <div className="text-center">
+                <Image src="/charts/multi_write.png" alt="Multi Write" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <p className="mt-2 text-sm text-gray-500">Multi-Sensor Write</p>
+              </div>
+            </div>
+            <div className="mt-8 text-center">
+              <a
+                href="https://github.com/abbychau/gtsdb-benchmark"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              >
+                <Github className="h-5 w-5 mr-2" />
+                View Full Benchmark Repository
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white p-8 rounded-lg shadow-lg">
             <h3 className="text-2xl font-semibold mb-6">Test Configuration</h3>
             <div className="space-y-6">
-
               <table className="min-w-full bg-white border border-gray-200 text-sm">
                 <tbody>
-
                   <tr>
-                    <td className="py-2 px-4 border-b">Total Data Points</td>
-                    <td className="py-2 px-4 border-b font-bold">10,000</td>
+                    <td className="py-2 px-4 border-b">Points per Operation</td>
+                    <td className="py-2 px-4 border-b font-bold">5,000</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 border-b">Points per Sensor</td>
-                    <td className="py-2 px-4 border-b font-bold">1,000</td>
+                    <td className="py-2 px-4 border-b">Sensors (multi-write)</td>
+                    <td className="py-2 px-4 border-b font-bold">5</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 border-b">Sensor Count</td>
-                    <td className="py-2 px-4 border-b font-bold">10</td>
+                    <td className="py-2 px-4 border-b">Runs per Benchmark</td>
+                    <td className="py-2 px-4 border-b font-bold">3</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 border-b">Write Method</td>
-                    <td className="py-2 px-4 border-b font-bold">Sequential, single-point</td>
+                    <td className="py-2 px-4 border-b">Warmup Iterations</td>
+                    <td className="py-2 px-4 border-b font-bold">300</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 border-b">Read Method</td>
-                    <td className="py-2 px-4 border-b font-bold">1 query (last 100 records)</td>
+                    <td className="py-2 px-4 border-b">GTSDB JSON Library</td>
+                    <td className="py-2 px-4 border-b font-bold">sonic (SIMD-accelerated)</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 border-b">Multi-Write Method</td>
-                    <td className="py-2 px-4 border-b font-bold">10 goroutines parallel</td>
+                    <td className="py-2 px-4 border-b">GTSDB Cache Size</td>
+                    <td className="py-2 px-4 border-b font-bold">10,000 ring buffer / key</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 border-b">PubSub message Count</td>
-                    <td className="py-2 px-4 border-b font-bold">1,000,000</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 px-4 border-b">Queue Order</td>
-                    <td className="py-2 px-4 border-b font-bold">Ordered</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 px-4 border-b">Queue Delivery Semantics</td>
-                    <td className="py-2 px-4 border-b font-bold">Exactly Once</td>
+                    <td className="py-2 px-4 border-b">Sync Mode</td>
+                    <td className="py-2 px-4 border-b font-bold">async (dirty-key flusher)</td>
                   </tr>
                   <tr>
                     <td className="py-2 px-4 border-b">OS</td>
@@ -738,34 +820,53 @@ function PerformanceSection() {
                   </tr>
                 </tbody>
               </table>
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="text-lg font-bold mb-2 text-blue-800">Key Note</h4>
-                <ul className="list-disc list-inside space-y-2 text-blue-700">
-                  <li>GTSDB shows <strong>233x faster</strong> write (21.76 ms vs 5,070 ms)</li>
-                  <li><strong>Sub-millisecond</strong> single read (&lt;1 ms vs 4.48 ms)</li>
-                  <li><strong>4.7x faster</strong> on 10,000 reads (205 ms vs 967 ms)</li>
-                  <li><strong>16.6x faster</strong> parallel multi-write (51 ms vs 851 ms)</li>
-                  <li><strong>29.6x smaller</strong> than JSON, 7.98x smaller than raw</li>
-                  <li>NSQ-like PubSub: 1M messages in 32.7s</li>
-                  <li>Only <strong>~12MB</strong> Memory Usage</li>
-                  <li>Only <strong>1</strong> binary executable</li>
-                </ul>
-              </div>
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <a
-                  href="https://github.com/abbychau/gtsdb-benchmark"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
-                >
-                  <Github className="h-5 w-5 mr-2" />
-                  View Benchmark Repository
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
-              </div>
             </div>
           </div>
-        </motion.div>
+
+          <div className="bg-white p-8 rounded-lg shadow-lg">
+            <h3 className="text-2xl font-semibold mb-6">Key Takeaways</h3>
+            <div className="bg-blue-50 p-4 rounded-lg mb-4">
+              <h4 className="text-lg font-bold mb-2 text-blue-800">vs InfluxDB</h4>
+              <ul className="list-disc list-inside space-y-1 text-blue-700 text-sm">
+                <li><strong>17.4x faster</strong> sequential write (90.75 ms vs 1,580 ms)</li>
+                <li><strong>9.1x faster</strong> pipeline write (31.02 ms vs 282.84 ms)</li>
+                <li><strong>2.6x faster</strong> multi-sensor write (3.73 ms vs 9.61 ms)</li>
+                <li><strong>2.0x faster</strong> single read (4.08 ms vs 8.19 ms)</li>
+                <li><strong>1.4x faster</strong> multi-key read (9.36 ms vs 13.03 ms)</li>
+                <li><strong>1.1x faster</strong> batch write (10.50 ms vs 11.78 ms)</li>
+              </ul>
+            </div>
+            <div className="bg-green-50 p-4 rounded-lg mb-4">
+              <h4 className="text-lg font-bold mb-2 text-green-800">vs VictoriaMetrics</h4>
+              <ul className="list-disc list-inside space-y-1 text-green-700 text-sm">
+                <li><strong>2.0x faster</strong> sequential write (90.75 ms vs 180.30 ms)</li>
+                <li><strong>1.3x faster</strong> pipeline write (31.02 ms vs 39.21 ms)</li>
+                <li>VM leads batch write (<strong>20.5x</strong>), multi-key read (<strong>36x</strong>), and single read (<strong>13.3x</strong>)</li>
+              </ul>
+            </div>
+            <div className="bg-amber-50 p-4 rounded-lg mb-4">
+              <h4 className="text-lg font-bold mb-2 text-amber-800">General</h4>
+              <ul className="list-disc list-inside space-y-1 text-amber-700 text-sm">
+                <li>Pub/Sub: <strong>119 ms</strong> delivery latency (competitive with NSQ at 99 ms)</li>
+                <li><strong>29.6x smaller</strong> than raw JSON with Gorilla compression</li>
+                <li>Only <strong>~12 MB</strong> memory usage at idle</li>
+                <li>Single <strong>binary executable</strong> — no dependencies</li>
+              </ul>
+            </div>
+            <div className="pt-4 border-t border-gray-200">
+              <a
+                href="https://github.com/abbychau/gtsdb-benchmark"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+              >
+                <Github className="h-5 w-5 mr-2" />
+                View Benchmark Repository
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   )
