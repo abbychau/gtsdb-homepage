@@ -19,6 +19,7 @@ import samdasoo from './samdasoo.png' // jeju samdasoo, enormous drinking water 
 import Link from 'next/link'
 import { ResponsiveBar } from "@nivo/bar"
 import Footer from '@/components/Footer'
+import { LightboxImage } from '@/components/Lightbox'
 
 export default function Home() {
   return (
@@ -725,35 +726,35 @@ function PerformanceSection() {
             <h3 className="text-2xl font-semibold mb-6 text-center">Benchmark Report Charts</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="text-center">
-                <Image src="/charts/radar.png" alt="Radar Chart" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <LightboxImage src="/charts/radar.png" alt="Radar Chart" width={400} height={400} />
                 <p className="mt-2 text-sm text-gray-500">Performance Radar</p>
               </div>
               <div className="text-center">
-                <Image src="/charts/ops_per_sec.png" alt="Ops/Sec" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <LightboxImage src="/charts/ops_per_sec.png" alt="Ops/Sec" width={400} height={400} />
                 <p className="mt-2 text-sm text-gray-500">Throughput (ops/sec)</p>
               </div>
               <div className="text-center">
-                <Image src="/charts/resource_usage.png" alt="Resource Usage" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <LightboxImage src="/charts/resource_usage.png" alt="Resource Usage" width={400} height={400} />
                 <p className="mt-2 text-sm text-gray-500">Resource Usage</p>
               </div>
               <div className="text-center">
-                <Image src="/charts/write_latency.png" alt="Write Latency" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <LightboxImage src="/charts/write_latency.png" alt="Write Latency" width={400} height={400} />
                 <p className="mt-2 text-sm text-gray-500">Write Latency</p>
               </div>
               <div className="text-center">
-                <Image src="/charts/batch_comparison.png" alt="Batch Write" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <LightboxImage src="/charts/batch_comparison.png" alt="Batch Write" width={400} height={400} />
                 <p className="mt-2 text-sm text-gray-500">Batch Write Comparison</p>
               </div>
               <div className="text-center">
-                <Image src="/charts/pipeline.png" alt="Pipeline Write" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <LightboxImage src="/charts/pipeline.png" alt="Pipeline Write" width={400} height={400} />
                 <p className="mt-2 text-sm text-gray-500">Pipeline Write</p>
               </div>
               <div className="text-center">
-                <Image src="/charts/read_comparison.png" alt="Read Comparison" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <LightboxImage src="/charts/read_comparison.png" alt="Read Comparison" width={400} height={400} />
                 <p className="mt-2 text-sm text-gray-500">Read Comparison</p>
               </div>
               <div className="text-center">
-                <Image src="/charts/multi_write.png" alt="Multi Write" width={400} height={400} className="w-full h-auto rounded-lg border border-gray-200" />
+                <LightboxImage src="/charts/multi_write.png" alt="Multi Write" width={400} height={400} />
                 <p className="mt-2 text-sm text-gray-500">Multi-Sensor Write</p>
               </div>
             </div>
