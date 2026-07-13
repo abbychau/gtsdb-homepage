@@ -158,14 +158,14 @@ function FeaturesSection() {
           <FeatureCard
             icon={<Database className="h-10 w-10" />}
             title="Innovative Design"
-            description="WAL-first architecture with per-key ring buffer cache, async dirty-key flusher, and SIMD-accelerated sonic JSON. Minimal IO, maximum speed."
+            description="WAL-first architecture with per-key ring buffer cache, async dirty-key flusher, and Velox native C VM JSON. Minimal IO, maximum speed."
           />
           <FeatureCard
             icon={<Zap className="h-10 w-10" />}
             title="Blazing Fast"
             description={
               <>
-                <b>285K ops/sec</b> batch write, <b>805K ops/sec</b> multi-write. SIMD-accelerated JSON via sonic. In-memory-like speed with WAL-class durability.
+                <b>1.17M ops/sec</b> batch write, <b>1.06M ops/sec</b> multi-write. Native C VM JSON via Velox. In-memory-like speed with WAL-class durability.
               </>
             }
           />
@@ -574,44 +574,44 @@ function PerformanceSection() {
   const [ref, inView] = useInView()
 
   const writeData = [
-    { db: "GTSDB", milliseconds: 90.75 },
-    { db: "VM", milliseconds: 180.30 },
-    { db: "InfluxDB", milliseconds: 1580.00 }
+    { db: "GTSDB", milliseconds: 83.65 },
+    { db: "VM", milliseconds: 157.23 },
+    { db: "InfluxDB", milliseconds: 1450.00 }
   ]
 
   const batchWriteData = [
-    { db: "VM", milliseconds: 0.51 },
-    { db: "GTSDB", milliseconds: 10.50 },
-    { db: "InfluxDB", milliseconds: 11.78 }
+    { db: "VM", milliseconds: 0.28 },
+    { db: "GTSDB", milliseconds: 2.57 },
+    { db: "InfluxDB", milliseconds: 10.80 }
   ]
 
   const pipelineData = [
-    { db: "GTSDB", milliseconds: 31.02 },
-    { db: "VM", milliseconds: 39.21 },
-    { db: "InfluxDB", milliseconds: 282.84 }
+    { db: "GTSDB", milliseconds: 27.91 },
+    { db: "VM", milliseconds: 36.37 },
+    { db: "InfluxDB", milliseconds: 259.73 }
   ]
 
   const multiWriteData = [
-    { db: "VM", milliseconds: 0.52 },
-    { db: "GTSDB", milliseconds: 3.73 },
-    { db: "InfluxDB", milliseconds: 9.61 }
+    { db: "VM", milliseconds: 0.51 },
+    { db: "GTSDB", milliseconds: 2.84 },
+    { db: "InfluxDB", milliseconds: 7.95 }
   ]
 
   const readData = [
-    { db: "VM", milliseconds: 0.31 },
-    { db: "GTSDB", milliseconds: 4.08 },
-    { db: "InfluxDB", milliseconds: 8.19 }
+    { db: "VM", milliseconds: 0.26 },
+    { db: "GTSDB", milliseconds: 1.04 },
+    { db: "InfluxDB", milliseconds: 8.73 }
   ]
 
   const readManyData = [
     { db: "VM", milliseconds: 0.26 },
-    { db: "GTSDB", milliseconds: 9.36 },
-    { db: "InfluxDB", milliseconds: 13.03 }
+    { db: "GTSDB", milliseconds: 6.98 },
+    { db: "InfluxDB", milliseconds: 10.63 }
   ]
 
   const pubsubData = [
-    { db: "NSQ", seconds: 0.099 },
-    { db: "GTSDB", seconds: 0.119 }
+    { db: "NSQ", seconds: 0.088 },
+    { db: "GTSDB", seconds: 0.108 }
   ]
 
   const compressionData = [
@@ -797,7 +797,7 @@ function PerformanceSection() {
                   </tr>
                   <tr>
                     <td className="py-2 px-4 border-b">GTSDB JSON Library</td>
-                    <td className="py-2 px-4 border-b font-bold">sonic (SIMD-accelerated)</td>
+                    <td className="py-2 px-4 border-b font-bold">Velox (native C VM backend)</td>
                   </tr>
                   <tr>
                     <td className="py-2 px-4 border-b">GTSDB Cache Size</td>
@@ -829,26 +829,28 @@ function PerformanceSection() {
             <div className="bg-blue-50 p-4 rounded-lg mb-4">
               <h4 className="text-lg font-bold mb-2 text-blue-800">vs InfluxDB</h4>
               <ul className="list-disc list-inside space-y-1 text-blue-700 text-sm">
-                <li><strong>17.4x faster</strong> sequential write (90.75 ms vs 1,580 ms)</li>
-                <li><strong>9.1x faster</strong> pipeline write (31.02 ms vs 282.84 ms)</li>
-                <li><strong>2.6x faster</strong> multi-sensor write (3.73 ms vs 9.61 ms)</li>
-                <li><strong>2.0x faster</strong> single read (4.08 ms vs 8.19 ms)</li>
-                <li><strong>1.4x faster</strong> multi-key read (9.36 ms vs 13.03 ms)</li>
-                <li><strong>1.1x faster</strong> batch write (10.50 ms vs 11.78 ms)</li>
+                <li><strong>17.4x faster</strong> sequential write (83.65 ms vs 1,450 ms)</li>
+                <li><strong>9.3x faster</strong> pipeline write (27.91 ms vs 259.73 ms)</li>
+                <li><strong>4.2x faster</strong> batch write (2.57 ms vs 10.80 ms)</li>
+                <li><strong>2.8x faster</strong> multi-sensor write (2.84 ms vs 7.95 ms)</li>
+                <li><strong>8.4x faster</strong> single read (1.04 ms vs 8.73 ms)</li>
+                <li><strong>1.5x faster</strong> multi-key read (6.98 ms vs 10.63 ms)</li>
               </ul>
             </div>
             <div className="bg-green-50 p-4 rounded-lg mb-4">
               <h4 className="text-lg font-bold mb-2 text-green-800">vs VictoriaMetrics</h4>
               <ul className="list-disc list-inside space-y-1 text-green-700 text-sm">
-                <li><strong>2.0x faster</strong> sequential write (90.75 ms vs 180.30 ms)</li>
-                <li><strong>1.3x faster</strong> pipeline write (31.02 ms vs 39.21 ms)</li>
-                <li>VM leads batch write (<strong>20.5x</strong>), multi-key read (<strong>36x</strong>), and single read (<strong>13.3x</strong>)</li>
+                <li><strong>1.9x faster</strong> sequential write (83.65 ms vs 157.23 ms)</li>
+                <li><strong>1.3x faster</strong> pipeline write (27.91 ms vs 36.37 ms)</li>
+                <li>VM leads batch write (<strong>9.2x</strong>), multi-key read (<strong>27x</strong>), and single read (<strong>4.1x</strong>)</li>
               </ul>
             </div>
             <div className="bg-amber-50 p-4 rounded-lg mb-4">
               <h4 className="text-lg font-bold mb-2 text-amber-800">General</h4>
               <ul className="list-disc list-inside space-y-1 text-amber-700 text-sm">
-                <li>Pub/Sub: <strong>119 ms</strong> delivery latency (competitive with NSQ at 99 ms)</li>
+                <li>JSON: <strong>Velox native C VM</strong> — 2–4x faster than sonic</li>
+                <li>Pub/Sub: <strong>108 ms</strong> delivery latency (competitive with NSQ at 88 ms)</li>
+                <li><strong>1.17M ops/sec</strong> batch write, <strong>1.06M ops/sec</strong> multi-write</li>
                 <li><strong>29.6x smaller</strong> than raw JSON with Gorilla compression</li>
                 <li>Only <strong>~12 MB</strong> memory usage at idle</li>
                 <li>Single <strong>binary executable</strong> — no dependencies</li>
