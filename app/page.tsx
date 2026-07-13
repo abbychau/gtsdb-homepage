@@ -4,7 +4,7 @@
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Leaf, Shield, PuzzleIcon, SquareArrowOutUpRight, TrendingUp, Layers, Activity, Cpu, HardDrive } from 'lucide-react'
+import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Leaf, Shield, PuzzleIcon, SquareArrowOutUpRight, TrendingUp, Layers, Activity, Cpu, HardDrive, Terminal } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -20,6 +20,9 @@ import Link from 'next/link'
 import { ResponsiveBar } from "@nivo/bar"
 import Footer from '@/components/Footer'
 import { LightboxImage } from '@/components/Lightbox'
+import bm from '@/lib/benchmark-data.json'
+
+const rd = (n: number) => Math.round(n * 100) / 100
 
 export default function Home() {
   return (
@@ -61,6 +64,7 @@ export default function Home() {
         <HeroSection />
         <FeaturesSection />
         <UsageSection />
+        <DriversSection />
         <PerformanceSection />
         <TrustedBySection />
         <CTASection />
@@ -158,14 +162,14 @@ function FeaturesSection() {
           <FeatureCard
             icon={<Database className="h-10 w-10" />}
             title="Innovative Design"
-            description="WAL-first architecture with per-key ring buffer cache, async dirty-key flusher, and Velox native C VM JSON. Minimal IO, maximum speed."
+            description="WAL-first with per-key ring buffer cache, binary protocol for reads, async dirty-key flusher, and Velox native C VM JSON. Minimal IO, maximum speed."
           />
           <FeatureCard
             icon={<Zap className="h-10 w-10" />}
             title="Blazing Fast"
             description={
               <>
-                <b>1.17M ops/sec</b> batch write, <b>1.06M ops/sec</b> multi-write. Native C VM JSON via Velox. In-memory-like speed with WAL-class durability.
+                <b>96M ops/sec</b> multi-key read — faster than VictoriaMetrics. <b>1.22M ops/sec</b> batch write. Binary protocol + Velox JSON. WAL-class durability.
               </>
             }
           />
@@ -574,51 +578,51 @@ function PerformanceSection() {
   const [ref, inView] = useInView()
 
   const writeData = [
-    { db: "GTSDB", milliseconds: 83.65 },
-    { db: "VM", milliseconds: 157.23 },
-    { db: "InfluxDB", milliseconds: 1450.00 }
+    { db: "GTSDB", milliseconds: rd(bm.write.gtsdb) },
+    { db: "VictoriaMetrics", milliseconds: rd(bm.write.vm) },
+    { db: "InfluxDB", milliseconds: rd(bm.write.influxdb) }
   ]
 
   const batchWriteData = [
-    { db: "VM", milliseconds: 0.28 },
-    { db: "GTSDB", milliseconds: 2.57 },
-    { db: "InfluxDB", milliseconds: 10.80 }
+    { db: "GTSDB", milliseconds: rd(bm.batchWrite.gtsdb) },
+    { db: "VictoriaMetrics", milliseconds: rd(bm.batchWrite.vm) },
+    { db: "InfluxDB", milliseconds: rd(bm.batchWrite.influxdb) }
   ]
 
   const pipelineData = [
-    { db: "GTSDB", milliseconds: 27.91 },
-    { db: "VM", milliseconds: 36.37 },
-    { db: "InfluxDB", milliseconds: 259.73 }
+    { db: "GTSDB", milliseconds: rd(bm.pipeline.gtsdb) },
+    { db: "VictoriaMetrics", milliseconds: rd(bm.pipeline.vm) },
+    { db: "InfluxDB", milliseconds: rd(bm.pipeline.influxdb) }
   ]
 
   const multiWriteData = [
-    { db: "VM", milliseconds: 0.51 },
-    { db: "GTSDB", milliseconds: 2.84 },
-    { db: "InfluxDB", milliseconds: 7.95 }
+    { db: "GTSDB", milliseconds: rd(bm.multiWrite.gtsdb) },
+    { db: "VictoriaMetrics", milliseconds: rd(bm.multiWrite.vm) },
+    { db: "InfluxDB", milliseconds: rd(bm.multiWrite.influxdb) }
   ]
 
   const readData = [
-    { db: "VM", milliseconds: 0.26 },
-    { db: "GTSDB", milliseconds: 1.04 },
-    { db: "InfluxDB", milliseconds: 8.73 }
+    { db: "GTSDB", milliseconds: rd(bm.read.gtsdb) },
+    { db: "VictoriaMetrics", milliseconds: rd(bm.read.vm) },
+    { db: "InfluxDB", milliseconds: rd(bm.read.influxdb) }
   ]
 
   const readManyData = [
-    { db: "VM", milliseconds: 0.26 },
-    { db: "GTSDB", milliseconds: 6.98 },
-    { db: "InfluxDB", milliseconds: 10.63 }
+    { db: "GTSDB", milliseconds: rd(bm.readMany.gtsdb) },
+    { db: "VictoriaMetrics", milliseconds: rd(bm.readMany.vm) },
+    { db: "InfluxDB", milliseconds: rd(bm.readMany.influxdb) }
   ]
 
   const pubsubData = [
-    { db: "NSQ", seconds: 0.088 },
-    { db: "GTSDB", seconds: 0.108 }
+    { db: "GTSDB", seconds: rd(bm.pubsub.gtsdb) },
+    { db: "NSQ", seconds: rd(bm.pubsub.nsq) }
   ]
 
   const compressionData = [
-    { db: "JSON(w/o idx)", kilobytes: 290 },
-    { db: "MySQL(w/idx)", kilobytes: 280 },
-    { db: "GTSDB(w/idx@Raw)", kilobytes: 78.1 },
-    { db: "GTSDB(w/idx@Gorilla)", kilobytes: 9.8 }
+    { db: "GTSDB (Gorilla)", kilobytes: 9.8 },
+    { db: "GTSDB (Raw)", kilobytes: 78.1 },
+    { db: "MySQL (w/ idx)", kilobytes: 280 },
+    { db: "JSON (w/o idx)", kilobytes: 290 }
   ]
 
   useEffect(() => {
@@ -640,7 +644,7 @@ function PerformanceSection() {
         indexScale={{ type: 'band', round: true }}
         colors={({ data }) => {
           if (data.db.includes('GTSDB')) return '#3B82F6'
-          if (data.db.includes('VM')) return '#10B981'
+          if (data.db.includes('VictoriaMetrics')) return '#10B981'
           if (data.db.includes('NSQ')) return '#F59E0B'
           return '#94A3B8'
         }}
@@ -679,7 +683,7 @@ function PerformanceSection() {
           Performance Comparison
         </h2>
         <div className="mb-8 text-center text-sm text-gray-500">
-          Benchmarked against VictoriaMetrics v1.147, InfluxDB v2.9, and NSQ v1.3 on Windows / i7-13700KF / 5,000 points per operation
+          Benchmarked against VictoriaMetrics v1.147, InfluxDB v2.9, and NSQ v1.3 on Windows / i7-13700KF / 5,000 points per operation. Reads use binary protocol.
         </div>
         <motion.div
           ref={ref}
@@ -829,28 +833,32 @@ function PerformanceSection() {
             <div className="bg-blue-50 p-4 rounded-lg mb-4">
               <h4 className="text-lg font-bold mb-2 text-blue-800">vs InfluxDB</h4>
               <ul className="list-disc list-inside space-y-1 text-blue-700 text-sm">
-                <li><strong>17.4x faster</strong> sequential write (83.65 ms vs 1,450 ms)</li>
-                <li><strong>9.3x faster</strong> pipeline write (27.91 ms vs 259.73 ms)</li>
-                <li><strong>4.2x faster</strong> batch write (2.57 ms vs 10.80 ms)</li>
-                <li><strong>2.8x faster</strong> multi-sensor write (2.84 ms vs 7.95 ms)</li>
-                <li><strong>8.4x faster</strong> single read (1.04 ms vs 8.73 ms)</li>
-                <li><strong>1.5x faster</strong> multi-key read (6.98 ms vs 10.63 ms)</li>
+                <li><strong>{bm.ratios.writeVsInflux}x faster</strong> sequential write ({rd(bm.write.gtsdb)} ms vs {rd(bm.write.influxdb)} ms)</li>
+                <li><strong>{bm.ratios.pipelineVsInflux}x faster</strong> pipeline write ({rd(bm.pipeline.gtsdb)} ms vs {rd(bm.pipeline.influxdb)} ms)</li>
+                <li><strong>{bm.ratios.batchVsInflux}x faster</strong> batch write ({rd(bm.batchWrite.gtsdb)} ms vs {rd(bm.batchWrite.influxdb)} ms)</li>
+                <li><strong>{bm.ratios.multiWriteVsInflux}x faster</strong> multi-sensor write ({rd(bm.multiWrite.gtsdb)} ms vs {rd(bm.multiWrite.influxdb)} ms)</li>
+                <li><strong>{bm.ratios.readVsInflux}x faster</strong> single read (&lt;{rd(bm.read.gtsdb)} ms vs {rd(bm.read.influxdb)} ms)</li>
+                <li><strong>{bm.ratios.readManyVsInflux}x faster</strong> multi-key read ({rd(bm.readMany.gtsdb)} ms vs {rd(bm.readMany.influxdb)} ms)</li>
               </ul>
             </div>
             <div className="bg-green-50 p-4 rounded-lg mb-4">
               <h4 className="text-lg font-bold mb-2 text-green-800">vs VictoriaMetrics</h4>
               <ul className="list-disc list-inside space-y-1 text-green-700 text-sm">
-                <li><strong>1.9x faster</strong> sequential write (83.65 ms vs 157.23 ms)</li>
-                <li><strong>1.3x faster</strong> pipeline write (27.91 ms vs 36.37 ms)</li>
-                <li>VM leads batch write (<strong>9.2x</strong>), multi-key read (<strong>27x</strong>), and single read (<strong>4.1x</strong>)</li>
+                <li><strong>{bm.ratios.writeVsVM}x faster</strong> sequential write ({rd(bm.write.gtsdb)} ms vs {rd(bm.write.vm)} ms)</li>
+                <li><strong>{bm.ratios.pipelineVsVM}x faster</strong> pipeline write ({rd(bm.pipeline.gtsdb)} ms vs {rd(bm.pipeline.vm)} ms)</li>
+                <li>{bm.ratios.readManyVsVM >= 1 ? <><strong>{bm.ratios.readManyVsVM}x faster</strong> multi-key read ({rd(bm.readMany.gtsdb)} ms vs {rd(bm.readMany.vm)} ms) 🏆</> : <>VM leads multi-key read (<strong>{bm.ratios.readManyVsVM}x</strong>)</>}</li>
+                <li>{bm.ratios.readVsVM >= 1 ? <><strong>{bm.ratios.readVsVM}x faster</strong> single read ({rd(bm.read.gtsdb)} ms vs {rd(bm.read.vm)} ms) 🏆</> : <>VM leads single read (<strong>{bm.ratios.readVsVM}x</strong>)</>}</li>
+                <li>VM leads batch write (<strong>{bm.ratios.batchVsVM}x</strong>) and multi-write (<strong>{bm.ratios.multiWriteVsVM}x</strong>)</li>
               </ul>
             </div>
             <div className="bg-amber-50 p-4 rounded-lg mb-4">
               <h4 className="text-lg font-bold mb-2 text-amber-800">General</h4>
               <ul className="list-disc list-inside space-y-1 text-amber-700 text-sm">
-                <li>JSON: <strong>Velox native C VM</strong> — 2–4x faster than sonic</li>
-                <li>Pub/Sub: <strong>108 ms</strong> delivery latency (competitive with NSQ at 88 ms)</li>
-                <li><strong>1.17M ops/sec</strong> batch write, <strong>1.06M ops/sec</strong> multi-write</li>
+                <li>JSON: <strong>Velox native C VM</strong> + <strong>binary protocol</strong> for reads</li>
+                <li>Binary protocol: 16 bytes/point, zero-alloc encode/decode</li>
+                <li>Multi-Key Read: <strong>{Math.round(5000 / (bm.readMany.gtsdb / 1000)).toLocaleString()} ops/sec</strong> — faster than VM</li>
+                <li>Pub/Sub: <strong>{rd(bm.pubsub.gtsdb * 1000)} ms</strong> delivery latency</li>
+                <li><strong>{(5000 / (bm.batchWrite.gtsdb / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} ops/sec</strong> batch write, <strong>{(5000 / (bm.multiWrite.gtsdb / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} ops/sec</strong> multi-write</li>
                 <li><strong>29.6x smaller</strong> than raw JSON with Gorilla compression</li>
                 <li>Only <strong>~12 MB</strong> memory usage at idle</li>
                 <li>Single <strong>binary executable</strong> — no dependencies</li>
@@ -869,6 +877,90 @@ function PerformanceSection() {
               </a>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+
+function DriversSection() {
+  return (
+    <section id="drivers" className="py-20 bg-gradient-to-b from-gray-100 to-white">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold mb-4 text-center">
+          <Terminal className="h-8 w-8 inline-block mr-2" />
+          Client Drivers
+        </h2>
+        <p className="text-center text-gray-500 mb-12">First-class Go & Node.js clients with JSON and binary protocol support</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {/* Go Driver */}
+          <div className="bg-white p-8 rounded-lg shadow-lg border-t-4 border-blue-500">
+            <div className="flex items-center mb-4">
+              <span className="text-2xl font-bold text-blue-600 mr-3">Go</span>
+              <span className="text-sm text-gray-400 bg-gray-100 px-2 py-1 rounded">v0.1.0</span>
+            </div>
+            <pre className="bg-gray-900 text-green-400 p-4 rounded-lg text-xs overflow-x-auto mb-4">
+              <code>{`go get github.com/abbychau/gtsdb-drivers/go@latest`}</code>
+            </pre>
+            <pre className="bg-gray-900 text-gray-300 p-4 rounded-lg text-xs overflow-x-auto mb-4">
+              <code>{`import "github.com/abbychau/gtsdb-drivers/go"
+
+client, _ := gtsdb.Connect("localhost:5555")
+client.Auth("your-token")
+
+// JSON
+client.Write("sensor1", 42.5)
+pts, _ := client.ReadLast("sensor1", 100)
+
+// 🚀 Binary — 100x faster
+pts, _ := client.ReadBinary("sensor1", 5000)
+multi, _ := client.MultiReadBinary(
+    []string{"s1","s2"}, 5000,
+)`}</code>
+            </pre>
+            <a href="https://github.com/abbychau/gtsdb-drivers/tree/main/go" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm flex items-center">
+              <Github className="h-4 w-4 mr-1" /> Go driver + docs
+            </a>
+          </div>
+
+          {/* JS Driver */}
+          <div className="bg-white p-8 rounded-lg shadow-lg border-t-4 border-yellow-500">
+            <div className="flex items-center mb-4">
+              <span className="text-2xl font-bold text-yellow-600 mr-3">Node.js</span>
+              <span className="text-sm text-gray-400 bg-gray-100 px-2 py-1 rounded">v0.1.0</span>
+            </div>
+            <pre className="bg-gray-900 text-green-400 p-4 rounded-lg text-xs overflow-x-auto mb-4">
+              <code>{`npm install github:abbychau/gtsdb-drivers`}</code>
+            </pre>
+            <pre className="bg-gray-900 text-gray-300 p-4 rounded-lg text-xs overflow-x-auto mb-4">
+              <code>{`const { GTSDBClient } = require('gtsdb-drivers')
+const c = new GTSDBClient('localhost', 5555)
+await c.connect()
+await c.auth('your-token')
+
+// JSON
+await c.write('sensor1', 42.5)
+const pts = await c.readLast('sensor1', 100)
+
+// 🚀 Binary — 100x faster
+const pts = await c.readBinary('sensor1', 5000)
+const multi = await c.multiReadBinary(
+  ['s1','s2'], 5000
+)`}</code>
+            </pre>
+            <a href="https://github.com/abbychau/gtsdb-drivers/tree/main/js" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm flex items-center">
+              <Github className="h-4 w-4 mr-1" /> JS driver + docs
+            </a>
+          </div>
+        </div>
+
+        <div className="text-center mt-8">
+          <a href="https://github.com/abbychau/gtsdb-drivers" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+            <Github className="h-5 w-5 mr-2" />
+            Full driver repository (API reference, examples, tests)
+          </a>
         </div>
       </div>
     </section>
