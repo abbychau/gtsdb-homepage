@@ -1,6 +1,6 @@
 "use client"
 
-import { Github, Download, HomeIcon, Copy, Check, Cpu } from 'lucide-react'
+import { Github, Download, HomeIcon, Copy, Check } from 'lucide-react'
 import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Edit, BookOpen, Bell, Key, MoreHorizontal } from 'lucide-react'
@@ -11,31 +11,17 @@ import Image from 'next/image'
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
-        <div className="container mx-auto px-4 py-1 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-blue-950">
-          <Image src={hamham} alt="GTSDB Logo" className="w-14 inline-block mr-2 mb-1" /> GTSDB Documentation
+    <div className="flex flex-col min-h-screen bg-zinc-950 text-zinc-100">
+      <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <h1 className="text-xl font-bold flex items-center gap-2">
+            <Image src={hamham} alt="GTSDB" className="w-10 inline-block" /> Documentation
           </h1>
           <nav>
-            <ul className="flex space-x-6">
-
-              <li>
-                <a href="/architecture" className="text-gray-600 hover:text-blue-600 transition-colors flex items-center">
-                  <Cpu className="h-5 w-5 mr-1" /> Architecture
-                </a>
-              </li>
-              <li><a href="https://github.com/abbychau/gtsdb" target='_blank' rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition-colors">
-                <Github className="h-5 w-5" />
-              </a></li>
-              <li><a href="https://github.com/abbychau/gtsdb/releases" target='_blank' rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition-colors">
-                <Download className="h-5 w-5" />
-              </a></li>
-              <li>
-                <a href="/" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  <HomeIcon className="h-5 w-5" />
-                </a>
-              </li>
+            <ul className="flex space-x-6 text-sm text-zinc-400">
+              <li><a href="https://github.com/abbychau/gtsdb" target='_blank' rel="noopener noreferrer" className="hover:text-zinc-200 transition-colors"><Github className="h-4 w-4" /></a></li>
+              <li><a href="https://github.com/abbychau/gtsdb/releases" target='_blank' rel="noopener noreferrer" className="hover:text-zinc-200 transition-colors"><Download className="h-4 w-4" /></a></li>
+              <li><a href="/" className="hover:text-zinc-200 transition-colors"><HomeIcon className="h-4 w-4" /></a></li>
             </ul>
           </nav>
         </div>
@@ -53,6 +39,8 @@ export default function Home() {
 function DocumentationPage() {
   const [activeSection, setActiveSection] = useState("write-single")
   const sectionRefs = {
+    'auth': useRef<HTMLDivElement>(null),
+    'adduser': useRef<HTMLDivElement>(null),
     'write-single': useRef<HTMLDivElement>(null),
     'write-batch': useRef<HTMLDivElement>(null),
     'patch': useRef<HTMLDivElement>(null),
@@ -60,6 +48,7 @@ function DocumentationPage() {
     'read-last': useRef<HTMLDivElement>(null),
     'read-multi-range': useRef<HTMLDivElement>(null),
     'read-multi-last': useRef<HTMLDivElement>(null),
+    'binary-protocol': useRef<HTMLDivElement>(null),
     'export': useRef<HTMLDivElement>(null),
     'subscribe': useRef<HTMLDivElement>(null),
     'unsubscribe': useRef<HTMLDivElement>(null),
@@ -121,6 +110,7 @@ function DocumentationPage() {
         { id: 'read-last' as SectionId, label: 'Read Last X' },
         { id: 'read-multi-range' as SectionId, label: 'Multi-Read Range' },
         { id: 'read-multi-last' as SectionId, label: 'Multi-Read Last X' },
+        { id: 'binary-protocol' as SectionId, label: 'Binary Protocol' },
         { id: 'export' as SectionId, label: 'Export Data' },
       ]
     },
@@ -136,6 +126,7 @@ function DocumentationPage() {
       group: 'Key Operations',
       icon: <Key className="h-5 w-5" />,
       items: [
+        { id: 'adduser' as SectionId, label: 'Add User / Reset Token' },
         { id: 'keys-get' as SectionId, label: 'Get All Keys' },
         { id: 'keys-get-with-count' as SectionId, label: 'Get Keys with Count' },
         { id: 'keys-init' as SectionId, label: 'Initialize Key' },
@@ -160,19 +151,32 @@ function DocumentationPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <div className="container mx-auto px-4 py-4">
         <h1 className="text-4xl font-bold mb-8">GTSDB API Documentation</h1>
-        <p className="text-lg mb-8">
-          All payloads are in JSON format. Endpoints are either <code className='bg-gray-200 p-1 rounded-sm'>POST /</code> OR <code className='bg-slate-200 p-1 rounded-sm'>TCP</code>.
+
+        <div className="mb-8 p-4 bg-blue-950/20 border border-blue-900/50 rounded-lg text-sm text-zinc-300">
+          <p className="font-medium mb-2">Authentication</p>
+          <p>All operations (except <code className="bg-zinc-700 px-1 rounded text-xs">/health</code> and <code className="bg-zinc-700 px-1 rounded text-xs">/metrics</code>) require a valid token. Authenticate first:</p>
+          <pre className="bg-zinc-900 border border-zinc-800 text-zinc-300 p-3 rounded text-xs mt-2 overflow-x-auto">
+            <code>{'{"operation":"auth","key":"your-token"}\n\n// Or skip auth in dev:\n//   NO_AUTH_USER=tester  (env var)\n//   no_auth_user = tester  (gtsdb.ini)'}</code>
+          </pre>
+        </div>
+
+        <div className="mb-8 p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg text-sm text-zinc-400">
+          <p><strong className="text-zinc-200">Binary Protocol</strong> — Add <code className="bg-zinc-700 px-1 rounded text-xs">"response_format":"binary"</code> to any <code className="bg-zinc-700 px-1 rounded text-xs">read</code> or <code className="bg-zinc-700 px-1 rounded text-xs">multi-read</code> request to receive a compact 16-byte-per-point binary frame instead of JSON. See <a href="#binary-protocol" className="text-blue-400 hover:underline">binary frame spec</a>.</p>
+        </div>
+
+        <p className="text-zinc-400 mb-8 text-sm">
+          All payloads are JSON. Endpoints: <code className="bg-zinc-700 px-1 rounded text-xs">POST /</code> (HTTP) or raw TCP on port <code className="bg-zinc-700 px-1 rounded text-xs">5555</code>.
         </p>
 
         <div className="flex flex-col md:flex-row gap-8">
           <nav className="w-full md:w-64 flex-shrink-0">
-            <div className="sticky top-20 flex flex-col space-y-6">
+            <div className="sticky top-16 flex flex-col space-y-6 max-h-[calc(100vh-5rem)] overflow-y-auto pr-2">
               {navigationItems.map(({ group, icon, items }) => (
                 <div key={group} className="space-y-2">
-                  <div className="font-semibold flex items-center text-gray-700">
+                  <div className="font-semibold flex items-center text-zinc-300">
                     {icon}
                     <span className="ml-2">{group}</span>
                   </div>
@@ -183,8 +187,8 @@ function DocumentationPage() {
                         onClick={() => scrollToSection(id)}
                         className={cn(
                           "text-left px-3 py-1.5 rounded-md text-sm transition-colors",
-                          "hover:bg-blue-50 hover:text-blue-800",
-                          activeSection === id ? "bg-blue-100 text-blue-800" : "text-gray-600"
+                          "hover:bg-zinc-800 hover:text-zinc-200",
+                          activeSection === id ? "bg-zinc-700 text-zinc-200" : "text-zinc-400"
                         )}
                       >
                         {label}
@@ -324,6 +328,59 @@ function DocumentationPage() {
               />
             </div>
 
+            {/* Binary Protocol */}
+            <div ref={sectionRefs['binary-protocol']} id="binary-protocol">
+              <h2 className="text-2xl font-bold mb-6">Binary Protocol</h2>
+              <ApiEndpoint
+                title="Binary Response Format"
+                description="Opt into a compact binary response for read operations by adding response_format: binary. The response uses a 4-byte length-prefixed frame. Each data point is 16 bytes (8-byte timestamp + 8-byte IEEE 754 float64). Significantly faster than JSON for bulk reads."
+                endpoint="POST /"
+                requestBody={{
+                  operation: "read",
+                  key: "sensor1",
+                  read: { lastx: 5000 },
+                  response_format: "binary"
+                }}
+              />
+              <ApiEndpoint
+                title="Binary Multi-Read"
+                description="Binary protocol also works with multi-read for maximum throughput when querying multiple keys."
+                endpoint="POST /"
+                requestBody={{
+                  operation: "multi-read",
+                  keys: ["sensor1", "sensor2"],
+                  read: { lastx: 5000 },
+                  response_format: "binary"
+                }}
+              />
+              <ApiEndpoint
+                title="Count-Only Mode"
+                description="For multi-read, add count_only: true to get only data point counts per key. Response is a compact JSON object with key:count pairs — ideal for dashboards."
+                endpoint="POST /"
+                requestBody={{
+                  operation: "multi-read",
+                  keys: ["sensor1", "sensor2"],
+                  read: { lastx: 5000, count_only: true }
+                }}
+                responseBody={{ success: true, data: { sensor1: 5000, sensor2: 5000 } }}
+              />
+              <div className="mb-8 p-6 bg-zinc-900 border border-zinc-800 rounded-lg">
+                <h3 className="text-lg font-medium mb-3">Binary Frame Format</h3>
+                <p className="text-zinc-400 text-sm mb-4">Each binary response is a single TCP frame:</p>
+                <pre className="bg-zinc-950 border border-zinc-800 text-zinc-300 p-4 rounded-lg text-xs overflow-x-auto">
+                  <code>{`[4 bytes] frame length (uint32 BE)
+  [4 bytes] key count (uint32 BE)
+  For each key:
+    [2 bytes] key length (uint16 BE)
+    [N bytes] key (UTF-8)
+    [4 bytes] point count (uint32 BE)
+    For each point:
+      [8 bytes] timestamp (int64 BE)
+      [8 bytes] value (float64 IEEE 754 BE)`}</code>
+                </pre>
+              </div>
+            </div>
+
             {/* Export */}
             <div ref={sectionRefs['export']} id="export">
               <ApiEndpoint
@@ -367,6 +424,24 @@ function DocumentationPage() {
                   key: "sensor1"
                 }}
                 responseBody={{ success: true, message: "Unsubscribed from sensor1" }}
+              />
+            </div>
+
+            <div ref={sectionRefs['adduser']} id="adduser">
+              <h2 className="text-2xl font-bold mb-6">User Management</h2>
+              <ApiEndpoint
+                title="Create User"
+                description="Create a new user (root only). Returns the user's token."
+                endpoint="POST /"
+                requestBody={{ operation: "adduser", key: "new-username" }}
+                responseBody={{ success: true, data: { name: "new-username", token: "generated-token" } }}
+              />
+              <ApiEndpoint
+                title="Reset User Token"
+                description="Reset a user's token (root only)."
+                endpoint="POST /"
+                requestBody={{ operation: "resetkey", key: "username" }}
+                responseBody={{ success: true, data: { token: "new-token" } }}
               />
             </div>
 
@@ -573,13 +648,13 @@ function CopyButton({ text }: { text: string }) {
 
   return (
     <button
-      className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-700 transition-colors"
+      className="absolute top-4 right-4 p-2 rounded-lg hover:bg-zinc-700 transition-colors"
       onClick={copy}
     >
       {copied ? (
-        <Check className="h-4 w-4 text-green-400" />
+        <Check className="h-4 w-4 text-emerald-400" />
       ) : (
-        <Copy className="h-4 w-4 text-gray-400" />
+        <Copy className="h-4 w-4 text-zinc-500" />
       )}
     </button>
   )
@@ -595,20 +670,20 @@ interface ApiEndpointProps {
 
 function ApiEndpoint({ title, description, requestBody, responseBody }: ApiEndpointProps) {
   return (
-    <div className="mb-8 p-6 bg-white rounded-lg shadow-md">
+    <div className="mb-8 p-6 bg-zinc-900 border border-zinc-800 rounded-lg">
       <h2 className="text-2xl font-semibold mb-4">{title}</h2>
-      <p className="mb-4 text-gray-600">{description}</p>
+      <p className="mb-4 text-zinc-400">{description}</p>
       <div>
         <h3 className="text-lg font-medium mb-2">Request Body</h3>
 
         {requestBody && (
           <div className="relative">
             <div
-              className="bg-gray-100 p-3 rounded overflow-x-auto">
+              className="bg-zinc-800 p-3 rounded overflow-x-auto">
 
               <SyntaxHighlighter
                 language="json"
-                customStyle={{ backgroundColor: 'transparent', color: '#222' }}
+                customStyle={{ backgroundColor: 'transparent', color: "#e4e4e7" }}
               >{JSON.stringify(requestBody, null, 2)}</SyntaxHighlighter>
             </div>
 
@@ -620,10 +695,10 @@ function ApiEndpoint({ title, description, requestBody, responseBody }: ApiEndpo
         {responseBody && (
           <div className="relative">
             <h3 className="text-lg font-medium mb-2 mt-4">Response Body</h3>
-            <div className="bg-gray-100 p-3 rounded">
+            <div className="bg-zinc-800 p-3 rounded">
               <SyntaxHighlighter
                 language="json"
-                customStyle={{ backgroundColor: 'transparent', color: '#222' }}
+                customStyle={{ backgroundColor: 'transparent', color: "#e4e4e7" }}
               >{JSON.stringify({ success: true }, null, 2)}</SyntaxHighlighter>
             </div>
 

@@ -31,19 +31,13 @@ export default function Home() {
         <div className="container mx-auto px-3 py-1 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-blue-950">
             <Image src={hamham} alt="GTSDB Logo" className="w-14 inline-block mr-2 mb-1" />
-             GTSDB
+             GTSDB - <span className="text-red-500">G</span>olang <span className="text-red-500">T</span>ime<span className="text-red-500">S</span>eries <span className="text-red-500">D</span>ata<span className="text-red-500">B</span>ase
           </h1>
           <nav>
             <ul className="flex space-x-6">
               <li className="hidden md:block"><a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Key Features</a></li>
               <li className="hidden md:block"><a href="#usages" className="text-gray-600 hover:text-blue-600 transition-colors">Usages</a></li>
               <li className="hidden md:block"><a href="#performance" className="text-gray-600 hover:text-blue-600 transition-colors">Performance</a></li>
-              <li>
-                <Link href="/architecture" className="text-gray-600 hover:text-blue-600 transition-colors flex">
-                  <Cpu className="h-5 w-5 mr-2" />
-                  Architecture
-                </Link>
-              </li>
               <li>
                 <Link href="/Documentation" className="text-gray-600 hover:text-blue-600 transition-colors flex">
                   <Book className="h-5 w-5 mr-2" />
@@ -85,8 +79,13 @@ function HeroSection() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Golang Dead Simple Timeseries Database</h1>
-          <p className="text-xl mb-8">A simple, efficient, and easy-to-use timeseries database for IoT and more.</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">GTSDB <small className="text-xs">A Dead Simple</small> <br />
+          <span className="text-red-500">G</span>olang 
+          <span className="text-red-500">T</span>ime<span className="text-red-500">S</span>eries <span className="text-red-500">D</span>ata<span className="text-red-500">B</span>ase
+          </h1>
+          <p className="text-xl mb-8">A simple(in Golang), <br />efficient(see the benchmarks), and <br />easy-to-use(JSON in and out) <br /><br />
+          <span className="text-green-500">T</span>ime<span className="text-green-500">S</span>eries <span className="text-green-500">D</span>ata<span className="text-green-500">B</span>ase
+          for IoT and more.</p>
 
           <Button
             className="bg-blue-50 text-blue-800 hover:bg-blue-300 shadow-slate-200"
@@ -809,7 +808,7 @@ function PerformanceSection() {
                   </tr>
                   <tr>
                     <td className="py-2 px-4 border-b">Sync Mode</td>
-                    <td className="py-2 px-4 border-b font-bold">async (dirty-key flusher)</td>
+                    <td className="py-2 px-4 border-b font-bold">async (dirty-key flusher) <br /> (p.s. sync mode also available, and our clients love it :p)</td>
                   </tr>
                   <tr>
                     <td className="py-2 px-4 border-b">OS</td>
@@ -896,7 +895,7 @@ function DriversSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* Go Driver */}
-          <div className="bg-white p-8 rounded-lg shadow-lg border-t-4 border-blue-500">
+          <div className="bg-white p-8 shadow-lg border-t-4 border-b-4 border-blue-500">
             <div className="flex items-center mb-4">
               <span className="text-2xl font-bold text-blue-600 mr-3">Go</span>
               <span className="text-sm text-gray-400 bg-gray-100 px-2 py-1 rounded">v0.1.0</span>
@@ -926,7 +925,7 @@ multi, _ := client.MultiReadBinary(
           </div>
 
           {/* JS Driver */}
-          <div className="bg-white p-8 rounded-lg shadow-lg border-t-4 border-yellow-500">
+          <div className="bg-white p-8 shadow-lg border-t-4 border-b-4 border-yellow-500">
             <div className="flex items-center mb-4">
               <span className="text-2xl font-bold text-yellow-600 mr-3">Node.js</span>
               <span className="text-sm text-gray-400 bg-gray-100 px-2 py-1 rounded">v0.1.0</span>
