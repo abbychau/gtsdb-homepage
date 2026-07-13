@@ -57,6 +57,7 @@ export default function Home() {
       <main className="flex-grow">
         <HeroSection />
         <FeaturesSection />
+        <EfficiencySection />
         <UsageSection />
         <DriversSection />
         <PerformanceSection />
@@ -159,11 +160,6 @@ function FeaturesSection() {
           animate={controls}
         >
           <FeatureCard
-            icon={<Database className="h-10 w-10" />}
-            title="Innovative Design"
-            description="WAL-first with per-key ring buffer cache, binary protocol for reads, async dirty-key flusher, and Velox native C VM JSON. Minimal IO, maximum speed."
-          />
-          <FeatureCard
             icon={<Zap className="h-10 w-10" />}
             title="Blazing Fast"
             description={
@@ -263,6 +259,39 @@ function FeatureCard({ icon, title, description }: FeatureCardProps) {
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <div className="text-gray-600">{description}</div>
     </motion.div>
+  )
+}
+
+
+
+
+function EfficiencySection() {
+  return (
+    <section className="py-20 bg-gray-100">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <h2 className="text-3xl font-bold mb-8 text-center">Why is GTSDB so efficient?</h2>
+        <div className="prose prose-gray max-w-none space-y-6 text-gray-700 leading-relaxed">
+          <p>
+            Most databases separate their write path and read path with layers of abstraction — a write-ahead log (WAL) for durability, a buffer pool for caching, and separate index structures for querying. Each layer adds latency and memory overhead. GTSDB takes a fundamentally different approach: <strong>the WAL is the database</strong>.
+          </p>
+          <p>
+            Instead of maintaining a separate buffer pool and periodically flushing pages to disk, GTSDB appends every write directly to a per-key append-only file. There is no double-writing — data goes straight from the network socket to the WAL and into a ring buffer cache. This eliminates the memory amplification that comes from maintaining both a write buffer and a read cache. The ring buffer, configured per-key with up to 10,000 slots, serves recent reads directly from memory without any disk access. For a typical IoT workload where the latest readings matter most, virtually every read hits the cache.
+          </p>
+          <p>
+            But the real performance breakthrough is in how GTSDB handles the read path. Traditional databases serialize query results into verbose JSON, with each data point carrying repeated field names like <code className="bg-gray-200 px-1 rounded text-sm">"timestamp"</code> and <code className="bg-gray-200 px-1 rounded text-sm">"value"</code>. At 5,000 points per query, this adds up to hundreds of kilobytes of redundant text. GTSDB introduces an optional binary protocol: each data point becomes a fixed 16-byte record — an 8-byte timestamp followed by an 8-byte IEEE 754 float. No parsing, no field name repetition, no reflection-based serialization overhead. The server writes raw bytes straight to the TCP socket; the client reads them back with zero allocation. On a multi-key read of 25,000 points, this alone takes the response time from 7 milliseconds down to 260 microseconds.
+          </p>
+          <p>
+            The JSON path is no slouch either. GTSDB uses Velox, a Go JSON library backed by a native C VM, which outperforms the standard library by an order of magnitude and even beats SIMD-based alternatives like Sonic. For writes and non-bulk reads where JSON remains the default, Velox handles marshaling in nanoseconds per operation.
+          </p>
+          <p>
+            Under the hood, a dirty-key async flusher ensures that only modified keys trigger disk syncs, avoiding the blanket fsync storms that plague append-only databases. When data does go to disk, Facebook's Gorilla time-series compression reduces storage by nearly 30x compared to raw JSON, making disk space a non-issue even on constrained edge devices.
+          </p>
+          <p>
+            The architecture scales down as well as it scales up. At idle, GTSDB uses about 6 MB of memory — less than a single browser tab. It ships as a single statically-linked binary with no external dependencies. Deploy it on a Raspberry Pi, a cloud VM, or a Windows server; the behavior is identical. This is what makes GTSDB uniquely suited for IoT: it does not ask you to choose between durability, speed, and footprint. It gives you all three.
+          </p>
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -723,7 +752,13 @@ function PerformanceSection() {
             </div>
           </div>
         </motion.div>
-
+        {/* Resource Usage Charts */}
+        <div className="mt-12">
+          <div className="bg-white p-8 rounded-lg shadow-lg">
+            <h3 className="text-2xl font-semibold mb-6 text-center">Resource Usage</h3>
+            <ResourceCharts />
+          </div>
+        </div>
         <div className="mt-12">
           <div className="bg-white p-8 rounded-lg shadow-lg">
             <h3 className="text-2xl font-semibold mb-6 text-center">Benchmark Report Charts</h3>
@@ -877,8 +912,65 @@ function PerformanceSection() {
             </div>
           </div>
         </div>
+
+
+
       </div>
     </section>
+  )
+}
+
+function ResourceCharts() {
+  const res = (bm as any).resources || {}
+  const cpuData = [
+    { db: "GTSDB", seconds: res['GTSDB']?.cpu_sec || 0 },
+    { db: "VictoriaMetrics", seconds: res['VM']?.cpu_sec || 0 },
+    { db: "InfluxDB", seconds: res['InfluxDB']?.cpu_sec || 0 },
+  ]
+  const memData = [
+    { db: "GTSDB", milliseconds: res['GTSDB']?.memory_mb || 0 },
+    { db: "VictoriaMetrics", milliseconds: res['VM']?.memory_mb || 0 },
+    { db: "InfluxDB", milliseconds: res['InfluxDB']?.memory_mb || 0 },
+  ]
+  const diskData = [
+    { db: "GTSDB", milliseconds: res['GTSDB']?.disk_kb || 0 },
+    { db: "VictoriaMetrics", milliseconds: res['VM']?.disk_kb || 0 },
+    { db: "InfluxDB", milliseconds: res['InfluxDB']?.disk_kb || 0 },
+  ]
+
+  const ResChart = ({ data, title, unit }: { data: { db: string, milliseconds?: number, seconds?: number }[], title: string, unit: string }) => (
+    <div className="h-[250px]">
+      <h4 className="text-lg font-medium mb-4 text-center">{title}</h4>
+      <ResponsiveBar
+        data={data}
+        keys={['milliseconds', 'seconds']}
+        indexBy="db"
+        margin={{ top: 20, right: 20, bottom: 80, left: 60 }}
+        padding={0.3}
+        valueScale={{ type: 'linear' }}
+        indexScale={{ type: 'band', round: true }}
+        colors={({ data }: { data: { db: string } }) => {
+          if (data.db.includes('GTSDB')) return '#3B82F6'
+          if (data.db.includes('VictoriaMetrics')) return '#10B981'
+          return '#94A3B8'
+        }}
+        borderWidth={1}
+        borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
+        axisLeft={{ tickSize: 1, tickValues: 5, tickPadding: 5, tickRotation: 0, legend: unit, legendPosition: 'middle', legendOffset: -40 }}
+        axisBottom={{ tickSize: 5, tickPadding: 5, tickRotation: 0 }}
+        labelFormat={value => `${Number(value).toFixed(1)} ${unit}`}
+        labelSkipWidth={12}
+        labelSkipHeight={12}
+      />
+    </div>
+  )
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <ResChart data={cpuData} title="CPU Time (s)" unit="s" />
+      <ResChart data={memData} title="Memory (MB)" unit="MB" />
+      <ResChart data={diskData} title="Disk (KB)" unit="KB" />
+    </div>
   )
 }
 
@@ -965,6 +1057,9 @@ const multi = await c.multiReadBinary(
     </section>
   )
 }
+
+
+
 
 
 function TrustedBySection() {
