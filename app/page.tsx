@@ -368,6 +368,15 @@ POST /
     }
 }
 
+# Binary read (16 bytes/point, zero-alloc):
+POST /
+{
+    "operation": "read",
+    "key": "a_sensor1",
+    "read": { "lastx": 5000 },
+    "response_format": "binary"
+}
+
 # Multi-read with time range:
 POST /
 {
@@ -380,14 +389,21 @@ POST /
     }
 }
 
-# Multi-read last X records:
+# Multi-read count-only (returns just counts):
 POST /
 {
     "operation": "multi-read",
-    "keys": ["sensor1", "sensor2", "sensor3"],
-    "read": {
-        "lastx": 1
-    }
+    "keys": ["sensor1", "sensor2"],
+    "read": { "lastx": 5000, "count_only": true }
+}
+
+# Multi-read binary:
+POST /
+{
+    "operation": "multi-read",
+    "keys": ["sensor1", "sensor2"],
+    "read": { "lastx": 5000 },
+    "response_format": "binary"
 }
                       `}</code>
                     </pre>
@@ -418,42 +434,19 @@ POST /
     "operation": "unsubscribe",
     "key": "sensor1"
 }
-
-# Initialize a new key
-POST /
-{
-    "operation": "initkey",
-    "key": "new_sensor"
-}
-
-# Rename a key
-POST /
-{
-    "operation": "renamekey",
-    "key": "old_sensor_name",
-    "toKey": "new_sensor_name"
-}
-
-# Delete a key
-POST /
-{
-    "operation": "deletekey",
-    "key": "sensor_to_delete"
-}
-
-# Patch data points
-POST /
-{
-    "operation": "data-patch",
-    "key": "sensor1",
-    "data": "1717965210,123.45\\n1717965211,123.46\\n1717965212,123.47"
-}
                       `}</code>
                     </pre>
                   </TabsContent>
                   <TabsContent value="advanced">
                     <pre className="text-sm">
                       <code>{`
+# Authenticate (required before any operation):
+POST /
+{
+    "operation": "auth",
+    "key": "your-token-here"
+}
+
 # Batch write (up to 10,000 points):
 POST /
 {
@@ -490,6 +483,19 @@ GET /health
 
 # Prometheus metrics (no auth required):
 GET /metrics
+
+# Key management:
+POST / { "operation": "initkey", "key": "new_sensor" }
+POST / { "operation": "renamekey", "key": "old", "toKey": "new" }
+POST / { "operation": "deletekey", "key": "sensor_to_delete" }
+
+# Patch data points (CSV or JSON):
+POST /
+{
+    "operation": "data-patch",
+    "key": "sensor1",
+    "data": "1717965210,123.45\\n1717965211,123.46"
+}
                       `}</code>
                     </pre>
                   </TabsContent>
