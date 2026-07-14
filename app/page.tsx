@@ -112,6 +112,14 @@ function HeroSection() {
             Admin Tool Demo
             <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
           </Button>
+          <Button
+            className="ml-4 bg-blue-50 text-blue-800 hover:bg-blue-300 shadow-slate-200"
+            size={"lg"}
+            onClick={() => window.open("https://hub.docker.com/r/abbychau/gtsdb", "_blank")}
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13.98 11.08h2.16a4.74 4.74 0 0 0 1.06-.14 2.23 2.23 0 0 0 1.74-2.2 2.18 2.18 0 0 0-1.74-2.18 4.74 4.74 0 0 0-1.06-.14h-2.16M12.04 3H5.31a2.34 2.34 0 0 0-2.34 2.34v13.32A2.34 2.34 0 0 0 5.31 21h13.38a2.34 2.34 0 0 0 2.34-2.34V6.67M7.5 15.25h2.16M7.5 11.08h2.16M7.5 6.91h6.48M2 6.67h2.85M17.15 6.67H22"/></svg>
+            Docker
+          </Button>
           <div className="mt-4">
           <a href="https://www.producthunt.com/posts/gtsdb?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-gtsdb" target="_blank" rel="noopener noreferrer"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=758497&theme=light" alt="GTSDB - Durable&#0032;and&#0032;Memory&#0032;Friendly&#0032;timeseries&#0032;database | Product Hunt" style={{width: 250, height: 54}} width="250" height="54" /></a>
           </div>
