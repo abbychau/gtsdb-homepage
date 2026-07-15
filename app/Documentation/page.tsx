@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils"
 import { Edit, BookOpen, Bell, Key, MoreHorizontal } from 'lucide-react'
 import Footer from '@/components/Footer'
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import hamham from '../hamham.png'
+import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import oldHamham from '../oldHamham.png'
 import Image from 'next/image'
 
 export default function Home() {
@@ -15,7 +16,7 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <h1 className="text-xl font-bold flex items-center gap-2">
-            <Image src={hamham} alt="GTSDB" className="w-10 inline-block" /> Documentation
+            <Image src={oldHamham} alt="GTSDB" className="w-10 inline-block" /> Documentation
           </h1>
           <nav>
             <ul className="flex space-x-6 text-sm text-zinc-400">
@@ -683,7 +684,8 @@ function ApiEndpoint({ title, description, requestBody, responseBody }: ApiEndpo
 
               <SyntaxHighlighter
                 language="json"
-                customStyle={{ backgroundColor: 'transparent', color: "#e4e4e7" }}
+                style={atomOneDark}
+                customStyle={{ backgroundColor: 'transparent' }}
               >{JSON.stringify(requestBody, null, 2)}</SyntaxHighlighter>
             </div>
 
@@ -698,7 +700,8 @@ function ApiEndpoint({ title, description, requestBody, responseBody }: ApiEndpo
             <div className="bg-zinc-800 p-3 rounded">
               <SyntaxHighlighter
                 language="json"
-                customStyle={{ backgroundColor: 'transparent', color: "#e4e4e7" }}
+                style={atomOneDark}
+                customStyle={{ backgroundColor: 'transparent' }}
               >{JSON.stringify({ success: true }, null, 2)}</SyntaxHighlighter>
             </div>
 

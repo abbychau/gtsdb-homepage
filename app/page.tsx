@@ -1,15 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
 
-import { useEffect } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Database, Code, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, SquareArrowOutUpRight, Cpu, Terminal, Zap, Monitor, Container } from 'lucide-react'
+import { ArrowRight, Code, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, SquareArrowOutUpRight, Terminal, Zap, Monitor, Container } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
-import hamham from './hamham.png'
 import oldHamham from './oldHamham.png'
 
 import { buttonVariants } from "@/components/ui/button"
@@ -24,38 +23,148 @@ import bm from '@/lib/benchmark-data.json'
 
 const rd = (n: number) => Math.round(n * 100) / 100
 
+const NAV_SECTIONS = [
+  { id: 'features', label: 'Key Features' },
+  { id: 'usages', label: 'Usages' },
+  { id: 'performance', label: 'Performance' },
+]
+
+function useScrollSpy(sectionIds: string[]) {
+  const [activeId, setActiveId] = useState('')
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) { setActiveId(e.target.id); break }
+        }
+      },
+      { rootMargin: '-20% 0px -70% 0px', threshold: 0 }
+    )
+    const els = sectionIds.map(id => document.getElementById(id)).filter(Boolean) as HTMLElement[]
+    els.forEach(el => obs.observe(el))
+    return () => obs.disconnect()
+  }, [sectionIds])
+  return activeId
+}
+
 export default function Home() {
+  const [scrolled, setScrolled] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const activeSection = useScrollSpy(NAV_SECTIONS.map(s => s.id))
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => { document.body.style.overflow = mobileOpen ? 'hidden' : '' }, [mobileOpen])
+
+  const linkClass = (id: string) =>
+    `relative text-sm font-medium transition-colors duration-200 ${
+      activeSection === id
+        ? 'text-cyan-300'
+        : 'text-slate-300 hover:text-cyan-300'
+    }`
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <header className="sticky top-0 z-50 backdrop-blur-md border-b-4 border-gray-400 bg-slate-100/80">
-        <div className="container mx-auto px-3 py-1 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-blue-950">
-            <Image src={hamham} alt="GTSDB Logo" className="w-14 inline-block mr-2 mb-1" />
-             GTSDB - <span className="text-red-500">G</span>olang <span className="text-red-500">T</span>ime<span className="text-red-500">S</span>eries <span className="text-red-500">D</span>ata<span className="text-red-500">B</span>ase
-          </h1>
-          <nav>
-            <ul className="flex space-x-6">
-              <li className="hidden md:block"><a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Key Features</a></li>
-              <li className="hidden md:block"><a href="#usages" className="text-gray-600 hover:text-blue-600 transition-colors">Usages</a></li>
-              <li className="hidden md:block"><a href="#performance" className="text-gray-600 hover:text-blue-600 transition-colors">Performance</a></li>
-              <li>
-                <Link href="/Documentation" className="text-gray-600 hover:text-blue-600 transition-colors flex">
-                  <Book className="h-5 w-5 mr-2" />
-                  Documentation
-                </Link>
-              </li>
-              <li><a href="https://github.com/abbychau/gtsdb" target='_blank' rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition-colors"><Github className="h-5 w-5" /></a></li>
+      <header className={`sticky top-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? 'backdrop-blur-2xl bg-slate-950/95 shadow-[0_4px_20px_rgba(0,0,0,0.4)] py-0'
+          : 'backdrop-blur-xl bg-gradient-to-r from-slate-900/90 via-indigo-900/85 to-slate-900/90 py-1'
+      } border-b-0`}>
+        {/* Fancy gradient bottom border */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-500/60 via-indigo-400/60 to-fuchsia-500/60" />
 
-              <li><a href="https://github.com/abbychau/gtsdb/releases" target='_blank' rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition-colors">
-                <Download className="h-5 w-5" />
-              </a></li>
-            </ul>
+        <div className={`container mx-auto px-4 flex justify-between items-center relative transition-all duration-500 ${scrolled ? 'py-2' : 'py-1'}`}>
+          {/* Logo */}
+          <a href="#" className="flex items-center gap-2 shrink-0 group">
+            <span className="w-9 shrink-0">
+              {scrolled && (
+                <motion.div layoutId="hero-logo">
+                  <Image src={oldHamham} alt="GTSDB Logo" className="w-9" />
+                </motion.div>
+              )}
+            </span>
+            <h1 className={`font-bold transition-all duration-500 ${scrolled ? 'text-lg' : 'text-2xl'} text-white`}>
+              GTSDB
+              <span className={`hidden sm:inline transition-all duration-300 ${scrolled ? 'text-xs ml-1' : 'text-base ml-1'}`}>
+                · <span className="text-red-400">G</span>o<span className="text-red-400">T</span>ime<span className="text-red-400">S</span>eries<span className="text-red-400">DB</span>
+              </span>
+            </h1>
+          </a>
+
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {NAV_SECTIONS.map(s => (
+              <a key={s.id} href={`#${s.id}`} className={linkClass(s.id) + ' px-3 py-2 rounded-lg hover:bg-white/5'}>
+                {s.label}
+                {activeSection === s.id && (
+                  <motion.div layoutId="nav-underline" className="absolute bottom-0 left-3 right-3 h-0.5 bg-cyan-400 rounded-full" transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
+                )}
+              </a>
+            ))}
+            <div className="w-px h-5 bg-white/10 mx-2" />
+            <Link href="/Documentation" className={`${linkClass('')} px-3 py-2 rounded-lg hover:bg-white/5 flex items-center gap-1.5`}>
+              <Book className="h-4 w-4" /> Docs
+            </Link>
+            <div className="w-px h-5 bg-white/10 mx-2" />
+            <a href="https://github.com/abbychau/gtsdb" target='_blank' rel="noopener noreferrer" className="text-slate-300 hover:text-white transition-all duration-300 p-2 rounded-lg hover:bg-white/10">
+              <Github className="h-5 w-5" />
+            </a>
+            <a href="https://github.com/abbychau/gtsdb/releases" target='_blank' rel="noopener noreferrer" className="text-slate-300 hover:text-white transition-all duration-300 p-2 rounded-lg hover:bg-white/10">
+              <Download className="h-5 w-5" />
+            </a>
           </nav>
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden relative w-9 h-9 flex flex-col items-center justify-center gap-1.5 group"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            <span className={`w-6 h-0.5 bg-white rounded-full transition-all duration-300 ${mobileOpen ? 'rotate-45 translate-y-[4px]' : ''}`} />
+            <span className={`w-6 h-0.5 bg-white rounded-full transition-all duration-300 ${mobileOpen ? 'opacity-0 scale-x-0' : ''}`} />
+            <span className={`w-6 h-0.5 bg-white rounded-full transition-all duration-300 ${mobileOpen ? '-rotate-45 -translate-y-[4px]' : ''}`} />
+          </button>
         </div>
+
+        {/* Mobile menu */}
+        <motion.div
+          className="md:hidden overflow-hidden"
+          initial={false}
+          animate={{ height: mobileOpen ? 'auto' : 0, opacity: mobileOpen ? 1 : 0 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+          <nav className="px-4 pb-4 pt-2 flex flex-col gap-1 border-t border-white/10">
+            {NAV_SECTIONS.map(s => (
+              <a key={s.id} href={`#${s.id}`} onClick={() => setMobileOpen(false)}
+                className={`px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${
+                  activeSection === s.id ? 'bg-indigo-500/20 text-cyan-300' : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                }`}>{s.label}</a>
+            ))}
+            <div className="h-px bg-white/10 my-1" />
+            <Link href="/Documentation" onClick={() => setMobileOpen(false)}
+              className="px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:bg-white/5 hover:text-white transition-all duration-200 flex items-center gap-2">
+              <Book className="h-4 w-4" /> Documentation
+            </Link>
+            <div className="flex gap-2 mt-2 px-2">
+              <a href="https://github.com/abbychau/gtsdb" target='_blank' rel="noopener noreferrer"
+                className="flex-1 text-center py-2.5 rounded-xl bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white transition-all duration-200 text-sm font-medium">
+                <Github className="h-4 w-4 inline mr-1" /> GitHub
+              </a>
+              <a href="https://github.com/abbychau/gtsdb/releases" target='_blank' rel="noopener noreferrer"
+                className="flex-1 text-center py-2.5 rounded-xl bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white transition-all duration-200 text-sm font-medium">
+                <Download className="h-4 w-4 inline mr-1" /> Download
+              </a>
+            </div>
+          </nav>
+        </motion.div>
       </header>
 
       <main className="flex-grow">
-        <HeroSection />
+        <HeroSection scrolled={scrolled} />
         <FeaturesSection />
         <EfficiencySection />
         <UsageSection />
@@ -70,78 +179,261 @@ export default function Home() {
   )
 }
 
-function HeroSection() {
+function HeroSection(_props: { scrolled: boolean }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [tilt, setTilt] = useState({ x: 0, y: 0 })
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width - 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5
+    setMousePos({ x, y })
+  }, [])
+
+  const handleTiltMove = useCallback((e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 20
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * -20
+    setTilt({ x, y })
+  }, [])
+
+  const handleTiltLeave = useCallback(() => setTilt({ x: 0, y: 0 }), [])
+
   return (
-    <section className="bg-gradient-to-r from-slate-800 to-indigo-700 text-white py-20 overflow-hidden">
-      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
+    <section
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      className="relative bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white py-24 md:py-32 overflow-hidden"
+    >
+      {/* Animated floating orbs — parallax */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-[float_8s_ease-in-out_infinite]"
+          style={{ transform: `translate(${mousePos.x * -30}px, ${mousePos.y * -30}px)` }} />
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-fuchsia-500/15 rounded-full blur-3xl animate-[float_10s_ease-in-out_infinite_1s]"
+          style={{ transform: `translate(${mousePos.x * -20}px, ${mousePos.y * -20}px)` }} />
+        <div className="absolute -bottom-20 right-1/3 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl animate-[float_7s_ease-in-out_infinite_2s]"
+          style={{ transform: `translate(${mousePos.x * 25}px, ${mousePos.y * 25}px)` }} />
+        <div className="absolute top-1/4 left-1/2 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl animate-[float_9s_ease-in-out_infinite_3s]"
+          style={{ transform: `translate(${mousePos.x * 15}px, ${mousePos.y * -15}px)` }} />
+      </div>
+      {/* Grid overlay with parallax */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.04)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none"
+        style={{ transform: `translate(${mousePos.x * 5}px, ${mousePos.y * 5}px)` }} />
+      {/* Radial glow at center */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-indigo-500/10 via-transparent to-transparent rounded-full blur-2xl pointer-events-none" />
+      {/* Floating particles */}
+      <ParticleField />
+      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative">
         <motion.div
           className="md:w-1/2 mb-10 md:mb-0"
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">GTSDB <small className="text-xs">A Dead Simple</small> <br />
-          <span className="text-red-500">G</span>olang 
-          <span className="text-red-500">T</span>ime<span className="text-red-500">S</span>eries <span className="text-red-500">D</span>ata<span className="text-red-500">B</span>ase
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
+            <span className="block text-sm md:text-base font-normal text-cyan-300/80 mb-2 tracking-widest uppercase">A Dead Simple</span>
+            GTSDB
+            <br />
+            <span className="text-red-400">G</span>olang{' '}
+            <span className="text-red-400">T</span>ime{' '}
+            <span className="text-red-400">S</span>eries{' '}
+            <span className="text-red-400">D</span>ata{' '}
+            <span className="text-red-400">B</span>ase
           </h1>
-          <p className="text-xl mb-8">A simple(in Golang), <br />efficient(see the benchmarks), and <br />easy-to-use(JSON in and out) <br /><br />
-          <span className="text-green-500">T</span>ime<span className="text-green-500">S</span>eries <span className="text-green-500">D</span>ata<span className="text-green-500">B</span>ase
-          for IoT and more.</p>
 
-          <Button
-            className="bg-blue-50 text-blue-800 hover:bg-blue-300 shadow-slate-200"
-            onClick={
-              () => window.location.href = "/#features"
-            }
-            size={"lg"}
-          >
-            <Star className="h-4 w-4" />
-            Get Started
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-          
-          <Button
-            className="ml-4 bg-blue-50 text-blue-800 hover:bg-blue-300 shadow-slate-200"
-            size={"lg"}
-            onClick={
-              () => {
-                window.open("https://gtsdb-admin.vercel.app/?apiUrl=https://gtsdb-web.abby.md/", "_blank")
-              }
-            }>
-            <Presentation className="h-4 w-4" />
-            Admin Tool Demo
-            <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
-          </Button>
-          <p className="mt-6 text-sm text-blue-200 flex flex-wrap items-center gap-x-3 gap-y-1">
+          <TypewriterText />
+
+          <div className="flex flex-wrap gap-3 mt-8">
+            <Button
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white border-0 transition-colors duration-300 font-semibold"
+              onClick={() => window.location.href = "/#features"}
+              size="lg"
+            >
+              <Star className="h-4 w-4" />
+              Get Started
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+            <Button
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm hover:border-white/40 transition-all duration-300 font-semibold"
+              size="lg"
+              onClick={() => window.open("https://gtsdb-admin.vercel.app/?apiUrl=https://gtsdb-web.abby.md/", "_blank")}
+            >
+              <Presentation className="h-4 w-4" />
+              Admin Tool Demo
+              <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+
+          <p className="mt-6 text-sm text-blue-200/60 flex flex-wrap items-center gap-x-3 gap-y-1">
             <a href="https://hub.docker.com/r/abbychau/gtsdb" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-white transition-colors">
               <Container className="h-4 w-4" /> Docker
             </a>
-            <span className="opacity-50">·</span>
+            <span className="opacity-40">·</span>
             <a href="https://github.com/abbychau/gtsdb/releases" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-white transition-colors">
               <Download className="h-4 w-4" /> Binary
             </a>
-            <span className="opacity-50">·</span>
+            <span className="opacity-40">·</span>
             <span className="inline-flex items-center gap-1"><Monitor className="h-4 w-4" /> Windows</span>
-            <span className="opacity-50">·</span>
+            <span className="opacity-40">·</span>
             <span className="inline-flex items-center gap-1"><Terminal className="h-4 w-4" /> Linux / BSD</span>
-            <span className="opacity-50">·</span>
+            <span className="opacity-40">·</span>
             <span className="inline-flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"></path><path d="M10 2c1 .5 2 2 2 5"></path></svg> macOS</span>
           </p>
           <div className="mt-4">
-          <a href="https://www.producthunt.com/posts/gtsdb?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-gtsdb" target="_blank" rel="noopener noreferrer"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=758497&theme=light" alt="GTSDB - Durable&#0032;and&#0032;Memory&#0032;Friendly&#0032;timeseries&#0032;database | Product Hunt" style={{width: 250, height: 54}} width="250" height="54" /></a>
+            <a href="https://www.producthunt.com/posts/gtsdb?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-gtsdb" target="_blank" rel="noopener noreferrer"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=758497&theme=light" alt="GTSDB - Durable&#0032;and&#0032;Memory&#0032;Friendly&#0032;timeseries&#0032;database | Product Hunt" style={{width: 250, height: 54}} width="250" height="54" /></a>
           </div>
         </motion.div>
+
         <motion.div
-          className="md:w-1/2"
+          className="md:w-1/2 flex justify-center"
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
+          onMouseMove={handleTiltMove}
+          onMouseLeave={handleTiltLeave}
+          style={{
+            transform: `perspective(1000px) rotateY(${tilt.x}deg) rotateX(${tilt.y}deg)`,
+            transition: 'transform 0.2s ease-out',
+          }}
         >
-          <Image src={oldHamham} alt="GTSDB Illustration" className="w-full h-auto" />
+          <motion.div layoutId="hero-logo" className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/30 via-indigo-500/20 to-fuchsia-500/30 rounded-3xl blur-2xl scale-90" />
+            <Image src={oldHamham} alt="GTSDB Illustration" className="w-full h-auto relative drop-shadow-[0_20px_60px_rgba(0,0,0,0.5)]" />
+          </motion.div>
         </motion.div>
       </div>
     </section>
   )
+}
+
+// ── Typewriter subtitle ────────────────────────────────────────────
+const PHRASES = [
+  'for IoT and more.',
+  '96M ops/sec · 6 MB memory · 29.6× compression.',
+  'blazing fast, impossibly tiny.',
+  'JSON in, JSON out.',
+  'binary protocol ready.',
+  'Gorilla-compressed storage.',
+  'WAL-first architecture.',
+  'deploy anywhere, run everywhere.',
+]
+
+function TypewriterText() {
+  const [phraseIdx, setPhraseIdx] = useState(0)
+  const [charCount, setCharCount] = useState(0)
+  const [deleting, setDeleting] = useState(false)
+
+  useEffect(() => {
+    const phrase = PHRASES[phraseIdx]
+    const speed = deleting ? 35 : 60
+    const pause = !deleting && charCount === phrase.length ? 2000 : deleting && charCount === 0 ? 400 : speed
+
+    const timer = setTimeout(() => {
+      if (!deleting && charCount === phrase.length) {
+        setDeleting(true)
+      } else if (deleting && charCount === 0) {
+        setDeleting(false)
+        setPhraseIdx((phraseIdx + 1) % PHRASES.length)
+      } else {
+        setCharCount(c => c + (deleting ? -1 : 1))
+      }
+    }, pause)
+
+    return () => clearTimeout(timer)
+  }, [charCount, deleting, phraseIdx])
+
+  const phrase = PHRASES[phraseIdx]
+
+  return (
+    <p className="text-xl md:text-2xl text-slate-300 min-h-[4rem] leading-relaxed">
+      <span className="text-green-400">T</span>ime
+      <span className="text-green-400">S</span>eries{' '}
+      <span className="text-green-400">D</span>ata
+      <span className="text-green-400">B</span>ase{' '}
+      <span className="text-base md:text-lg text-slate-400/60 italic font-light">that is…</span>
+      <br />
+      <span>{phrase.slice(0, charCount)}</span>
+      <span className="inline-block w-0.5 h-5 bg-cyan-400 ml-0.5 animate-pulse align-middle" />
+    </p>
+  )
+}
+
+// ── Floating particle canvas ──────────────────────────────────────
+function ParticleField() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let animId: number
+    const particles: { x: number; y: number; vx: number; vy: number; r: number; alpha: number }[] = []
+
+    const resize = () => {
+      const parent = canvas.parentElement!
+      canvas.width = parent.offsetWidth
+      canvas.height = parent.offsetHeight
+    }
+    resize()
+    window.addEventListener('resize', resize)
+
+    for (let i = 0; i < 40; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        r: Math.random() * 1.5 + 0.5,
+        alpha: Math.random() * 0.4 + 0.1,
+      })
+    }
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      for (const p of particles) {
+        p.x += p.vx
+        p.y += p.vy
+        if (p.x < 0) p.x = canvas.width
+        if (p.x > canvas.width) p.x = 0
+        if (p.y < 0) p.y = canvas.height
+        if (p.y > canvas.height) p.y = 0
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(165,180,252,${p.alpha})`
+        ctx.fill()
+      }
+
+      // Draw connection lines for nearby particles
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x
+          const dy = particles[i].y - particles[j].y
+          const dist = Math.sqrt(dx * dx + dy * dy)
+          if (dist < 120) {
+            ctx.beginPath()
+            ctx.moveTo(particles[i].x, particles[i].y)
+            ctx.lineTo(particles[j].x, particles[j].y)
+            ctx.strokeStyle = `rgba(165,180,252,${0.06 * (1 - dist / 120)})`
+            ctx.lineWidth = 0.5
+            ctx.stroke()
+          }
+        }
+      }
+
+      animId = requestAnimationFrame(draw)
+    }
+    draw()
+
+    return () => {
+      cancelAnimationFrame(animId)
+      window.removeEventListener('resize', resize)
+    }
+  }, [])
+
+  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none opacity-60" />
 }
 
 function FeaturesSection() {
@@ -691,18 +983,18 @@ function PerformanceSection() {
           <div className="bg-white p-8 rounded-lg shadow-lg">
             <h3 className="text-2xl font-semibold mb-6">Write Benchmarks</h3>
             <div className="space-y-8">
-              <BarChartComponent data={writeData} title="Write (seq) — 5,000 pts" />
-              <BarChartComponent data={batchWriteData} title="Batch Write — 5,000 pts" />
-              <BarChartComponent data={pipelineData} title="Pipeline Write — 5,000 pts" />
-              <BarChartComponent data={multiWriteData} title="Multi-Sensor Write — 5 keys × 1,000 pts" />
+              <BarChartComponent data={writeData} title="Write (seq) – 5,000 pts" />
+              <BarChartComponent data={batchWriteData} title="Batch Write – 5,000 pts" />
+              <BarChartComponent data={pipelineData} title="Pipeline Write – 5,000 pts" />
+              <BarChartComponent data={multiWriteData} title="Multi-Sensor Write – 5 keys × 1,000 pts" />
             </div>
           </div>
 
           <div className="bg-white p-8 rounded-lg shadow-lg">
             <h3 className="text-2xl font-semibold mb-6">Read Benchmarks</h3>
             <div className="space-y-8">
-              <BarChartComponent data={readData} title="Single Read — Last 1 Point" />
-              <BarChartComponent data={readManyData} title="Multi-Key Read — 5 Keys × 5,000 pts" />
+              <BarChartComponent data={readData} title="Single Read – Last 1 Point" />
+              <BarChartComponent data={readManyData} title="Multi-Key Read – 5 Keys × 5,000 pts" />
               <BarChartComponent 
                 data={pubsubData.map(d => ({ ...d, seconds: Number(d.seconds.toFixed(3)) }))} 
                 title="Pub/Sub Delivery Latency (s)" 
@@ -854,12 +1146,12 @@ function PerformanceSection() {
               <ul className="list-disc list-inside space-y-1 text-amber-700 text-sm">
                 <li>JSON: <strong>Velox native C VM</strong> + <strong>binary protocol</strong> for reads</li>
                 <li>Binary protocol: 16 bytes/point, zero-alloc encode/decode</li>
-                <li>Multi-Key Read: <strong>{Math.round(5000 / (bm.readMany.gtsdb / 1000)).toLocaleString()} ops/sec</strong> — faster than VM</li>
+                <li>Multi-Key Read: <strong>{Math.round(5000 / (bm.readMany.gtsdb / 1000)).toLocaleString()} ops/sec</strong> – faster than VM</li>
                 <li>Pub/Sub: <strong>{rd(bm.pubsub.gtsdb * 1000)} ms</strong> delivery latency</li>
                 <li><strong>{(5000 / (bm.batchWrite.gtsdb / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} ops/sec</strong> batch write, <strong>{(5000 / (bm.multiWrite.gtsdb / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} ops/sec</strong> multi-write</li>
                 <li><strong>29.6x smaller</strong> than raw JSON with Gorilla compression</li>
                 <li>Only <strong>~12 MB</strong> memory usage at idle</li>
-                <li>Single <strong>binary executable</strong> — no dependencies</li>
+                <li>Single <strong>binary executable</strong> – no dependencies</li>
               </ul>
             </div>
             <div className="pt-4 border-t border-gray-200">
@@ -969,7 +1261,7 @@ client.Auth("your-token")
 client.Write("sensor1", 42.5)
 pts, _ := client.ReadLast("sensor1", 100)
 
-// 🚀 Binary — 100x faster
+// 🚀 Binary – 100x faster
 pts, _ := client.ReadBinary("sensor1", 5000)
 multi, _ := client.MultiReadBinary(
     []string{"s1","s2"}, 5000,
@@ -999,7 +1291,7 @@ await c.auth('your-token')
 await c.write('sensor1', 42.5)
 const pts = await c.readLast('sensor1', 100)
 
-// 🚀 Binary — 100x faster
+// 🚀 Binary – 100x faster
 const pts = await c.readBinary('sensor1', 5000)
 const multi = await c.multiReadBinary(
   ['s1','s2'], 5000
