@@ -4,7 +4,7 @@
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Database, Zap, Code, BarChart, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, Leaf, Shield, PuzzleIcon, SquareArrowOutUpRight, TrendingUp, Layers, Activity, Cpu, HardDrive, Terminal } from 'lucide-react'
+import { ArrowRight, Database, Code, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, SquareArrowOutUpRight, Cpu, Terminal, Zap, Monitor, Container } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -112,14 +112,21 @@ function HeroSection() {
             Admin Tool Demo
             <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
           </Button>
-          <Button
-            className="ml-4 bg-blue-50 text-blue-800 hover:bg-blue-300 shadow-slate-200"
-            size={"lg"}
-            onClick={() => window.open("https://hub.docker.com/r/abbychau/gtsdb", "_blank")}
-          >
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13.98 11.08h2.16a4.74 4.74 0 0 0 1.06-.14 2.23 2.23 0 0 0 1.74-2.2 2.18 2.18 0 0 0-1.74-2.18 4.74 4.74 0 0 0-1.06-.14h-2.16M12.04 3H5.31a2.34 2.34 0 0 0-2.34 2.34v13.32A2.34 2.34 0 0 0 5.31 21h13.38a2.34 2.34 0 0 0 2.34-2.34V6.67M7.5 15.25h2.16M7.5 11.08h2.16M7.5 6.91h6.48M2 6.67h2.85M17.15 6.67H22"/></svg>
-            Docker
-          </Button>
+          <p className="mt-6 text-sm text-blue-200 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <a href="https://hub.docker.com/r/abbychau/gtsdb" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-white transition-colors">
+              <Container className="h-4 w-4" /> Docker
+            </a>
+            <span className="opacity-50">·</span>
+            <a href="https://github.com/abbychau/gtsdb/releases" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-white transition-colors">
+              <Download className="h-4 w-4" /> Binary
+            </a>
+            <span className="opacity-50">·</span>
+            <span className="inline-flex items-center gap-1"><Monitor className="h-4 w-4" /> Windows</span>
+            <span className="opacity-50">·</span>
+            <span className="inline-flex items-center gap-1"><Terminal className="h-4 w-4" /> Linux / BSD</span>
+            <span className="opacity-50">·</span>
+            <span className="inline-flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"></path><path d="M10 2c1 .5 2 2 2 5"></path></svg> macOS</span>
+          </p>
           <div className="mt-4">
           <a href="https://www.producthunt.com/posts/gtsdb?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-gtsdb" target="_blank" rel="noopener noreferrer"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=758497&theme=light" alt="GTSDB - Durable&#0032;and&#0032;Memory&#0032;Friendly&#0032;timeseries&#0032;database | Product Hunt" style={{width: 250, height: 54}} width="250" height="54" /></a>
           </div>
@@ -138,135 +145,77 @@ function HeroSection() {
 }
 
 function FeaturesSection() {
-  const controls = useAnimation()
-  const [ref, inView] = useInView()
-
-  useEffect(() => {
-    if (inView) {
-      controls.start('visible')
-    }
-  }, [controls, inView])
-
   return (
     <section id="features" className="py-20 bg-gray-100">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-12 text-center">Key Features</h2>
-        <motion.div
-          ref={ref}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: {
-                delayChildren: 0.3,
-                staggerChildren: 0.2
-              }
-            }
-          }}
-          initial="hidden"
-          animate={controls}
-        >
-          <FeatureCard
-            icon={<Zap className="h-10 w-10" />}
-            title="Blazing Fast"
-            description={
-              <>
-                <b>96M ops/sec</b> multi-key read — faster than VictoriaMetrics. <b>1.22M ops/sec</b> batch write. Binary protocol + Velox JSON. WAL-class durability.
-              </>
-            }
-          />
-          <FeatureCard
-            icon={<Code className="h-10 w-10" />}
-            title="Super Easy Integration"
-            description="Identical HTTP API and TCP interfaces, which are all in strict JSON."
-          />
-          <FeatureCard
-            icon={<BarChart className="h-10 w-10" />}
-            title="Analytics Ready"
-            description="Built-in support for data downsampling and aggregation."
-          />
-          <FeatureCard
-            icon={<Leaf className="h-10 w-10" />}
-            title="Memory Efficient"
-            description="As Low as 6MB memory. Perfect for IoT devices. Indexing is all in SSD."
-          />
-          <FeatureCard
-            icon={<Rss className="h-10 w-10" />}
-            title="Built-in Streaming"
-            description="Subscribe to keys and receive updates in real-time."
-          />
-          <FeatureCard
-            icon={<Shield className="h-10 w-10" />}
-            title="Battle-Tested"
-            description="Trusted by IoT pioneers and used in production. Code Coverage for all logic."
-          />
-          <FeatureCard
-            icon={<PuzzleIcon className="h-10 w-10" />}
-            title="Cross-Platform"
-            description={
-              <>
-                Supports Windows, Linux/BSD, and macOS. Perfect for edge devices.
-              </>
-            }
-          />
-          <FeatureCard
-            icon={<Activity className="h-10 w-10" />}
-            title="Monitoring Ready"
-            description="Built-in /health and /metrics (Prometheus) endpoints. Monitor uptime, memory, GC, and data points in real-time."
-          />
-          <FeatureCard
-            icon={<Layers className="h-10 w-10" />}
-            title="Batch Write"
-            description="Write up to 10,000 data points in a single API call. Perfect for bulk imports and migration."
-          />
-          <FeatureCard
-            icon={<Download className="h-10 w-10" />}
-            title="Data Export"
-            description="Export sensor data in CSV or JSON format with filtering by time range and downsampling."
-          />
-          <FeatureCard
-            icon={<HardDrive className="h-10 w-10" />}
-            title="Gorilla Compression"
-            description={
-              <>
-                Facebook Gorilla time-series compression. <b>29.6x smaller</b> than JSON, <b>8x smaller</b> than raw. Massive disk savings for IoT workloads.
-              </>
-            }
-          />
-          <FeatureCard
-            icon={<TrendingUp className="h-10 w-10" />}
-            title="Advanced Analytics"
-            description="Downsampling with avg, sum, min, max, first, last, count, median (p50), p95, and p99 aggregations."
-          />
-        </motion.div>
+      <div className="container mx-auto px-6">
+        <h2 className="text-3xl font-bold text-center text-gray-900 mb-16">Key features</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-12 max-w-5xl mx-auto">
+          <div className="flex gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-zap h-6 w-6 mt-0.5 shrink-0 text-blue-500"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></svg>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">Blazing Fast</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">96M ops/sec multi-key read. 1.22M ops/sec batch write. Binary protocol + Velox JSON.</p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-leaf h-6 w-6 mt-0.5 shrink-0 text-green-500"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">Memory Efficient</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">As low as 6 MB memory. Perfect for IoT edge devices.</p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-code h-6 w-6 mt-0.5 shrink-0 text-purple-500"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">Simple API</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">Identical HTTP + TCP interfaces, all in strict JSON.</p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-hard-drive h-6 w-6 mt-0.5 shrink-0 text-orange-500"><line x1="22" x2="2" y1="12" y2="12"></line><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path><line x1="6" x2="6.01" y1="16" y2="16"></line><line x1="10" x2="10.01" y1="16" y2="16"></line></svg>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">Gorilla Compression</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">29.6× smaller than JSON. Massive disk savings.</p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-rss h-6 w-6 mt-0.5 shrink-0 text-red-500"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">Built-in Streaming</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">Subscribe to keys, receive updates in real-time.</p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shield h-6 w-6 mt-0.5 shrink-0 text-teal-500"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path></svg>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">Battle-Tested</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">Production use by IoT pioneers. Full code coverage.</p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-layers h-6 w-6 mt-0.5 shrink-0 text-indigo-500"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path></svg>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">Batch Write</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">Up to 10,000 points per call. Bulk imports.</p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trending-up h-6 w-6 mt-0.5 shrink-0 text-pink-500"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">Advanced Analytics</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">Downsampling: avg, sum, min, max, p50, p95, p99.</p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-activity h-6 w-6 mt-0.5 shrink-0 text-cyan-500"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">Monitoring Ready</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">Built-in /health and /metrics (Prometheus) endpoints.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
-  )
-}
-
-interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: React.ReactNode;
-}
-
-function FeatureCard({ icon, title, description }: FeatureCardProps) {
-  return (
-    <motion.div
-      className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
-      variants={{
-        hidden: { y: 20, opacity: 0 },
-        visible: {
-          y: 0,
-          opacity: 1
-        }
-      }}
-    >
-      <div className="text-blue-600 mb-4">{icon}</div>
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <div className="text-gray-600">{description}</div>
-    </motion.div>
   )
 }
 
@@ -275,10 +224,11 @@ function FeatureCard({ icon, title, description }: FeatureCardProps) {
 
 function EfficiencySection() {
   return (
-    <section className="py-20 bg-gray-100">
+    <section className="py-20 bg-white">
       <div className="container mx-auto px-4 max-w-3xl">
-        <h2 className="text-3xl font-bold mb-8 text-center">Why is GTSDB so efficient?</h2>
-        <div className="prose prose-gray max-w-none space-y-6 text-gray-700 leading-relaxed">
+        <h2 className="text-3xl font-bold mb-4 text-center text-gray-900">Why is GTSDB so efficient?</h2>
+        <p className="text-center text-gray-500 text-sm mb-10">A deep dive into the architecture that makes GTSDB fast, small, and durable.</p>
+        <article className="prose prose-gray prose-lg max-w-none text-gray-700 leading-relaxed space-y-6">
           <p>
             Most databases separate their write path and read path with layers of abstraction — a write-ahead log (WAL) for durability, a buffer pool for caching, and separate index structures for querying. Each layer adds latency and memory overhead. GTSDB takes a fundamentally different approach: <strong>the WAL is the database</strong>.
           </p>
@@ -297,7 +247,7 @@ function EfficiencySection() {
           <p>
             The architecture scales down as well as it scales up. At idle, GTSDB uses about 6 MB of memory — less than a single browser tab. It ships as a single statically-linked binary with no external dependencies. Deploy it on a Raspberry Pi, a cloud VM, or a Windows server; the behavior is identical. This is what makes GTSDB uniquely suited for IoT: it does not ask you to choose between durability, speed, and footprint. It gives you all three.
           </p>
-        </div>
+        </article>
       </div>
     </section>
   )
