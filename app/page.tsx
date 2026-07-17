@@ -1,17 +1,18 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
 
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Code, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, SquareArrowOutUpRight, Terminal, Zap, Monitor, Container } from 'lucide-react'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { motion, useAnimation } from 'framer-motion'
+import { ArrowRight, Code, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, SquareArrowOutUpRight, Terminal, Zap, Monitor, Container, Copy, Check, ChevronDown, Apple } from 'lucide-react'
+
+import { motion, useAnimation, AnimatePresence } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
+import SyntaxHighlighter from 'react-syntax-highlighter'
+import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 
 import oldHamham from './oldHamham.png'
-
-import { buttonVariants } from "@/components/ui/button"
+import adminScreenshot from './admin-screenshot.png'
 import controlfree from './control-free.png' // control-free, a company that provides a wide range of services, mostly in the IoT sector.
 import vertriqe from './vertriqe.png' // vertriqe, a company that provides a wide range of services, including IoT, AI, and more.
 import samdasoo from './samdasoo.png' // jeju samdasoo, enormous drinking water company from korea. famous for its volcanic water, selling around the world, loved by health-conscious people.
@@ -20,6 +21,7 @@ import { ResponsiveBar } from "@nivo/bar"
 import Footer from '@/components/Footer'
 import { LightboxImage } from '@/components/Lightbox'
 import bm from '@/lib/benchmark-data.json'
+import { Separator } from '@/components/ui/separator'
 
 const rd = (n: number) => Math.round(n * 100) / 100
 
@@ -31,9 +33,13 @@ const NAV_SECTIONS = [
 
 function useScrollSpy(sectionIds: string[]) {
   const [activeId, setActiveId] = useState('')
+  const hasScrolled = useRef(false)
   useEffect(() => {
+    const onScroll = () => { hasScrolled.current = true }
+    window.addEventListener('scroll', onScroll, { passive: true })
     const obs = new IntersectionObserver(
       (entries) => {
+        if (!hasScrolled.current) return
         for (const e of entries) {
           if (e.isIntersecting) { setActiveId(e.target.id); break }
         }
@@ -42,7 +48,7 @@ function useScrollSpy(sectionIds: string[]) {
     )
     const els = sectionIds.map(id => document.getElementById(id)).filter(Boolean) as HTMLElement[]
     els.forEach(el => obs.observe(el))
-    return () => obs.disconnect()
+    return () => { obs.disconnect(); window.removeEventListener('scroll', onScroll) }
   }, [sectionIds])
   return activeId
 }
@@ -63,8 +69,8 @@ export default function Home() {
   const linkClass = (id: string) =>
     `relative text-sm font-medium transition-colors duration-200 ${
       activeSection === id
-        ? 'text-cyan-300'
-        : 'text-slate-300 hover:text-cyan-300'
+        ? 'text-white'
+        : 'text-slate-300 hover:text-white'
     }`
 
   return (
@@ -75,21 +81,30 @@ export default function Home() {
           : 'backdrop-blur-xl bg-gradient-to-r from-slate-900/90 via-indigo-900/85 to-slate-900/90 py-1'
       } border-b-0`}>
         {/* Fancy gradient bottom border */}
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-500/60 via-indigo-400/60 to-fuchsia-500/60" />
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-white/60 via-indigo-400/60 to-fuchsia-500/60" />
 
         <div className={`container mx-auto px-4 flex justify-between items-center relative transition-all duration-500 ${scrolled ? 'py-2' : 'py-1'}`}>
           {/* Logo */}
           <a href="#" className="flex items-center gap-2 shrink-0 group">
-            <span className="w-9 shrink-0">
+            <AnimatePresence initial={false}>
               {scrolled && (
-                <motion.div layoutId="hero-logo">
-                  <Image src={oldHamham} alt="GTSDB Logo" className="w-9" />
-                </motion.div>
+                <motion.span
+                  key="scrolled-logo"
+                  className="block shrink-0 overflow-hidden"
+                  initial={{ width: 0, opacity: 0, marginRight: 0 }}
+                  animate={{ width: 36, opacity: 1, marginRight: 0 }}
+                  exit={{ width: 0, opacity: 0, marginRight: 0 }}
+                  transition={{ duration: 1, ease: 'easeInOut' }}
+                >
+                  <motion.div layoutId="hero-logo">
+                    <Image src={oldHamham} alt="GTSDB Logo" className="w-9" />
+                  </motion.div>
+                </motion.span>
               )}
-            </span>
-            <h1 className={`font-bold transition-all duration-500 ${scrolled ? 'text-lg' : 'text-2xl'} text-white`}>
+            </AnimatePresence>
+            <h1 className={`font-bold transition-all duration-500 text-2xl text-white`}>
               GTSDB
-              <span className={`hidden sm:inline transition-all duration-300 ${scrolled ? 'text-xs ml-1' : 'text-base ml-1'}`}>
+              <span className={`hidden sm:inline transition-all duration-300 text-sm ml-1`}>
                 · <span className="text-red-400">G</span>o<span className="text-red-400">T</span>ime<span className="text-red-400">S</span>eries<span className="text-red-400">DB</span>
               </span>
             </h1>
@@ -101,7 +116,7 @@ export default function Home() {
               <a key={s.id} href={`#${s.id}`} className={linkClass(s.id) + ' px-3 py-2 rounded-lg hover:bg-white/5'}>
                 {s.label}
                 {activeSection === s.id && (
-                  <motion.div layoutId="nav-underline" className="absolute bottom-0 left-3 right-3 h-0.5 bg-cyan-400 rounded-full" transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
+                  <motion.div layoutId="nav-underline" className="absolute bottom-0 left-3 right-3 h-0.5 bg-white rounded-lg" transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
                 )}
               </a>
             ))}
@@ -124,9 +139,9 @@ export default function Home() {
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
-            <span className={`w-6 h-0.5 bg-white rounded-full transition-all duration-300 ${mobileOpen ? 'rotate-45 translate-y-[4px]' : ''}`} />
-            <span className={`w-6 h-0.5 bg-white rounded-full transition-all duration-300 ${mobileOpen ? 'opacity-0 scale-x-0' : ''}`} />
-            <span className={`w-6 h-0.5 bg-white rounded-full transition-all duration-300 ${mobileOpen ? '-rotate-45 -translate-y-[4px]' : ''}`} />
+            <span className={`w-6 h-0.5 bg-white rounded-lg transition-all duration-300 ${mobileOpen ? 'rotate-45 translate-y-[4px]' : ''}`} />
+            <span className={`w-6 h-0.5 bg-white rounded-lg transition-all duration-300 ${mobileOpen ? 'opacity-0 scale-x-0' : ''}`} />
+            <span className={`w-6 h-0.5 bg-white rounded-lg transition-all duration-300 ${mobileOpen ? '-rotate-45 -translate-y-[4px]' : ''}`} />
           </button>
         </div>
 
@@ -141,7 +156,7 @@ export default function Home() {
             {NAV_SECTIONS.map(s => (
               <a key={s.id} href={`#${s.id}`} onClick={() => setMobileOpen(false)}
                 className={`px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${
-                  activeSection === s.id ? 'bg-indigo-500/20 text-cyan-300' : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                  activeSection === s.id ? 'bg-indigo-500/20 text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white'
                 }`}>{s.label}</a>
             ))}
             <div className="h-px bg-white/10 my-1" />
@@ -170,6 +185,7 @@ export default function Home() {
         <UsageSection />
         <DriversSection />
         <PerformanceSection />
+        <AdminToolSection />
         <TrustedBySection />
         <CTASection />
       </main>
@@ -206,22 +222,22 @@ function HeroSection(_props: { scrolled: boolean }) {
       onMouseMove={handleMouseMove}
       className="relative bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white py-24 md:py-32 overflow-hidden"
     >
-      {/* Animated floating orbs — parallax */}
+      {/* Animated floating orbs - parallax */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-[float_8s_ease-in-out_infinite]"
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-white/20 rounded-lg blur-3xl animate-[float_8s_ease-in-out_infinite]"
           style={{ transform: `translate(${mousePos.x * -30}px, ${mousePos.y * -30}px)` }} />
-        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-fuchsia-500/15 rounded-full blur-3xl animate-[float_10s_ease-in-out_infinite_1s]"
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-fuchsia-500/15 rounded-lg blur-3xl animate-[float_10s_ease-in-out_infinite_1s]"
           style={{ transform: `translate(${mousePos.x * -20}px, ${mousePos.y * -20}px)` }} />
-        <div className="absolute -bottom-20 right-1/3 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl animate-[float_7s_ease-in-out_infinite_2s]"
+        <div className="absolute -bottom-20 right-1/3 w-72 h-72 bg-indigo-500/20 rounded-lg blur-3xl animate-[float_7s_ease-in-out_infinite_2s]"
           style={{ transform: `translate(${mousePos.x * 25}px, ${mousePos.y * 25}px)` }} />
-        <div className="absolute top-1/4 left-1/2 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl animate-[float_9s_ease-in-out_infinite_3s]"
+        <div className="absolute top-1/4 left-1/2 w-64 h-64 bg-violet-500/10 rounded-lg blur-3xl animate-[float_9s_ease-in-out_infinite_3s]"
           style={{ transform: `translate(${mousePos.x * 15}px, ${mousePos.y * -15}px)` }} />
       </div>
       {/* Grid overlay with parallax */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.04)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none"
         style={{ transform: `translate(${mousePos.x * 5}px, ${mousePos.y * 5}px)` }} />
       {/* Radial glow at center */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-indigo-500/10 via-transparent to-transparent rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-indigo-500/10 via-transparent to-transparent rounded-lg blur-2xl pointer-events-none" />
       {/* Floating particles */}
       <ParticleField />
       <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative">
@@ -232,55 +248,51 @@ function HeroSection(_props: { scrolled: boolean }) {
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
-            <span className="block text-sm md:text-base font-normal text-cyan-300/80 mb-2 tracking-widest uppercase">A Dead Simple</span>
-            GTSDB
+            <span
+              className="bg-gradient-to-r "
+            >
+              GTSDB
+            </span>
             <br />
-            <span className="text-red-400">G</span>olang{' '}
-            <span className="text-red-400">T</span>ime{' '}
-            <span className="text-red-400">S</span>eries{' '}
-            <span className="text-red-400">D</span>ata{' '}
-            <span className="text-red-400">B</span>ase
+            <span
+              className="bg-gradient-to-r from-slate-300 via-slate-500 to-slate-300 
+              bg-clip-text text-transparent"
+            >
+              <span className="text-red-400">G</span>olang{' '}
+              <span className="text-red-400">T</span>ime{' '}
+              <span className="text-red-400">S</span>eries{' '}
+              <span className="text-red-400">D</span>ata{}
+              <span className="text-red-400">B</span>ase
+            </span>
           </h1>
 
           <TypewriterText />
 
-          <div className="flex flex-wrap gap-3 mt-8">
-            <Button
-              className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white border-0 transition-colors duration-300 font-semibold"
-              onClick={() => window.location.href = "/#features"}
-              size="lg"
-            >
-              <Star className="h-4 w-4" />
-              Get Started
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm hover:border-white/40 transition-all duration-300 font-semibold"
-              size="lg"
-              onClick={() => window.open("https://gtsdb-admin.vercel.app/?apiUrl=https://gtsdb-web.abby.md/", "_blank")}
-            >
-              <Presentation className="h-4 w-4" />
-              Admin Tool Demo
-              <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
 
-          <p className="mt-6 text-sm text-blue-200/60 flex flex-wrap items-center gap-x-3 gap-y-1">
-            <a href="https://hub.docker.com/r/abbychau/gtsdb" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-white transition-colors">
-              <Container className="h-4 w-4" /> Docker
+          <div className="mt-5 text-md text-blue-200/60 flex flex-wrap items-center 
+          gap-x-3 gap-y-1 border-2 border-blue-200/20 rounded-lg px-4 py-2
+          w-fit
+          ">
+            <a href="https://hub.docker.com/r/abbychau/gtsdb" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-white transition-colors text-base">
+              <Container className="h-5 w-5" /> Docker
             </a>
-            <span className="opacity-40">·</span>
-            <a href="https://github.com/abbychau/gtsdb/releases" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-white transition-colors">
-              <Download className="h-4 w-4" /> Binary
+            <Separator className="h-4 w-px bg-white/20" orientation="vertical" />
+            <a href="https://github.com/abbychau/gtsdb/releases" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-white transition-colors text-base">
+              <Download className="h-5 w-5" /> Multi-Platform Binary
             </a>
-            <span className="opacity-40">·</span>
-            <span className="inline-flex items-center gap-1"><Monitor className="h-4 w-4" /> Windows</span>
-            <span className="opacity-40">·</span>
-            <span className="inline-flex items-center gap-1"><Terminal className="h-4 w-4" /> Linux / BSD</span>
-            <span className="opacity-40">·</span>
-            <span className="inline-flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"></path><path d="M10 2c1 .5 2 2 2 5"></path></svg> macOS</span>
-          </p>
-          <div className="mt-4">
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <Link
+              href="https://github.com/abbychau/gtsdb/blob/main/README.md"
+              target="_blank"
+              className="
+              inline-flex items-center justify-center gap-3 rounded-[10px] bg-white
+              border-1 border-green-100 px-7 py-[14px] text-base font-semibold
+              "
+            >
+              <span className="text-gray-900 font-mono text-xl">README.md</span>
+              <SquareArrowOutUpRight className="h-5 w-5 text-gray-500 text-md" />
+            </Link>
             <a href="https://www.producthunt.com/posts/gtsdb?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-gtsdb" target="_blank" rel="noopener noreferrer"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=758497&theme=light" alt="GTSDB - Durable&#0032;and&#0032;Memory&#0032;Friendly&#0032;timeseries&#0032;database | Product Hunt" style={{width: 250, height: 54}} width="250" height="54" /></a>
           </div>
         </motion.div>
@@ -298,7 +310,7 @@ function HeroSection(_props: { scrolled: boolean }) {
           }}
         >
           <motion.div layoutId="hero-logo" className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/30 via-indigo-500/20 to-fuchsia-500/30 rounded-3xl blur-2xl scale-90" />
+            <div className="absolute inset-0 bg-gradient-to-r from-white/30 via-indigo-500/20 to-fuchsia-500/30 rounded-3xl blur-2xl scale-90" />
             <Image src={oldHamham} alt="GTSDB Illustration" className="w-full h-auto relative drop-shadow-[0_20px_60px_rgba(0,0,0,0.5)]" />
           </motion.div>
         </motion.div>
@@ -307,11 +319,10 @@ function HeroSection(_props: { scrolled: boolean }) {
   )
 }
 
-// ── Typewriter subtitle ────────────────────────────────────────────
 const PHRASES = [
   'for IoT and more.',
-  '96M ops/sec · 6 MB memory · 29.6× compression.',
-  'blazing fast, impossibly tiny.',
+  '96M ops/sec at 20MB memory.',
+  '12MB.',
   'JSON in, JSON out.',
   'binary protocol ready.',
   'Gorilla-compressed storage.',
@@ -351,15 +362,14 @@ function TypewriterText() {
       <span className="text-green-400">S</span>eries{' '}
       <span className="text-green-400">D</span>ata
       <span className="text-green-400">B</span>ase{' '}
-      <span className="text-base md:text-lg text-slate-400/60 italic font-light">that is…</span>
+      <span className="text-base md:text-lg text-slate-400/60 italic font-light">that is</span>
       <br />
       <span>{phrase.slice(0, charCount)}</span>
-      <span className="inline-block w-0.5 h-5 bg-cyan-400 ml-0.5 animate-pulse align-middle" />
+      <span className="inline-block w-0.5 h-5 bg-white ml-0.5 animate-pulse align-middle" />
     </p>
   )
 }
 
-// ── Floating particle canvas ──────────────────────────────────────
 function ParticleField() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -467,7 +477,7 @@ function FeaturesSection() {
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-hard-drive h-6 w-6 mt-0.5 shrink-0 text-orange-500"><line x1="22" x2="2" y1="12" y2="12"></line><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path><line x1="6" x2="6.01" y1="16" y2="16"></line><line x1="10" x2="10.01" y1="16" y2="16"></line></svg>
             <div>
               <h3 className="font-semibold text-gray-900 mb-1">Gorilla Compression</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">29.6× smaller than JSON. Massive disk savings.</p>
+              <p className="text-sm text-gray-500 leading-relaxed">29.6x smaller than JSON. Massive disk savings.</p>
             </div>
           </div>
           <div className="flex gap-4">
@@ -499,7 +509,7 @@ function FeaturesSection() {
             </div>
           </div>
           <div className="flex gap-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-activity h-6 w-6 mt-0.5 shrink-0 text-cyan-500"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-activity h-6 w-6 mt-0.5 shrink-0 text-slate-500"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg>
             <div>
               <h3 className="font-semibold text-gray-900 mb-1">Monitoring Ready</h3>
               <p className="text-sm text-gray-500 leading-relaxed">Built-in /health and /metrics (Prometheus) endpoints.</p>
@@ -522,13 +532,13 @@ function EfficiencySection() {
         <p className="text-center text-gray-500 text-sm mb-10">A deep dive into the architecture that makes GTSDB fast, small, and durable.</p>
         <article className="prose prose-gray prose-lg max-w-none text-gray-700 leading-relaxed space-y-6">
           <p>
-            Most databases separate their write path and read path with layers of abstraction — a write-ahead log (WAL) for durability, a buffer pool for caching, and separate index structures for querying. Each layer adds latency and memory overhead. GTSDB takes a fundamentally different approach: <strong>the WAL is the database</strong>.
+            Most databases separate their write path and read path with layers of abstraction - a write-ahead log (WAL) for durability, a buffer pool for caching, and separate index structures for querying. Each layer adds latency and memory overhead. GTSDB takes a fundamentally different approach: <strong>the WAL is the database</strong>.
           </p>
           <p>
-            Instead of maintaining a separate buffer pool and periodically flushing pages to disk, GTSDB appends every write directly to a per-key append-only file. There is no double-writing — data goes straight from the network socket to the WAL and into a ring buffer cache. This eliminates the memory amplification that comes from maintaining both a write buffer and a read cache. The ring buffer, configured per-key with up to 10,000 slots, serves recent reads directly from memory without any disk access. For a typical IoT workload where the latest readings matter most, virtually every read hits the cache.
+            Instead of maintaining a separate buffer pool and periodically flushing pages to disk, GTSDB appends every write directly to a per-key append-only file. There is no double-writing - data goes straight from the network socket to the WAL and into a ring buffer cache. This eliminates the memory amplification that comes from maintaining both a write buffer and a read cache. The ring buffer, configured per-key with up to 10,000 slots, serves recent reads directly from memory without any disk access. For a typical IoT workload where the latest readings matter most, virtually every read hits the cache.
           </p>
           <p>
-            But the real performance breakthrough is in how GTSDB handles the read path. Traditional databases serialize query results into verbose JSON, with each data point carrying repeated field names like <code className="bg-gray-200 px-1 rounded text-sm">"timestamp"</code> and <code className="bg-gray-200 px-1 rounded text-sm">"value"</code>. At 5,000 points per query, this adds up to hundreds of kilobytes of redundant text. GTSDB introduces an optional binary protocol: each data point becomes a fixed 16-byte record — an 8-byte timestamp followed by an 8-byte IEEE 754 float. No parsing, no field name repetition, no reflection-based serialization overhead. The server writes raw bytes straight to the TCP socket; the client reads them back with zero allocation. On a multi-key read of 25,000 points, this alone takes the response time from 7 milliseconds down to 260 microseconds.
+            But the real performance breakthrough is in how GTSDB handles the read path. Traditional databases serialize query results into verbose JSON, with each data point carrying repeated field names like <code className="bg-gray-200 px-1 rounded text-sm">"timestamp"</code> and <code className="bg-gray-200 px-1 rounded text-sm">"value"</code>. At 5,000 points per query, this adds up to hundreds of kilobytes of redundant text. GTSDB introduces an optional binary protocol: each data point becomes a fixed 16-byte record - an 8-byte timestamp followed by an 8-byte IEEE 754 float. No parsing, no field name repetition, no reflection-based serialization overhead. The server writes raw bytes straight to the TCP socket; the client reads them back with zero allocation. On a multi-key read of 25,000 points, this alone takes the response time from 7 milliseconds down to 260 microseconds.
           </p>
           <p>
             The JSON path is no slouch either. GTSDB uses Velox, a Go JSON library backed by a native C VM, which outperforms the standard library by an order of magnitude and even beats SIMD-based alternatives like Sonic. For writes and non-bulk reads where JSON remains the default, Velox handles marshaling in nanoseconds per operation.
@@ -537,7 +547,7 @@ function EfficiencySection() {
             Under the hood, a dirty-key async flusher ensures that only modified keys trigger disk syncs, avoiding the blanket fsync storms that plague append-only databases. When data does go to disk, Facebook's Gorilla time-series compression reduces storage by nearly 30x compared to raw JSON, making disk space a non-issue even on constrained edge devices.
           </p>
           <p>
-            The architecture scales down as well as it scales up. At idle, GTSDB uses about 6 MB of memory — less than a single browser tab. It ships as a single statically-linked binary with no external dependencies. Deploy it on a Raspberry Pi, a cloud VM, or a Windows server; the behavior is identical. This is what makes GTSDB uniquely suited for IoT: it does not ask you to choose between durability, speed, and footprint. It gives you all three.
+            The architecture scales down as well as it scales up. At idle, GTSDB uses about 6 MB of memory - less than a single browser tab. It ships as a single statically-linked binary with no external dependencies. Deploy it on a Raspberry Pi, a cloud VM, or a Windows server; the behavior is identical. This is what makes GTSDB uniquely suited for IoT: it does not ask you to choose between durability, speed, and footprint. It gives you all three.
           </p>
         </article>
       </div>
@@ -545,59 +555,115 @@ function EfficiencySection() {
   )
 }
 
-function UsageSection() {
+function AdvancedAccordion({
+  groups,
+  proto,
+}: {
+  groups: { id: string; label: string; blurb: string; code: string }[]
+  proto: 'http' | 'tcp'
+}) {
+  const [open, setOpen] = useState<string | null>(groups[0]?.id ?? null)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+
+  const copyOne = (id: string, text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedId(id)
+      setTimeout(() => setCopiedId(null), 1500)
+    })
+  }
+
   return (
-    <section id="usages" className="py-20 bg-gradient-to-t from-slate-400 to-slate-700 text-white">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-12 text-center">
-          <Code className="h-8 w-8 inline-block mr-2" />
-          Usages</h2>
-        <Tabs defaultValue="http" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8 h-12">
-            <TabsTrigger value="http" className="text-lg"><Globe className="h-5 w-5 mr-2" /> HTTP API</TabsTrigger>
-            <TabsTrigger value="tcp" className="text-lg">
-              <Plug className="h-5 w-5 mr-2" />TCP Interface</TabsTrigger>
-          </TabsList>
-          <div className="mt-4">
-            <TabsContent value="http">
-              <Tabs defaultValue="write" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-4">
-                  <TabsTrigger value="write">
-                    <Pencil className="h-5 w-5 mr-2" />
-                    Write</TabsTrigger>
-                  <TabsTrigger value="read">
-                    <Book className="h-5 w-5 mr-2" />
-                    Read</TabsTrigger>
-                  <TabsTrigger value="keys">
-                    <Key className="h-5 w-5 mr-2" />
-                    Get All Keys</TabsTrigger>
-                  <TabsTrigger value="subscribe">
-                    <Rss className="h-5 w-5 mr-2" />
-                    Subscribe</TabsTrigger>
-                  <TabsTrigger value="advanced">
-                    <Zap className="h-5 w-5 mr-2" />
-                    Advanced</TabsTrigger>
-                </TabsList>
-                <div className="mt-4 bg-gray-800 text-white p-6 rounded-lg overflow-x-auto">
-                  <TabsContent value="write">
-                    <pre className="text-sm">
-                      <code>{`
-POST /
-{
+    <div className="divide-y divide-zinc-800">
+      {groups.map((g) => {
+        const isOpen = open === g.id
+        const method = proto === 'http' ? 'POST' : 'SEND'
+        const accent = proto === 'http'
+          ? 'bg-indigo-900/15 border-indigo-400/30 text-indigo-300'
+          : 'bg-sky-900/15 border-sky-400/30 text-sky-300'
+
+        return (
+          <div key={g.id}>
+            <button
+              onClick={() => setOpen(isOpen ? null : g.id)}
+              className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-zinc-800/40 transition-colors"
+              aria-expanded={isOpen}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <span className={`shrink-0 inline-flex items-center px-2 py-1 rounded border text-[10px] font-bold tracking-wider ${accent}`}>
+                  {method}
+                </span>
+                <div className="min-w-0">
+                  <div className="font-semibold text-white text-sm">{g.label}</div>
+                  <div className="text-xs text-zinc-400 truncate">{g.blurb}</div>
+                </div>
+              </div>
+              <ChevronDown
+                className={`h-4 w-4 shrink-0 text-zinc-400 transition-transform duration-200 ${isOpen ? 'rotate-180 text-white' : ''}`}
+              />
+            </button>
+
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  key="body"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2, ease: 'easeInOut' }}
+                  className="overflow-hidden"
+                >
+                  <div className="relative bg-zinc-950/50 border-t border-zinc-800">
+                    <SyntaxHighlighter
+                      language="json"
+                      style={atomOneDark}
+                      showLineNumbers
+                      customStyle={{
+                        margin: 0,
+                        padding: '1rem 1rem 1rem 0',
+                        background: 'transparent',
+                        fontSize: '0.82rem',
+                        lineHeight: '1.55',
+                      }}
+                      lineNumberStyle={{ color: '#52525b', paddingRight: '1rem', userSelect: 'none' }}
+                    >
+                      {g.code}
+                    </SyntaxHighlighter>
+                    <button
+                      onClick={() => copyOne(g.id, g.code)}
+                      className="absolute top-3 right-3 p-2 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700 transition-colors backdrop-blur-sm"
+                      aria-label={`Copy ${g.label} snippet`}
+                    >
+                      {copiedId === g.id
+                        ? <Check className="h-4 w-4 text-emerald-400" />
+                        : <Copy className="h-4 w-4 text-zinc-400" />}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function UsageSection() {
+  const [proto, setProto] = useState<'http' | 'tcp'>('http')
+  const [op, setOp] = useState<'write' | 'read' | 'keys' | 'subscribe' | 'advanced'>('write')
+  const [copied, setCopied] = useState(false)
+  const sectionRef = useRef<HTMLDivElement>(null)
+
+  const snippets = useMemo<Record<string, string>>(() => ({
+    write: `{
     "operation": "write",
     "key": "a_sensor1",
     "write": {
-        "value": 32242424243333333333.3333
+        "value": 32242424243333333333.3333,
+        "timestamp": 1717965210
     }
-}
-                      `}</code>
-                    </pre>
-                  </TabsContent>
-                  <TabsContent value="read">
-                    <pre className="text-sm">
-                      <code>{`
-# Read with time range:
-POST /
+}`,
+    read: `# Read with time range:
 {
     "operation": "read",
     "key": "a_sensor1",
@@ -609,17 +675,13 @@ POST /
 }
 
 # Read last X records:
-POST /
 {
     "operation": "read",
     "key": "a_sensor1",
-    "read": {
-        "lastx": 1
-    }
+    "read": { "lastx": 1 }
 }
 
 # Binary read (16 bytes/point, zero-alloc):
-POST /
 {
     "operation": "read",
     "key": "a_sensor1",
@@ -628,7 +690,6 @@ POST /
 }
 
 # Multi-read with time range:
-POST /
 {
     "operation": "multi-read",
     "keys": ["sensor1", "sensor2", "sensor3"],
@@ -637,210 +698,249 @@ POST /
         "end_timestamp": 1717965211,
         "downsampling": 3
     }
-}
-
-# Multi-read count-only (returns just counts):
-POST /
-{
-    "operation": "multi-read",
-    "keys": ["sensor1", "sensor2"],
-    "read": { "lastx": 5000, "count_only": true }
-}
-
-# Multi-read binary:
-POST /
-{
-    "operation": "multi-read",
-    "keys": ["sensor1", "sensor2"],
-    "read": { "lastx": 5000 },
-    "response_format": "binary"
-}
-                      `}</code>
-                    </pre>
-                  </TabsContent>
-                  <TabsContent value="keys">
-                    <pre className="text-sm">
-                      <code>{`
-POST /
-{
+}`,
+    keys: `{
     "operation": "ids"
-}
-                      `}</code>
-                    </pre>
-                  </TabsContent>
-                  <TabsContent value="subscribe">
-                    <pre className="text-sm">
-                      <code>{`
-# Subscribe to a key
-POST /
+}`,
+    subscribe: `# Subscribe to a key
 {
     "operation": "subscribe",
     "key": "sensor1"
 }
 
 # Unsubscribe from a key
-POST /
 {
     "operation": "unsubscribe",
     "key": "sensor1"
-}
-                      `}</code>
-                    </pre>
-                  </TabsContent>
-                  <TabsContent value="advanced">
-                    <pre className="text-sm">
-                      <code>{`
-# Authenticate (required before any operation):
-POST /
-{
+}`,
+    advanced: ``, // Advanced uses the expandable sections below instead.
+  }), [])
+
+  const advancedGroups: { id: string; label: string; blurb: string; code: string }[] = [
+    {
+      id: 'auth',
+      label: 'Authenticate',
+      blurb: 'Required before any operation.',
+      code: `{
     "operation": "auth",
     "key": "your-token-here"
-}
-
-# Batch write (up to 10,000 points):
-POST /
-{
+}`,
+    },
+    {
+      id: 'batch',
+      label: 'Batch Write',
+      blurb: 'Up to 10,000 points per call.',
+      code: `{
     "operation": "batch-write",
     "points": [
         {"key": "sensor1", "value": 42.5, "timestamp": 1717965210},
         {"key": "sensor2", "value": 99.9, "timestamp": 1717965210}
     ]
-}
-
-# Export data as CSV:
-POST /
-{
-    "operation": "export",
-    "key": "sensor1",
-    "export": { "format": "csv", "lastx": 100 }
-}
-
-# Compact key to reclaim disk space:
-POST /
-{
-    "operation": "compact",
-    "key": "sensor1"
-}
-
-# Server info with memory & uptime stats:
-POST /
-{
-    "operation": "serverinfo"
-}
-
-# Health check (no auth required):
-GET /health
-
-# Prometheus metrics (no auth required):
-GET /metrics
-
-# Key management:
-POST / { "operation": "initkey", "key": "new_sensor" }
-POST / { "operation": "renamekey", "key": "old", "toKey": "new" }
-POST / { "operation": "deletekey", "key": "sensor_to_delete" }
-
-# Patch data points (CSV or JSON):
-POST /
-{
+}`,
+    },
+    {
+      id: 'patch',
+      label: 'Patch Data Points',
+      blurb: 'Bulk insert via CSV or JSON.',
+      code: `{
     "operation": "data-patch",
     "key": "sensor1",
     "data": "1717965210,123.45\\n1717965211,123.46"
-}
-                      `}</code>
-                    </pre>
-                  </TabsContent>
-                </div>
-              </Tabs>
-            </TabsContent>
-            <TabsContent value="tcp">
-              <Tabs defaultValue="write" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 mb-4">
-                  <TabsTrigger value="write">
-                    <Pencil className="h-5 w-5 mr-2" />
-                    Write</TabsTrigger>
-                  <TabsTrigger value="read">
-                    <Book className="h-5 w-5 mr-2" />
-                    Read</TabsTrigger>
-                  <TabsTrigger value="keys">
-                    <Key className="h-5 w-5 mr-2" />
-                    Get All Keys</TabsTrigger>
-                  <TabsTrigger value="subscribe">
-                    <Rss className="h-5 w-5 mr-2" />
-                    Subscribe</TabsTrigger>
-                </TabsList>
-                <div className="mt-4 bg-gray-800 text-white p-6 rounded-lg overflow-x-auto">
-                  <TabsContent value="write">
-                    <pre className="text-sm">
-                      <code>{`
-{
-    "operation": "write",
-    "key": "a_sensor1",
-    "write": {
-        "value": 32242424243333333333.3333,
-        "timestamp": 1617965210
-    }
-}
-                      `}</code>
-                    </pre>
-                  </TabsContent>
-                  <TabsContent value="read">
-                    <pre className="text-sm">
-                      <code>{`
-{
-    "operation": "read",
-    "key": "a_sensor1",
-    "read": { // optional
-        "startTime": 1617965210,
-        "endTime": 1617965211,
-        "downsample": 3,
-        "aggregation": "avg"
-    }
-}
+}`,
+    },
+    {
+      id: 'export',
+      label: 'Export',
+      blurb: 'Stream data as CSV.',
+      code: `{
+    "operation": "export",
+    "key": "sensor1",
+    "export": { "format": "csv", "lastx": 100 }
+}`,
+    },
+    {
+      id: 'compact',
+      label: 'Compact',
+      blurb: 'Reclaim disk space.',
+      code: `{
+    "operation": "compact",
+    "key": "sensor1"
+}`,
+    },
+    {
+      id: 'serverinfo',
+      label: 'Server Info',
+      blurb: 'Memory, uptime, and stats.',
+      code: `{
+    "operation": "serverinfo"
+}`,
+    },
+    {
+      id: 'keymgmt',
+      label: 'Key Management',
+      blurb: 'Create, rename, delete keys.',
+      code: `{ "operation": "initkey",    "key": "new_sensor" }
+{ "operation": "renamekey",  "key": "old", "toKey": "new" }
+{ "operation": "deletekey",  "key": "sensor_to_delete" }`,
+    },
+    {
+      id: 'health',
+      label: 'Health & Metrics',
+      blurb: 'No auth required.',
+      code: `GET /health
+GET /metrics`,
+    },
+  ]
 
-# Or read last X records:
-{
-    "operation": "read",
-    "key": "a_sensor1",
-    "read": {
-        "lastx": 1
-    }
-}
-                      `}</code>
-                    </pre>
-                  </TabsContent>
-                  <TabsContent value="keys">
-                    <pre className="text-sm">
-                      <code>{`
-{
-    "operation": "ids"
-}
-                      `}</code>
-                    </pre>
-                  </TabsContent>
-                  <TabsContent value="subscribe">
-                    <pre className="text-sm">
-                      <code>{`
-# Subscribe to a key
-{
-  "operation": "subscribe",
-  "key": "sensor1"
-}
+  const opMeta: { id: typeof op; label: string; icon: React.ReactNode; blurb: string }[] = [
+    { id: 'write', label: 'Write', icon: <Pencil className="h-4 w-4" />, blurb: 'Append a single data point.' },
+    { id: 'read', label: 'Read', icon: <Book className="h-4 w-4" />, blurb: 'Query by range, last N, or batch.' },
+    { id: 'keys', label: 'Get All Keys', icon: <Key className="h-4 w-4" />, blurb: 'List every sensor / series.' },
+    { id: 'subscribe', label: 'Subscribe', icon: <Rss className="h-4 w-4" />, blurb: 'Real-time push notifications.' },
+    { id: 'advanced', label: 'Others', icon: <Zap className="h-4 w-4" />, blurb: 'Auth, batch, export, mgmt…' },
+  ]
 
-# Unsubscribe from a key
-{
-  "operation": "unsubscribe",
-  "key": "sensor1"
-}
-                      `}</code>
-                    </pre>
-                  </TabsContent>
-                </div>
-              </Tabs>
-            </TabsContent>
+  const current = snippets[op]
+  const copy = () => {
+    navigator.clipboard.writeText(current).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    })
+  }
+
+  return (
+    <section id="usages" className="py-20 bg-gradient-to-t from-slate-400 to-slate-700 text-white">
+      <div className="container mx-auto px-4" ref={sectionRef}>
+        <h2 className="text-3xl font-bold mb-4 text-center">
+          <Code className="h-8 w-8 inline-block mr-2" />
+          Usages
+        </h2>
+        <p className="text-center text-slate-200/80 mb-10 max-w-2xl mx-auto">
+          Identical JSON payload - choose your transport. Toggle between HTTP and TCP to see how the same body is sent.
+        </p>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-6 max-w-6xl mx-auto">
+          {/* Vertical op nav */}
+          <nav className="lg:sticky lg:top-24 self-start">
+            <ul className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
+              {opMeta.map(({ id, label, icon, blurb }) => {
+                const active = op === id
+                return (
+                  <li key={id} className="shrink-0 lg:shrink">
+                    <button
+                      onClick={() => setOp(id)}
+                      className={`group w-full text-left px-4 py-3 rounded-md border transition-all duration-200 ${
+                        active
+                          ? 'bg-white text-slate-900 border-white shadow-lg shadow-black/20'
+                          : 'bg-white/5 text-white border-white/10 hover:bg-white/10 hover:border-white/30'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="font-medium text-sm">{label}</span>
+                      </div>
+                      <p className={`mt-1.5 text-xs leading-snug hidden lg:block ${active ? 'text-slate-500' : 'text-slate-300/70'}`}>
+                        {blurb}
+                      </p>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </nav>
+
+          {/* Code panel */}
+          <div className="bg-zinc-900 rounded-md border border-zinc-800 overflow-hidden shadow-2xl">
+            {/* Top bar: method badge + transport toggle */}
+            <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-b border-zinc-800 bg-zinc-900/80">
+              <div className="flex items-center gap-2">
+                {proto === 'http' ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-900/15 border border-indigo-400/30 text-indigo-300 text-xs font-mono font-semibold">
+                    <span className="px-1.5 py-0.5 rounded bg-indigo-700 text-white text-[10px] tracking-wider">POST</span>
+                    <span>/</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-sky-900/15 border border-sky-400/30 text-sky-300 text-xs font-mono font-semibold">
+                    <span className="px-1.5 py-0.5 rounded bg-sky-900 text-white text-[10px] tracking-wider">WRITE</span>
+                    <span>tcp://host:5555</span>
+                  </span>
+                )}
+                <span className="text-zinc-500 text-xs hidden sm:inline">application/json · utf-8</span>
+              </div>
+
+              {/* Transport toggle */}
+              <div className="relative inline-flex p-1 rounded-lg bg-zinc-800 border border-zinc-700">
+                <motion.div
+                  layout
+                  className="absolute inset-y-1 rounded-md bg-white shadow"
+                  initial={false}
+                  animate={{
+                    left: proto === 'http' ? '0%' : '50%',
+                    right: proto === 'http' ? '50%' : '0%',
+                  }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+                {(['http', 'tcp'] as const).map(p => (
+                  <button
+                    key={p}
+                    onClick={() => setProto(p)}
+                    className={`relative z-10 px-3 py-1.5 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-colors duration-200 ${
+                      proto === p ? 'text-slate-900' : 'text-zinc-400 hover:text-zinc-200'
+                    }`}
+                  >
+                    {p === 'http' ? <Globe className="h-3.5 w-3.5" /> : <Plug className="h-3.5 w-3.5" />}
+                    {p.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Code body */}
+            {op === 'advanced' ? (
+              <AdvancedAccordion groups={advancedGroups} proto={proto} />
+            ) : (
+              <div className="relative">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={`${op}-${proto}`}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.18, ease: 'easeOut' }}
+                  >
+                    <SyntaxHighlighter
+                      language="json"
+                      style={atomOneDark}
+                      showLineNumbers
+                      customStyle={{
+                        margin: 0,
+                        padding: '1.25rem 1rem 1.25rem 0',
+                        background: 'transparent',
+                        fontSize: '0.85rem',
+                        lineHeight: '1.55',
+                      }}
+                      lineNumberStyle={{ color: '#52525b', paddingRight: '1rem', userSelect: 'none' }}
+                    >
+                      {current}
+                    </SyntaxHighlighter>
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Copy button */}
+                <button
+                  onClick={copy}
+                  className="absolute top-3 right-3 p-2 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700 transition-colors backdrop-blur-sm"
+                  aria-label="Copy snippet"
+                >
+                  {copied
+                    ? <Check className="h-4 w-4 text-emerald-400" />
+                    : <Copy className="h-4 w-4 text-zinc-400" />}
+                </button>
+              </div>
+            )}
           </div>
-        </Tabs>
+        </div>
 
-        {/* Add this new section below the tabs */}
+        {/* Doc link */}
         <div className="mt-12 text-center">
           <p className="text-lg mb-4">Need more details? Check out our complete API documentation.</p>
           <Link
@@ -917,13 +1017,14 @@ function PerformanceSection() {
 
   const BarChartComponent = ({ data, title, unit }: { data: { db: string, milliseconds?: number, seconds?: number, kilobytes?: number }[], title: string, unit?: string }) => (
     <div className="h-[250px]">
-      <h4 className="text-lg font-medium mb-4 text-center">{title}</h4>
+      <h4 className="text-base font-semibold mb-4 text-center text-gray-700">{title}</h4>
       <ResponsiveBar
         data={data}
         keys={['milliseconds', 'seconds', 'kilobytes']}
         indexBy="db"
         margin={{ top: 20, right: 20, bottom: 80, left: 60 }}
         padding={0.3}
+        borderRadius={4}
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
         colors={({ data }) => {
@@ -932,29 +1033,59 @@ function PerformanceSection() {
           if (data.db.includes('NSQ')) return '#F59E0B'
           return '#94A3B8'
         }}
-        borderWidth={1}
-        borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
+        borderWidth={0}
+        enableGridY={true}
+        gridYValues={5}
+        theme={{
+          axis: {
+            ticks: {
+              text: { fontSize: 11, fill: '#6B7280' },
+            },
+            legend: {
+              text: { fontSize: 11, fill: '#6B7280', fontWeight: '600' },
+            },
+          },
+          grid: {
+            line: { stroke: '#E5E7EB', strokeWidth: 1, strokeDasharray: '4 4' },
+          },
+        }}
         axisLeft={{
-          tickSize: 1,
+          tickSize: 0,
           tickValues: 5,
-          tickPadding: 5,
+          tickPadding: 8,
           tickRotation: 0,
+          format: v => v >= 1000 ? (v/1000).toFixed(0) + 'k' : v,
           legend: unit || 'Time (ms)',
           legendPosition: 'middle',
-          legendOffset: -40
+          legendOffset: -40,
         }}
         axisBottom={{
-          tickSize: 5,
-          tickPadding: 5,
+          tickSize: 0,
+          tickPadding: 8,
           tickRotation: 0,
         }}
+        enableLabel={true}
+        labelPosition="end"
         labelFormat={value => {
           const n = Number(value)
-          if (n < 1 && n > 0) return n.toFixed(3) + (unit || 'ms')
-          return n.toFixed(2) + (unit || 'ms')
+          if (n < 1 && n > 0) return n.toFixed(3)
+          return n.toFixed(1)
         }}
-        labelSkipWidth={12}
-        labelSkipHeight={12}
+        labelTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
+        labelSkipWidth={20}
+        labelSkipHeight={0}
+        labelOffset={5}
+        animate={true}
+        motionConfig="gentle"
+        tooltip={({ id, value, color, data }) => (
+          <div style={{ padding: '8px 12px', background: '#fff', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '1px solid #F3F4F6', fontSize: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: color, display: 'inline-block' }} />
+              <span style={{ fontWeight: 600, color: '#374151' }}>{data.db}</span>
+            </div>
+            <span style={{ color: '#6B7280' }}>{title}: <strong>{value}</strong> {unit || 'ms'}</span>
+          </div>
+        )}
       />
     </div>
   )
@@ -969,37 +1100,36 @@ function PerformanceSection() {
         <div className="mb-8 text-center text-sm text-gray-500">
           Benchmarked against VictoriaMetrics v1.147, InfluxDB v2.9, and NSQ v1.3 on Windows / i7-13700KF / 5,000 points per operation. Reads use binary protocol.
         </div>
-        <motion.div
+        <div
           ref={ref}
           className="grid grid-cols-1 lg:grid-cols-2 gap-8"
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0 }
-          }}
-          initial="hidden"
-          animate={controls}
-          transition={{ duration: 0.5 }}
         >
-          <div className="bg-white p-8 rounded-lg shadow-lg">
+          <div className="bg-white p-8 rounded-lg border border-zinc-400 border-3 shadow-lg">
             <h3 className="text-2xl font-semibold mb-6">Write Benchmarks</h3>
             <div className="space-y-8">
-              <BarChartComponent data={writeData} title="Write (seq) – 5,000 pts" />
-              <BarChartComponent data={batchWriteData} title="Batch Write – 5,000 pts" />
-              <BarChartComponent data={pipelineData} title="Pipeline Write – 5,000 pts" />
-              <BarChartComponent data={multiWriteData} title="Multi-Sensor Write – 5 keys × 1,000 pts" />
+              <BarChartComponent data={writeData} title="Write (seq) - 5,000 pts" />
+              <Separator className="w-auto" />
+              <BarChartComponent data={batchWriteData} title="Batch Write - 5,000 pts" />
+              <Separator />
+              <BarChartComponent data={pipelineData} title="Pipeline Write - 5,000 pts" />
+              <Separator />
+              <BarChartComponent data={multiWriteData} title="Multi-Sensor Write - 5 keys × 1,000 pts" />
             </div>
           </div>
 
-          <div className="bg-white p-8 rounded-lg shadow-lg">
+          <div className="bg-white p-8 rounded-lg border border-zinc-400 border-3 shadow-lg">
             <h3 className="text-2xl font-semibold mb-6">Read Benchmarks</h3>
             <div className="space-y-8">
-              <BarChartComponent data={readData} title="Single Read – Last 1 Point" />
-              <BarChartComponent data={readManyData} title="Multi-Key Read – 5 Keys × 5,000 pts" />
+              <BarChartComponent data={readData} title="Single Read - Last 1 Point" />
+              <Separator />
+              <BarChartComponent data={readManyData} title="Multi-Key Read - 5 Keys × 5,000 pts" />
+              <Separator />
               <BarChartComponent 
                 data={pubsubData.map(d => ({ ...d, seconds: Number(d.seconds.toFixed(3)) }))} 
                 title="Pub/Sub Delivery Latency (s)" 
                 unit="s"
               />
+              <Separator />
               <BarChartComponent 
                 data={compressionData} 
                 title="Storage per 5,000 points (KB)" 
@@ -1007,10 +1137,10 @@ function PerformanceSection() {
               />
             </div>
           </div>
-        </motion.div>
+        </div>
         {/* Resource Usage Charts */}
         <div className="mt-12">
-          <div className="bg-white p-8 rounded-lg shadow-lg">
+          <div className="bg-white p-8 rounded-lg border border-zinc-400 border-3 shadow-lg">
             <h3 className="text-2xl font-semibold mb-6 text-center">Resource Usage</h3>
             <ResourceCharts />
           </div>
@@ -1057,115 +1187,248 @@ function PerformanceSection() {
                 href="https://github.com/abbychau/gtsdb-benchmark"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                className="group relative inline-flex items-center px-7 py-3 bg-gradient-to-r 
+                from-slate-900 to-slate-700 text-white rounded-lg font-semibold shadow-lg 
+                shadow-slate-900/20 hover:shadow-sm 
+                hover:shadow-slate-900/30 hover:from-slate-800 hover:to-slate-600 transition-all duration-300"
               >
-                <Github className="h-5 w-5 mr-2" />
+                <Github className="h-5 w-5 mr-2 transition-transform duration-300 group-hover:rotate-12" />
                 View Full Benchmark Repository
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
               </a>
             </div>
           </div>
         </div>
 
+            <div className="bg-amber-50 rounded-lg mb-4 overflow-hidden mt-12 border border-amber-200 shadow-lg">
+              <h4 className="text-lg font-bold text-amber-800 px-4 pt-4 pb-2">Performance Highlights</h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-black-900">
+                  <thead>
+                    <tr className="bg-amber-100/70 text-amber-900">
+                      <th className="text-left py-2 px-4 font-semibold">Feature</th>
+                      <th className="text-left py-2 px-4 font-semibold">Detail</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-t border-amber-200/60">
+                      <td className="py-2 px-4 font-semibold">JSON Engine</td>
+                      <td className="py-2 px-4">Velox native C VM + binary protocol for reads</td>
+                    </tr>
+                    <tr className="border-t border-amber-200/60">
+                      <td className="py-2 px-4 font-semibold">Binary Protocol</td>
+                      <td className="py-2 px-4">16 bytes/point, zero-alloc encode/decode</td>
+                    </tr>
+                    <tr className="border-t border-amber-200/60">
+                      <td className="py-2 px-4 font-semibold">Multi-Key Read</td>
+                      <td className="py-2 px-4 font-mono">{Math.round(5000 / (bm.readMany.gtsdb / 1000)).toLocaleString()} ops/sec <span className="text-amber-700/70">(faster than VictoriaMetrics)</span></td>
+                    </tr>
+                    <tr className="border-t border-amber-200/60">
+                      <td className="py-2 px-4 font-semibold">Pub/Sub Latency</td>
+                      <td className="py-2 px-4 font-mono">{rd(bm.pubsub.gtsdb * 1000)} ms delivery</td>
+                    </tr>
+                    <tr className="border-t border-amber-200/60">
+                      <td className="py-2 px-4 font-semibold">Batch Write</td>
+                      <td className="py-2 px-4 font-mono">{(5000 / (bm.batchWrite.gtsdb / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} ops/sec</td>
+                    </tr>
+                    <tr className="border-t border-amber-200/60">
+                      <td className="py-2 px-4 font-semibold">Multi-Write</td>
+                      <td className="py-2 px-4 font-mono">{(5000 / (bm.multiWrite.gtsdb / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} ops/sec</td>
+                    </tr>
+                    <tr className="border-t border-amber-200/60">
+                      <td className="py-2 px-4 font-semibold">Compression</td>
+                      <td className="py-2 px-4"><strong>29.6x smaller</strong> than raw JSON (Gorilla)</td>
+                    </tr>
+                    <tr className="border-t border-amber-200/60">
+                      <td className="py-2 px-4 font-semibold">Memory (idle)</td>
+                      <td className="py-2 px-4"><strong>~12 MB</strong></td>
+                    </tr>
+                    <tr className="border-t border-amber-200/60">
+                      <td className="py-2 px-4 font-semibold">Deployment</td>
+                      <td className="py-2 px-4">Single <strong>binary executable</strong> — no dependencies</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="bg-white p-8 rounded-lg shadow-lg">
-            <h3 className="text-2xl font-semibold mb-6">Test Configuration</h3>
-            <div className="space-y-6">
-              <table className="min-w-full bg-white border border-gray-200 text-sm">
+          <div className="bg-slate-50 rounded-lg overflow-hidden border-2 border-slate-200 shadow-lg">
+            <h4 className="text-lg font-bold text-slate-800 px-4 pt-4 pb-2">Test Configuration</h4>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-slate-900">
+                <thead>
+                  <tr className="bg-slate-100/70 text-slate-900">
+                    <th className="text-left py-2 px-4 font-semibold">Setting</th>
+                    <th className="text-left py-2 px-4 font-semibold">Value</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  <tr>
-                    <td className="py-2 px-4 border-b">Points per Operation</td>
-                    <td className="py-2 px-4 border-b font-bold">5,000</td>
+                  <tr className="border-t border-slate-200/60">
+                    <td className="py-2 px-4 font-semibold">Points per Operation</td>
+                    <td className="py-2 px-4">5,000</td>
                   </tr>
-                  <tr>
-                    <td className="py-2 px-4 border-b">Sensors (multi-write)</td>
-                    <td className="py-2 px-4 border-b font-bold">5</td>
+                  <tr className="border-t border-slate-200/60">
+                    <td className="py-2 px-4 font-semibold">Sensors (multi-write)</td>
+                    <td className="py-2 px-4">5</td>
                   </tr>
-                  <tr>
-                    <td className="py-2 px-4 border-b">Runs per Benchmark</td>
-                    <td className="py-2 px-4 border-b font-bold">3</td>
+                  <tr className="border-t border-slate-200/60">
+                    <td className="py-2 px-4 font-semibold">Runs per Benchmark</td>
+                    <td className="py-2 px-4">3</td>
                   </tr>
-                  <tr>
-                    <td className="py-2 px-4 border-b">Warmup Iterations</td>
-                    <td className="py-2 px-4 border-b font-bold">300</td>
+                  <tr className="border-t border-slate-200/60">
+                    <td className="py-2 px-4 font-semibold">Warmup Iterations</td>
+                    <td className="py-2 px-4">300</td>
                   </tr>
-                  <tr>
-                    <td className="py-2 px-4 border-b">GTSDB JSON Library</td>
-                    <td className="py-2 px-4 border-b font-bold">Velox (native C VM backend)</td>
+                  <tr className="border-t border-slate-200/60">
+                    <td className="py-2 px-4 font-semibold">GTSDB JSON Library</td>
+                    <td className="py-2 px-4">Velox (native C VM backend)</td>
                   </tr>
-                  <tr>
-                    <td className="py-2 px-4 border-b">GTSDB Cache Size</td>
-                    <td className="py-2 px-4 border-b font-bold">10,000 ring buffer / key</td>
+                  <tr className="border-t border-slate-200/60">
+                    <td className="py-2 px-4 font-semibold">GTSDB Cache Size</td>
+                    <td className="py-2 px-4">10,000 ring buffer / key</td>
                   </tr>
-                  <tr>
-                    <td className="py-2 px-4 border-b">Sync Mode</td>
-                    <td className="py-2 px-4 border-b font-bold">async (dirty-key flusher) <br /> (p.s. sync mode also available, and our clients love it :p)</td>
+                  <tr className="border-t border-slate-200/60">
+                    <td className="py-2 px-4 font-semibold">Sync Mode</td>
+                    <td className="py-2 px-4">async (dirty-key flusher) <br /> (p.s. sync mode also available, and our clients love it :p)</td>
                   </tr>
-                  <tr>
-                    <td className="py-2 px-4 border-b">OS</td>
-                    <td className="py-2 px-4 border-b font-bold">Windows</td>
+                  <tr className="border-t border-slate-200/60">
+                    <td className="py-2 px-4 font-semibold">OS</td>
+                    <td className="py-2 px-4">Windows</td>
                   </tr>
-                  <tr>
-                    <td className="py-2 px-4 border-b">Architecture</td>
-                    <td className="py-2 px-4 border-b font-bold">amd64</td>
+                  <tr className="border-t border-slate-200/60">
+                    <td className="py-2 px-4 font-semibold">Architecture</td>
+                    <td className="py-2 px-4">amd64</td>
                   </tr>
-                  <tr>
-                    <td className="py-2 px-4 border-b">CPU</td>
-                    <td className="py-2 px-4 border-b font-bold">Core(TM) i7-13700KF</td>
+                  <tr className="border-t border-slate-200/60">
+                    <td className="py-2 px-4 font-semibold">CPU</td>
+                    <td className="py-2 px-4">Core(TM) i7-13700KF</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
 
-          <div className="bg-white p-8 rounded-lg shadow-lg">
-            <h3 className="text-2xl font-semibold mb-6">Key Takeaways</h3>
-            <div className="bg-blue-50 p-4 rounded-lg mb-4">
-              <h4 className="text-lg font-bold mb-2 text-blue-800">vs InfluxDB</h4>
-              <ul className="list-disc list-inside space-y-1 text-blue-700 text-sm">
-                <li><strong>{bm.ratios.writeVsInflux}x faster</strong> sequential write ({rd(bm.write.gtsdb)} ms vs {rd(bm.write.influxdb)} ms)</li>
-                <li><strong>{bm.ratios.pipelineVsInflux}x faster</strong> pipeline write ({rd(bm.pipeline.gtsdb)} ms vs {rd(bm.pipeline.influxdb)} ms)</li>
-                <li><strong>{bm.ratios.batchVsInflux}x faster</strong> batch write ({rd(bm.batchWrite.gtsdb)} ms vs {rd(bm.batchWrite.influxdb)} ms)</li>
-                <li><strong>{bm.ratios.multiWriteVsInflux}x faster</strong> multi-sensor write ({rd(bm.multiWrite.gtsdb)} ms vs {rd(bm.multiWrite.influxdb)} ms)</li>
-                <li><strong>{bm.ratios.readVsInflux}x faster</strong> single read (&lt;{rd(bm.read.gtsdb)} ms vs {rd(bm.read.influxdb)} ms)</li>
-                <li><strong>{bm.ratios.readManyVsInflux}x faster</strong> multi-key read ({rd(bm.readMany.gtsdb)} ms vs {rd(bm.readMany.influxdb)} ms)</li>
-              </ul>
+          <div className="bg-white rounded-lg overflow-hidden border-2 border-gray-200 shadow-lg">
+
+            {/* vs InfluxDB */}
+            <div className="bg-blue-50 mb-4 overflow-hidden">
+              <h4 className="text-lg font-bold text-blue-800 px-4 pt-4 pb-2">vs InfluxDB</h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-blue-900">
+                  <thead>
+                    <tr className="bg-blue-100/70 text-blue-900">
+                      <th className="text-left py-2 px-4 font-semibold">Operation</th>
+                      <th className="text-right py-2 px-4 font-semibold">GTSDB</th>
+                      <th className="text-right py-2 px-4 font-semibold">InfluxDB</th>
+                      <th className="text-right py-2 px-4 font-semibold">Result</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-t border-blue-200/60">
+                      <td className="py-2 px-4">Sequential write</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.write.gtsdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.write.influxdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-bold">{bm.ratios.writeVsInflux}x</td>
+                    </tr>
+                    <tr className="border-t border-blue-200/60">
+                      <td className="py-2 px-4">Pipeline write</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.pipeline.gtsdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.pipeline.influxdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-bold">{bm.ratios.pipelineVsInflux}x</td>
+                    </tr>
+                    <tr className="border-t border-blue-200/60">
+                      <td className="py-2 px-4">Batch write</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.batchWrite.gtsdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.batchWrite.influxdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-bold">{bm.ratios.batchVsInflux}x</td>
+                    </tr>
+                    <tr className="border-t border-blue-200/60">
+                      <td className="py-2 px-4">Multi-sensor write</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.multiWrite.gtsdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.multiWrite.influxdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-bold">{bm.ratios.multiWriteVsInflux}x</td>
+                    </tr>
+                    <tr className="border-t border-blue-200/60">
+                      <td className="py-2 px-4">Single read</td>
+                      <td className="py-2 px-4 text-right font-mono">&lt;{rd(bm.read.gtsdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.read.influxdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-bold">{bm.ratios.readVsInflux}x</td>
+                    </tr>
+                    <tr className="border-t border-blue-200/60">
+                      <td className="py-2 px-4">Multi-key read</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.readMany.gtsdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.readMany.influxdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-bold">{bm.ratios.readManyVsInflux}x</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div className="bg-green-50 p-4 rounded-lg mb-4">
-              <h4 className="text-lg font-bold mb-2 text-green-800">vs VictoriaMetrics</h4>
-              <ul className="list-disc list-inside space-y-1 text-green-700 text-sm">
-                <li><strong>{bm.ratios.writeVsVM}x faster</strong> sequential write ({rd(bm.write.gtsdb)} ms vs {rd(bm.write.vm)} ms)</li>
-                <li><strong>{bm.ratios.pipelineVsVM}x faster</strong> pipeline write ({rd(bm.pipeline.gtsdb)} ms vs {rd(bm.pipeline.vm)} ms)</li>
-                <li>{bm.ratios.readManyVsVM >= 1 ? <><strong>{bm.ratios.readManyVsVM}x faster</strong> multi-key read ({rd(bm.readMany.gtsdb)} ms vs {rd(bm.readMany.vm)} ms) 🏆</> : <>VM leads multi-key read (<strong>{bm.ratios.readManyVsVM}x</strong>)</>}</li>
-                <li>{bm.ratios.readVsVM >= 1 ? <><strong>{bm.ratios.readVsVM}x faster</strong> single read ({rd(bm.read.gtsdb)} ms vs {rd(bm.read.vm)} ms) 🏆</> : <>VM leads single read (<strong>{bm.ratios.readVsVM}x</strong>)</>}</li>
-                <li>VM leads batch write (<strong>{bm.ratios.batchVsVM}x</strong>) and multi-write (<strong>{bm.ratios.multiWriteVsVM}x</strong>)</li>
-              </ul>
+
+            {/* vs VictoriaMetrics */}
+            <div className="bg-green-50 overflow-hidden">
+              <h4 className="text-lg font-bold text-green-800 px-4 pt-4 pb-2">vs VictoriaMetrics</h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-green-900">
+                  <thead>
+                    <tr className="bg-green-100/70 text-green-900">
+                      <th className="text-left py-2 px-4 font-semibold">Operation</th>
+                      <th className="text-right py-2 px-4 font-semibold">GTSDB</th>
+                      <th className="text-right py-2 px-4 font-semibold">VictoriaMetrics</th>
+                      <th className="text-right py-2 px-4 font-semibold">Result</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-t border-green-200/60">
+                      <td className="py-2 px-4">Sequential write</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.write.gtsdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.write.vm)} ms</td>
+                      <td className="py-2 px-4 text-right font-bold">{bm.ratios.writeVsVM}x</td>
+                    </tr>
+                    <tr className="border-t border-green-200/60">
+                      <td className="py-2 px-4">Pipeline write</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.pipeline.gtsdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.pipeline.vm)} ms</td>
+                      <td className="py-2 px-4 text-right font-bold">{bm.ratios.pipelineVsVM}x</td>
+                    </tr>
+                    <tr className="border-t border-green-200/60">
+                      <td className="py-2 px-4">Single read</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.read.gtsdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.read.vm)} ms</td>
+                      <td className={`py-2 px-4 text-right font-bold ${bm.ratios.readVsVM >= 1 ? '' : 'text-slate-500'}`}>
+                        {bm.ratios.readVsVM >= 1
+                          ? `${bm.ratios.readVsVM}x faster`
+                          : `VM leads ${bm.ratios.readVsVM}x`}
+                      </td>
+                    </tr>
+                    <tr className="border-t border-green-200/60">
+                      <td className="py-2 px-4">Multi-key read</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.readMany.gtsdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.readMany.vm)} ms</td>
+                      <td className={`py-2 px-4 text-right font-bold ${bm.ratios.readManyVsVM >= 1 ? '' : 'text-slate-500'}`}>
+                        {bm.ratios.readManyVsVM >= 1
+                          ? `${bm.ratios.readManyVsVM}x faster`
+                          : `VM leads ${bm.ratios.readManyVsVM}x`}
+                      </td>
+                    </tr>
+                    <tr className="border-t border-green-200/60">
+                      <td className="py-2 px-4">Batch write</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.batchWrite.gtsdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.batchWrite.vm)} ms</td>
+                      <td className="py-2 px-4 text-right font-bold text-slate-500">VM leads {bm.ratios.batchVsVM}x</td>
+                    </tr>
+                    <tr className="border-t border-green-200/60">
+                      <td className="py-2 px-4">Multi-write</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.multiWrite.gtsdb)} ms</td>
+                      <td className="py-2 px-4 text-right font-mono">{rd(bm.multiWrite.vm)} ms</td>
+                      <td className="py-2 px-4 text-right font-bold text-slate-500">VM leads {bm.ratios.multiWriteVsVM}x</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div className="bg-amber-50 p-4 rounded-lg mb-4">
-              <h4 className="text-lg font-bold mb-2 text-amber-800">General</h4>
-              <ul className="list-disc list-inside space-y-1 text-amber-700 text-sm">
-                <li>JSON: <strong>Velox native C VM</strong> + <strong>binary protocol</strong> for reads</li>
-                <li>Binary protocol: 16 bytes/point, zero-alloc encode/decode</li>
-                <li>Multi-Key Read: <strong>{Math.round(5000 / (bm.readMany.gtsdb / 1000)).toLocaleString()} ops/sec</strong> – faster than VM</li>
-                <li>Pub/Sub: <strong>{rd(bm.pubsub.gtsdb * 1000)} ms</strong> delivery latency</li>
-                <li><strong>{(5000 / (bm.batchWrite.gtsdb / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} ops/sec</strong> batch write, <strong>{(5000 / (bm.multiWrite.gtsdb / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} ops/sec</strong> multi-write</li>
-                <li><strong>29.6x smaller</strong> than raw JSON with Gorilla compression</li>
-                <li>Only <strong>~12 MB</strong> memory usage at idle</li>
-                <li>Single <strong>binary executable</strong> – no dependencies</li>
-              </ul>
-            </div>
-            <div className="pt-4 border-t border-gray-200">
-              <a
-                href="https://github.com/abbychau/gtsdb-benchmark"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
-              >
-                <Github className="h-5 w-5 mr-2" />
-                View Benchmark Repository
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
-            </div>
+
           </div>
         </div>
 
@@ -1196,13 +1459,14 @@ function ResourceCharts() {
 
   const ResChart = ({ data, title, unit }: { data: { db: string, milliseconds?: number, seconds?: number }[], title: string, unit: string }) => (
     <div className="h-[250px]">
-      <h4 className="text-lg font-medium mb-4 text-center">{title}</h4>
+      <h4 className="text-base font-semibold mb-4 text-center text-gray-700">{title}</h4>
       <ResponsiveBar
         data={data}
         keys={['milliseconds', 'seconds']}
         indexBy="db"
         margin={{ top: 20, right: 20, bottom: 80, left: 60 }}
         padding={0.3}
+        borderRadius={4}
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
         colors={({ data }: { data: { db: string } }) => {
@@ -1210,30 +1474,103 @@ function ResourceCharts() {
           if (data.db.includes('VictoriaMetrics')) return '#10B981'
           return '#94A3B8'
         }}
-        borderWidth={1}
-        borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
-        axisLeft={{ tickSize: 1, tickValues: 5, tickPadding: 5, tickRotation: 0, legend: unit, legendPosition: 'middle', legendOffset: -40 }}
-        axisBottom={{ tickSize: 5, tickPadding: 5, tickRotation: 0 }}
-        labelFormat={value => `${Number(value).toFixed(1)} ${unit}`}
-        labelSkipWidth={12}
-        labelSkipHeight={12}
+        borderWidth={0}
+        enableGridY={true}
+        gridYValues={5}
+        theme={{
+          axis: {
+            ticks: {
+              text: { fontSize: 11, fill: '#6B7280' },
+            },
+            legend: {
+              text: { fontSize: 11, fill: '#6B7280', fontWeight: '600' },
+            },
+          },
+          grid: {
+            line: { stroke: '#E5E7EB', strokeWidth: 1, strokeDasharray: '4 4' },
+          },
+        }}
+        axisLeft={{ tickSize: 0, tickValues: 5, tickPadding: 8, tickRotation: 0, format: v => v >= 1000 ? (v/1000).toFixed(0) + 'k' : v, legend: unit, legendPosition: 'middle', legendOffset: -40 }}
+        axisBottom={{ tickSize: 0, tickPadding: 8, tickRotation: 0 }}
+        enableLabel={true}
+        labelPosition="end"
+        labelFormat={value => `${Number(value).toFixed(1)}`}
+        labelTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
+        labelSkipWidth={20}
+        labelSkipHeight={0}
+        labelOffset={5}
+        animate={true}
+        motionConfig="gentle"
+        tooltip={({ id, value, color, data }) => (
+          <div style={{ padding: '8px 12px', background: '#fff', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '1px solid #F3F4F6', fontSize: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: color, display: 'inline-block' }} />
+              <span style={{ fontWeight: 600, color: '#374151' }}>{data.db}</span>
+            </div>
+            <span style={{ color: '#6B7280' }}>{title}: <strong>{value}</strong> {unit}</span>
+          </div>
+        )}
       />
     </div>
   )
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <ResChart data={cpuData} title="CPU Time (s)" unit="s" />
-      <ResChart data={memData} title="Memory (MB)" unit="MB" />
-      <ResChart data={diskData} title="Disk (KB)" unit="KB" />
-    </div>
+<div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr_auto_1fr] gap-6 items-center">
+  <ResChart data={cpuData} title="CPU Time (s)" unit="s" />
+  <Separator orientation="vertical" className="hidden lg:block h-32" />
+  <ResChart data={memData} title="Memory (MB)" unit="MB" />
+  <Separator orientation="vertical" className="hidden lg:block h-32" />
+  <ResChart data={diskData} title="Disk (KB)" unit="KB" />
+</div>
   )
 }
 
 
 function DriversSection() {
+  const goInstall = `go get github.com/abbychau/gtsdb-drivers/go@latest`
+  const goCode = `import "github.com/abbychau/gtsdb-drivers/go"
+
+client, _ := gtsdb.Connect("localhost:5555")
+client.Auth("your-token")
+
+// JSON
+client.Write("sensor1", 42.5)
+pts, _ := client.ReadLast("sensor1", 100)
+
+// 🚀 Binary - 100x faster
+pts, _ := client.ReadBinary("sensor1", 5000)
+multi, _ := client.MultiReadBinary(
+    []string{"s1","s2"}, 5000,
+)`
+  const jsInstall = `npm install github:abbychau/gtsdb-drivers`
+  const jsCode = `const { GTSDBClient } = require('gtsdb-drivers')
+const c = new GTSDBClient('localhost', 5555)
+await c.connect()
+await c.auth('your-token')
+
+// JSON
+await c.write('sensor1', 42.5)
+const pts = await c.readLast('sensor1', 100)
+
+// 🚀 Binary - 100x faster
+const pts = await c.readBinary('sensor1', 5000)
+const multi = await c.multiReadBinary(
+  ['s1','s2'], 5000
+)`
+
+  const codeBlockProps = {
+    customStyle: {
+      margin: 0,
+      padding: '1rem 1rem 1rem 0',
+      background: 'transparent',
+      fontSize: '0.78rem',
+      lineHeight: '1.55',
+    },
+    lineNumberStyle: { color: '#52525b', paddingRight: '1rem', userSelect: 'none' as const },
+  }
+
   return (
-    <section id="drivers" className="py-20 bg-gradient-to-b from-gray-100 to-white">
+    <section id="drivers" className="py-20 bg-gradient-to-b from-slate-200 via-slate-100 to-white">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-4 text-center">
           <Terminal className="h-8 w-8 inline-block mr-2" />
@@ -1243,63 +1580,109 @@ function DriversSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* Go Driver */}
-          <div className="bg-white p-8 shadow-lg border-t-4 border-b-4 border-blue-500">
-            <div className="flex items-center mb-4">
-              <span className="text-2xl font-bold text-blue-600 mr-3">Go</span>
-              <span className="text-sm text-gray-400 bg-gray-100 px-2 py-1 rounded">v0.1.0</span>
+          <div className="relative bg-zinc-950 rounded-xl shadow-2xl border-4 border-sky-500 overflow-hidden">
+            <div className="flex items-center justify-between px-6 pt-6 pb-4">
+              <div className="flex items-center">
+                <span className="text-2xl font-bold text-sky-400 mr-3 font-mono">Go</span>
+                <span className="text-xs text-zinc-500 bg-zinc-900 border border-zinc-800 px-2 py-1 rounded font-mono">v0.1.0</span>
+              </div>
+              <span className="text-[10px] uppercase tracking-widest text-zinc-600 font-semibold">main.go</span>
             </div>
-            <pre className="bg-gray-900 text-green-400 p-4 rounded-lg text-xs overflow-x-auto mb-4">
-              <code>{`go get github.com/abbychau/gtsdb-drivers/go@latest`}</code>
-            </pre>
-            <pre className="bg-gray-900 text-gray-300 p-4 rounded-lg text-xs overflow-x-auto mb-4">
-              <code>{`import "github.com/abbychau/gtsdb-drivers/go"
 
-client, _ := gtsdb.Connect("localhost:5555")
-client.Auth("your-token")
+            {/* Install snippet */}
+            <div className="mx-6 mb-3 rounded-lg border border-zinc-800 bg-zinc-900/60 overflow-hidden">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-zinc-900 border-b border-zinc-800">
+                <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold ">
+                  install
+                </span>
+                <span className="text-[10px] text-zinc-600 font-mono">bash</span>
+              </div>
+              <SyntaxHighlighter
+                language="bash"
+                style={atomOneDark}
+                customStyle={{ margin: 0, padding: '0.65rem 0.75rem', background: 'transparent', fontSize: '0.78rem' }}
+              >
+                {goInstall}
+              </SyntaxHighlighter>
+            </div>
 
-// JSON
-client.Write("sensor1", 42.5)
-pts, _ := client.ReadLast("sensor1", 100)
+            {/* Main snippet */}
+            <div className="mx-6 mb-6 rounded-lg border border-zinc-800 bg-zinc-950 overflow-hidden">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-zinc-900 border-b border-zinc-800">
+                <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold">
+                  example
+                </span>
+                <span className="text-[10px] text-zinc-600 font-mono">go</span>
+              </div>
+              <SyntaxHighlighter
+                language="go"
+                style={atomOneDark}
+                showLineNumbers
+                {...codeBlockProps}
+              >
+                {goCode}
+              </SyntaxHighlighter>
+            </div>
 
-// 🚀 Binary – 100x faster
-pts, _ := client.ReadBinary("sensor1", 5000)
-multi, _ := client.MultiReadBinary(
-    []string{"s1","s2"}, 5000,
-)`}</code>
-            </pre>
-            <a href="https://github.com/abbychau/gtsdb-drivers/tree/main/go" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm flex items-center">
-              <Github className="h-4 w-4 mr-1" /> Go driver + docs
-            </a>
+            <div className="px-6 pb-6">
+              <a href="https://github.com/abbychau/gtsdb-drivers/tree/main/go" target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:text-sky-300 text-sm flex items-center transition-colors">
+                <Github className="h-4 w-4 mr-1" /> Go driver + docs
+                <SquareArrowOutUpRight className="h-3 w-3 ml-1 opacity-70" />
+              </a>
+            </div>
           </div>
 
           {/* JS Driver */}
-          <div className="bg-white p-8 shadow-lg border-t-4 border-b-4 border-yellow-500">
-            <div className="flex items-center mb-4">
-              <span className="text-2xl font-bold text-yellow-600 mr-3">Node.js</span>
-              <span className="text-sm text-gray-400 bg-gray-100 px-2 py-1 rounded">v0.1.0</span>
+          <div className="relative bg-zinc-950 rounded-xl shadow-2xl border-4 border-amber-500 overflow-hidden">
+            <div className="flex items-center justify-between px-6 pt-6 pb-4">
+              <div className="flex items-center">
+                <span className="text-2xl font-bold text-amber-400 mr-3 font-mono">Node.js</span>
+                <span className="text-xs text-zinc-500 bg-zinc-900 border border-zinc-800 px-2 py-1 rounded font-mono">v0.1.0</span>
+              </div>
+              <span className="text-[10px] uppercase tracking-widest text-zinc-600 font-semibold">index.js</span>
             </div>
-            <pre className="bg-gray-900 text-green-400 p-4 rounded-lg text-xs overflow-x-auto mb-4">
-              <code>{`npm install github:abbychau/gtsdb-drivers`}</code>
-            </pre>
-            <pre className="bg-gray-900 text-gray-300 p-4 rounded-lg text-xs overflow-x-auto mb-4">
-              <code>{`const { GTSDBClient } = require('gtsdb-drivers')
-const c = new GTSDBClient('localhost', 5555)
-await c.connect()
-await c.auth('your-token')
 
-// JSON
-await c.write('sensor1', 42.5)
-const pts = await c.readLast('sensor1', 100)
+            {/* Install snippet */}
+            <div className="mx-6 mb-3 rounded-lg border border-zinc-800 bg-zinc-900/60 overflow-hidden">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-zinc-900 border-b border-zinc-800">
+                <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold ">
+                  install
+                </span>
+                <span className="text-[10px] text-zinc-600 font-mono">bash</span>
+              </div>
+              <SyntaxHighlighter
+                language="bash"
+                style={atomOneDark}
+                customStyle={{ margin: 0, padding: '0.65rem 0.75rem', background: 'transparent', fontSize: '0.78rem' }}
+              >
+                {jsInstall}
+              </SyntaxHighlighter>
+            </div>
 
-// 🚀 Binary – 100x faster
-const pts = await c.readBinary('sensor1', 5000)
-const multi = await c.multiReadBinary(
-  ['s1','s2'], 5000
-)`}</code>
-            </pre>
-            <a href="https://github.com/abbychau/gtsdb-drivers/tree/main/js" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm flex items-center">
-              <Github className="h-4 w-4 mr-1" /> JS driver + docs
-            </a>
+            {/* Main snippet */}
+            <div className="mx-6 mb-6 rounded-lg border border-zinc-800 bg-zinc-950 overflow-hidden">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-zinc-900 border-b border-zinc-800">
+                <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold">
+                  example
+                </span>
+                <span className="text-[10px] text-zinc-600 font-mono">javascript</span>
+              </div>
+              <SyntaxHighlighter
+                language="javascript"
+                style={atomOneDark}
+                showLineNumbers
+                {...codeBlockProps}
+              >
+                {jsCode}
+              </SyntaxHighlighter>
+            </div>
+
+            <div className="px-6 pb-6">
+              <a href="https://github.com/abbychau/gtsdb-drivers/tree/main/js" target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:text-amber-300 text-sm flex items-center transition-colors">
+                <Github className="h-4 w-4 mr-1" /> JS driver + docs
+                <SquareArrowOutUpRight className="h-3 w-3 ml-1 opacity-70" />
+              </a>
+            </div>
           </div>
         </div>
 
@@ -1318,6 +1701,60 @@ const multi = await c.multiReadBinary(
 
 
 
+function AdminToolSection() {
+  return (
+    <section className="py-20 bg-white">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold mb-4 text-center">
+          <Monitor className="h-8 w-8 inline-block mr-2" />
+          Admin Tool
+        </h2>
+        <p className="text-center text-gray-500 text-sm mb-10 max-w-2xl mx-auto">
+          A modern web-based administration interface for managing your GTSDB instance.
+        </p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto items-center">
+          <div>
+            <LightboxImage
+              src={adminScreenshot.src}
+              alt="GTSDB Admin Interface"
+              width={800}
+              height={500}
+              className="rounded-xl shadow-2xl"
+            />
+          </div>
+          <div className="space-y-5 text-gray-700 leading-relaxed">
+            <p>
+              The <strong>GTSDB Admin</strong> is a feature-rich web dashboard that provides complete visual control over your
+              GTSDB instance — from key management and data read/write operations to real-time charting and comparison tools.
+              Built with Next.js 14, ECharts, and shadcn/ui, it connects to any running GTSDB server via a BFF proxy
+              pattern, supporting HTTP, WebSocket, and TCP protocols.
+            </p>
+            <p>
+              Key capabilities include tabbed multi-key workflows with hierarchical sidebar grouping, embeddable charts
+              for external dashboards, a built-in data generator for test data, server information monitoring with
+              live polling, and per-key configuration (multipliers, units, offsets) stored in Redis. The comparison
+              tool lets you stack up to three charts side-by-side with session persistence.
+            </p>
+            <a
+              href="https://github.com/abbychau/gtsdb-admin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative inline-flex items-center px-6 py-3 bg-gradient-to-r 
+                from-slate-900 to-slate-700 text-white rounded-lg font-semibold shadow-lg 
+                shadow-slate-900/20 hover:shadow-sm 
+                hover:shadow-slate-900/30 hover:from-slate-800 hover:to-slate-600 transition-all duration-300"
+            >
+              <Github className="h-5 w-5 mr-2 transition-transform duration-300 group-hover:rotate-12" />
+              View Admin Repository
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function TrustedBySection() {
   return (
     <section className="py-20 bg-gray-50">
@@ -1333,16 +1770,73 @@ function TrustedBySection() {
   )
 }
 
+function CTAButton({
+  href, rel, icon, title, trailingIcon, description
+}: {
+  href: string
+  rel?: string
+  icon: React.ReactNode
+  title: string
+  trailingIcon: React.ReactNode
+  description: string
+}) {
+  return (
+    <Link
+      href={href}
+      target="_blank"
+      rel={rel}
+      className="group relative inline-flex flex-col items-center px-6 py-3 bg-gradient-to-r 
+      from-slate-900 to-slate-800 text-white rounded-lg 
+      font-semibold shadow-lg shadow-slate-900/20 hover:shadow-sm 
+      hover:shadow-slate-900/30 hover:from-slate-900 hover:to-slate-700 transition-all duration-300"
+    >
+      <span className="flex items-center">
+        {icon}
+        {title}
+        {trailingIcon}
+      </span>
+      <span className="text-[10px] text-indigo-100/70 font-normal mt-0.5 tracking-wide">
+        {description}
+      </span>
+    </Link>
+  )
+}
+
 function CTASection() {
   return (
-    <section id="CTA" className="py-20 text-white bg-gradient-to-r from-slate-800 to-indigo-700">
-      <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold mb-8">Ready to Get Started?</h2>
-        <Link className={buttonVariants({ variant: "outline" }) + "bg-white text-blue-900 hover:text-blue-800 font-semibold"} href="https://github.com/abbychau/gtsdb/releases" target='_blank'>
-          Download GTSDB
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Link>
-
+    <section id="CTA" className="relative py-24 text-white overflow-hidden">
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-slate-300 animate-gradient" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(99,102,241,0.15),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(217,70,239,0.1),transparent_50%)]" />
+      {/* Grid overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:48px_48px]" />
+      <div className="container mx-auto px-4 text-center relative">
+        <div className="flex flex-wrap justify-center gap-4">
+          <CTAButton
+            href="https://github.com/abbychau/gtsdb/releases"
+            icon={<Download className="h-5 w-5 mr-2 transition-transform duration-300 group-hover:-translate-y-0.5" />}
+            title="Download GTSDB"
+            trailingIcon={<ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />}
+            description="Windows · Linux/BSD · macOS"
+          />
+          <CTAButton
+            href="https://hub.docker.com/r/abbychau/gtsdb"
+            rel="noopener noreferrer"
+            icon={<Container className="h-5 w-5 mr-2 transition-transform duration-300 group-hover:rotate-12" />}
+            title="Docker"
+            trailingIcon={<SquareArrowOutUpRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />}
+            description="Official image on Docker Hub"
+          />
+          <CTAButton
+            href="https://gtsdb-admin.vercel.app/?apiUrl=https://gtsdb-web.abby.md/"
+            rel="noopener noreferrer"
+            icon={<Presentation className="h-5 w-5 mr-2 transition-transform duration-300 group-hover:rotate-12" />}
+            title="Admin Tool Demo"
+            trailingIcon={<SquareArrowOutUpRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />}
+            description="Try the web-based admin interface(BYO GTSDB server)"
+          />
+        </div>
       </div>
     </section>
   )
