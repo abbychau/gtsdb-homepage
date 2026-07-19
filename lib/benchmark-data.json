@@ -68,5 +68,42 @@
       "cpu_sec": 0.6,
       "disk_kb": 0
     }
+  },
+  "memoryOverTime": {
+    "total_writes": 606363,
+    "total_reads": 60562,
+    "gtsdb": [
+      {"t": 0, "alloc_mb": 0.50, "sys_mb": 6.52, "gc_done": 0},
+      {"t": 1, "alloc_mb": 1.54, "sys_mb": 15.90, "gc_done": 9},
+      {"t": 2, "alloc_mb": 1.96, "sys_mb": 16.16, "gc_done": 18},
+      {"t": 3, "alloc_mb": 1.90, "sys_mb": 16.16, "gc_done": 27},
+      {"t": 4, "alloc_mb": 3.11, "sys_mb": 16.18, "gc_done": 35},
+      {"t": 5, "alloc_mb": 2.78, "sys_mb": 16.19, "gc_done": 43},
+      {"t": 6, "alloc_mb": 1.37, "sys_mb": 16.20, "gc_done": 52},
+      {"t": 7, "alloc_mb": 0.84, "sys_mb": 16.20, "gc_done": 61},
+      {"t": 8, "alloc_mb": 3.26, "sys_mb": 16.20, "gc_done": 69},
+      {"t": 9, "alloc_mb": 0.84, "sys_mb": 16.20, "gc_done": 79},
+      {"t": 10, "alloc_mb": 0.82, "sys_mb": 16.20, "gc_done": 88},
+      {"t": 11, "alloc_mb": 3.38, "sys_mb": 16.20, "gc_done": 96},
+      {"t": 12, "alloc_mb": 2.36, "sys_mb": 16.20, "gc_done": 105},
+      {"t": 13, "alloc_mb": 0.56, "sys_mb": 16.20, "gc_done": 114},
+      {"t": 14, "alloc_mb": 3.10, "sys_mb": 16.21, "gc_done": 121},
+      {"t": 15, "alloc_mb": 3.26, "sys_mb": 16.46, "gc_done": 130},
+      {"t": 16, "alloc_mb": 2.83, "sys_mb": 16.46, "gc_done": 139},
+      {"t": 17, "alloc_mb": 2.17, "sys_mb": 16.46, "gc_done": 148},
+      {"t": 18, "alloc_mb": 3.33, "sys_mb": 16.46, "gc_done": 156},
+      {"t": 19, "alloc_mb": 2.60, "sys_mb": 16.46, "gc_done": 165},
+      {"t": 20, "alloc_mb": 3.20, "sys_mb": 16.46, "gc_done": 174},
+      {"t": 21, "alloc_mb": 1.23, "sys_mb": 16.46, "gc_done": 184},
+      {"t": 22, "alloc_mb": 3.70, "sys_mb": 16.46, "gc_done": 192},
+      {"t": 23, "alloc_mb": 1.48, "sys_mb": 16.46, "gc_done": 202},
+      {"t": 24, "alloc_mb": 2.60, "sys_mb": 16.46, "gc_done": 210},
+      {"t": 25, "alloc_mb": 0.83, "sys_mb": 16.46, "gc_done": 220},
+      {"t": 26, "alloc_mb": 1.00, "sys_mb": 16.46, "gc_done": 229},
+      {"t": 27, "alloc_mb": 1.74, "sys_mb": 16.46, "gc_done": 238},
+      {"t": 28, "alloc_mb": 3.52, "sys_mb": 16.46, "gc_done": 247},
+      {"t": 29, "alloc_mb": 1.45, "sys_mb": 16.46, "gc_done": 257},
+      {"t": 30, "alloc_mb": 1.14, "sys_mb": 16.46, "gc_done": 265}
+    ]
   }
 }

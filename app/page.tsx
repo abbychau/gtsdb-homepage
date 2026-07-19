@@ -18,6 +18,7 @@ import vertriqe from './vertriqe.png' // vertriqe, a company that provides a wid
 import samdasoo from './samdasoo.png' // jeju samdasoo, enormous drinking water company from korea. famous for its volcanic water, selling around the world, loved by health-conscious people.
 import Link from 'next/link'
 import { ResponsiveBar } from "@nivo/bar"
+import { ResponsiveLine } from "@nivo/line"
 import Footer from '@/components/Footer'
 import { LightboxImage } from '@/components/Lightbox'
 import bm from '@/lib/benchmark-data.json'
@@ -182,6 +183,7 @@ export default function Home() {
         <HeroSection scrolled={scrolled} />
         <FeaturesSection />
         <EfficiencySection />
+        <WhyNotRustSection />
         <UsageSection />
         <DriversSection />
         <PerformanceSection />
@@ -548,6 +550,192 @@ function EfficiencySection() {
           </p>
           <p>
             The architecture scales down as well as it scales up. At idle, GTSDB uses about 6 MB of memory - less than a single browser tab. It ships as a single statically-linked binary with no external dependencies. Deploy it on a Raspberry Pi, a cloud VM, or a Windows server; the behavior is identical. This is what makes GTSDB uniquely suited for IoT: it does not ask you to choose between durability, speed, and footprint. It gives you all three.
+          </p>
+        </article>
+      </div>
+    </section>
+  )
+}
+
+function MemoryOverTimeChart() {
+  const gtsdbArr = bm.memoryOverTime.gtsdb as { t: number; alloc_mb: number; sys_mb: number }[]
+
+  const data = [
+    {
+      id: 'GTSDB Sys (stable OS mem)',
+      color: '#3b82f6',
+      data: gtsdbArr.map(d => ({ x: d.t, y: Number(d.sys_mb.toFixed(1)) })),
+    },
+    {
+      id: 'GTSDB Go heap alloc',
+      color: '#10b981',
+      data: gtsdbArr.map(d => ({ x: d.t, y: Number(d.alloc_mb.toFixed(1)) })),
+    },
+  ]
+
+  return (
+    <div className="h-64">
+      <ResponsiveLine
+        data={data}
+        margin={{ top: 20, right: 20, bottom: 40, left: 56 }}
+        xScale={{ type: 'linear', min: 0, max: 30 }}
+        yScale={{ type: 'linear', min: 0, max: 20 }}
+        curve="monotoneX"
+        lineWidth={2}
+        enablePoints={false}
+        useMesh={true}
+        enableSlices="x"
+        colors={{ datum: 'color' }}
+        theme={{
+          axis: {
+            ticks: { text: { fontSize: 11, fill: '#9ca3af' } },
+            legend: { text: { fontSize: 11, fill: '#6b7280', fontWeight: '600' } },
+          },
+          grid: { line: { stroke: '#e5e7eb', strokeWidth: 1, strokeDasharray: '4 4' } },
+          legends: { text: { fontSize: 11, fill: '#374151' } },
+          crosshair: { line: { stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: '2 2' } },
+        }}
+        axisLeft={{
+          tickSize: 0,
+          tickPadding: 8,
+          tickValues: 5,
+          format: v => v.toFixed(1),
+          legend: 'Memory (MB)',
+          legendPosition: 'middle',
+          legendOffset: -42,
+        }}
+        axisBottom={{
+          tickSize: 0,
+          tickPadding: 8,
+          tickValues: 7,
+          format: v => `${v}s`,
+          legend: 'Time',
+          legendPosition: 'middle',
+          legendOffset: 32,
+        }}
+        enableGridX={false}
+        legends={[
+          {
+            anchor: 'top-right',
+            direction: 'column',
+            justify: false,
+            translateX: 0,
+            translateY: 0,
+            itemsSpacing: 4,
+            itemDirection: 'left-to-right',
+            itemWidth: 180,
+            itemHeight: 18,
+            symbolSize: 12,
+            symbolShape: 'circle',
+          },
+        ]}
+        tooltip={({ point }) => (
+          <div className="bg-white px-3 py-2 rounded-lg shadow-lg border border-gray-100 text-xs">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: point.serieColor }} />
+              <span className="font-semibold text-gray-700">{point.serieId}</span>
+            </div>
+            <span className="text-gray-500">t={point.data.xFormatted} &middot; {point.data.yFormatted} MB</span>
+          </div>
+        )}
+      />
+    </div>
+  )
+}
+
+function WhyNotRustSection() {
+  return (
+    <section className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <h2 className="text-3xl font-bold mb-4 text-center text-gray-900">
+          Why not Rust?
+        </h2>
+        <p className="text-center text-gray-500 text-sm mb-10">
+          A pragmatic look at language choice given GTSDB&apos;s architecture.
+        </p>
+        <article className="prose prose-gray prose-lg max-w-none text-gray-700 leading-relaxed space-y-6">
+          <p>
+            Let&apos;s address the elephant in the room. Rust has become <em>the</em> darling of systems
+            programming in the AI era—rewritten tools like <code className="bg-gray-200 px-1 rounded text-sm">uv</code>,
+            <code className="bg-gray-200 px-1 rounded text-sm">ruff</code>, <code className="bg-gray-200 px-1 rounded text-sm">polars</code>,
+            and <code className="bg-gray-200 px-1 rounded text-sm">tokenizers</code> dominate headlines, and
+            every week a new database or framework announces a Rust rewrite promising 10x speed. The hype is
+            real, and for many projects the praise is well-earned.
+          </p>
+          <p>
+            So why did GTSDB choose Go? Rust&apos;s safety guarantees are genuinely valuable—but they come
+            with a cost, and not every architecture needs them equally. GTSDB&apos;s design makes Go the
+            better fit for several reasons.
+          </p>
+
+          <h3 className="text-xl font-semibold text-gray-800 mt-8">1. Minimal GC pressure</h3>
+          <p>
+            GTSDB&apos;s WAL-first architecture deliberately avoids heap churn. Data flows from the network
+            socket into a <strong>pre-allocated ring buffer</strong> (fixed-size, one per key) and gets appended
+            straight to a file. There are no complex object graphs, no reference cycles, no generational heap
+            promotions—just a simple, predictable data path. The Go garbage collector has almost nothing to do.
+            At idle, the process sits at ~6 MB with zero GC cycles firing. Rust&apos;s ownership model solves
+            a problem that barely exists here.
+          </p>
+
+          <div className="my-8 mx-auto max-w-xl">
+            <MemoryOverTimeChart />
+          </div>
+
+          <h3 className="text-xl font-semibold text-gray-800 mt-8">2. Goroutines map directly to the problem</h3>
+          <p>
+            GTSDB runs two concurrent servers (HTTP + TCP), a pub/sub fanout system, and an async dirty-key
+            flusher. All of these are textbook goroutine + channel patterns. Go&apos;s runtime multiplexes them
+            onto OS threads with <code className="bg-gray-200 px-1 rounded text-sm">GOMAXPROCS</code>;
+            the developer just writes straight-line code. Rust&apos;s async model requires picking an executor
+            (tokio, smol, async-std), annotating lifetimes through async boundaries, and managing
+            <code className="bg-gray-200 px-1 rounded text-sm">Send + Sync</code> bounds across every
+            <code className="bg-gray-200 px-1 rounded text-sm">.await</code> point. For an architecture
+            that is fundamentally a linear pipeline (read → cache → write), the extra ceremony buys nothing.
+          </p>
+
+          <h3 className="text-xl font-semibold text-gray-800 mt-8">3. Code review matters</h3>
+          <p>
+            This is the practical one. GTSDB is a focused project—its hot paths are short and simple. A
+            Go PR is typically a few dozen lines around a well-understood mutex or channel. The same logic
+            in Rust would require reviewing lifetime annotations, <code className="bg-gray-200 px-1 rounded text-sm">unsafe</code>
+            blocks (especially around the Velox C FFI), <code className="bg-gray-200 px-1 rounded text-sm">Send/Sync</code>
+            trait implementations, and the interaction between borrows and cancellation. Every review cycle
+            becomes slower, and for a small team, developer velocity is a real bottleneck. Go lets the team
+            ship and iterate faster without sacrificing correctness—the race detector catches the same class
+            of bugs the borrow checker would, at a fraction of the cognitive cost.
+          </p>
+
+          <h3 className="text-xl font-semibold text-gray-800 mt-8">4. C interop, done differently (Velox)</h3>
+          <p>
+            GTSDB uses Velox, a Go JSON library with a native C VM for its marshal hot path. Notably,
+            Velox does <em>not</em> use cgo—the C code is pre-compiled into <code className="bg-gray-200 px-1 rounded text-sm">.syso</code>
+            objects and linked via Plan9 assembly trampolines that bridge Go ABI to C ABI directly on
+            the goroutine stack. The result: native C speed without the cgo build penalty (no
+            <code className="bg-gray-200 px-1 rounded text-sm">CGO_ENABLED=1</code>, no cross-compilation
+            headaches, no fork-exec for the C compiler during build).
+          </p>
+          <p>
+            This is possible because Go&apos;s linker can ingest arbitrary <code className="bg-gray-200 px-1 rounded text-sm">.syso</code>
+            files and resolve assembly-level symbols—a unique sweet spot in Go&apos;s toolchain that
+            Rust&apos;s rigid separation between <code className="bg-gray-200 px-1 rounded text-sm">unsafe</code>
+            and safe code would make far more cumbersome to replicate. Rust&apos;s FFI requires
+            <code className="bg-gray-200 px-1 rounded text-sm">extern "C"</code> blocks,
+            <code className="bg-gray-200 px-1 rounded text-sm">#[no_mangle]</code> annotations, and
+            <code className="bg-gray-200 px-1 rounded text-sm">unsafe</code> wrappers around every C
+            call—and cross-compiling the C portion demands a C toolchain per target anyway. Velox&apos;s
+            approach ships the C artifacts pre-built, so consumers just run <code className="bg-gray-200 px-1 rounded text-sm">go build</code>
+            with zero C tooling required.
+          </p>
+
+          <h3 className="text-xl font-semibold text-gray-800 mt-8">The bottom line</h3>
+          <p>
+            Rust is an excellent choice for systems with complex shared state, strict latency requirements,
+            or safety-critical certification. GTSDB is none of those things. It is a focused, WAL-first
+            timeseries database where the hot path is a straight line from socket to ring buffer to file.
+            Go gives you <strong>enough</strong> safety (the race detector), <strong>better</strong> concurrency primitives (goroutines and channels), and <strong>faster</strong> iteration
+            (one-binary deploy, instant cross-compilation, simpler reviews). Choosing Go over Rust for this
+            architecture is not a compromise—it is the correct engineering tradeoff.
           </p>
         </article>
       </div>
