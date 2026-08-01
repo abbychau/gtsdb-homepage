@@ -4,7 +4,7 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Code, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, SquareArrowOutUpRight, Terminal, Zap, Monitor, Container, Copy, Check, ChevronDown, Apple } from 'lucide-react'
+import { ArrowRight, Code, Cloud, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, SquareArrowOutUpRight, Terminal, Zap, Monitor, Container, Copy, Check, ChevronDown, Apple } from 'lucide-react'
 
 import { motion, useAnimation, AnimatePresence } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -13,6 +13,7 @@ import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 
 import oldHamham from './oldHamham.png'
 import adminScreenshot from './admin-screenshot.png'
+import cloudScreenshot from './cloud-screenshot.png'
 import controlfree from './control-free.png' // control-free, a company that provides a wide range of services, mostly in the IoT sector.
 import vertriqe from './vertriqe.png' // vertriqe, a company that provides a wide range of services, including IoT, AI, and more.
 import samdasoo from './samdasoo.png' // jeju samdasoo, enormous drinking water company from korea. famous for its volcanic water, selling around the world, loved by health-conscious people.
@@ -30,6 +31,9 @@ const NAV_SECTIONS = [
   { id: 'features', label: 'Key Features' },
   { id: 'usages', label: 'Usages' },
   { id: 'performance', label: 'Performance' },
+  { id: 'drivers', label: 'Client Drivers' },
+  { id: 'admin-tool', label: 'Admin Tool' },
+  { id: 'cloud', label: 'GTSDB Cloud' },
 ]
 
 function useScrollSpy(sectionIds: string[]) {
@@ -111,20 +115,19 @@ export default function Home() {
             </h1>
           </a>
 
-          {/* Desktop nav */}
+          {/* Links (Docs / Admin Tool / Cloud / GitHub / Download) */}
           <nav className="hidden md:flex items-center gap-1">
-            {NAV_SECTIONS.map(s => (
-              <a key={s.id} href={`#${s.id}`} className={linkClass(s.id) + ' px-3 py-2 rounded-lg hover:bg-white/5'}>
-                {s.label}
-                {activeSection === s.id && (
-                  <motion.div layoutId="nav-underline" className="absolute bottom-0 left-3 right-3 h-0.5 bg-white rounded-lg" transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
-                )}
-              </a>
-            ))}
-            <div className="w-px h-5 bg-white/10 mx-2" />
             <Link href="/Documentation" className={`${linkClass('')} px-3 py-2 rounded-lg hover:bg-white/5 flex items-center gap-1.5`}>
               <Book className="h-4 w-4" /> Docs
             </Link>
+            <div className="w-px h-5 bg-white/10 mx-2" />
+            <a href="https://gtsdb-admin.vercel.app/?apiUrl=https://gtsdb-web.abby.md/" target='_blank' rel="noopener noreferrer" className={`${linkClass('')} px-3 py-2 rounded-lg hover:bg-white/5 flex items-center gap-1.5`}>
+              <Monitor className="h-4 w-4" /> Admin Tool
+            </a>
+            <div className="w-px h-5 bg-white/10 mx-2" />
+            <a href="https://gtsdb-cloud.abby.md/" target='_blank' rel="noopener noreferrer" className={`${linkClass('')} px-3 py-2 rounded-lg hover:bg-white/5 flex items-center gap-1.5`}>
+              <Cloud className="h-4 w-4" /> Cloud
+            </a>
             <div className="w-px h-5 bg-white/10 mx-2" />
             <a href="https://github.com/abbychau/gtsdb" target='_blank' rel="noopener noreferrer" className="text-slate-300 hover:text-white transition-all duration-300 p-2 rounded-lg hover:bg-white/10">
               <Github className="h-5 w-5" />
@@ -146,6 +149,18 @@ export default function Home() {
           </button>
         </div>
 
+        {/* Row 2: current-page nav items */}
+        <nav className="hidden md:flex container mx-auto px-4 items-center gap-1 border-t border-white/10 py-1.5">
+          {NAV_SECTIONS.map(s => (
+            <a key={s.id} href={`#${s.id}`} className={linkClass(s.id) + ' relative px-3 py-1.5 rounded-lg hover:bg-white/5'}>
+              {s.label}
+              {activeSection === s.id && (
+                <motion.div layoutId="nav-underline" className="absolute bottom-0 left-3 right-3 h-0.5 bg-white rounded-lg" transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
+              )}
+            </a>
+          ))}
+        </nav>
+
         {/* Mobile menu */}
         <motion.div
           className="md:hidden overflow-hidden"
@@ -154,6 +169,7 @@ export default function Home() {
           transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
           <nav className="px-4 pb-4 pt-2 flex flex-col gap-1 border-t border-white/10">
+            <p className="px-4 pt-1 pb-1 text-[10px] uppercase tracking-wider text-slate-500">On this page</p>
             {NAV_SECTIONS.map(s => (
               <a key={s.id} href={`#${s.id}`} onClick={() => setMobileOpen(false)}
                 className={`px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${
@@ -161,10 +177,19 @@ export default function Home() {
                 }`}>{s.label}</a>
             ))}
             <div className="h-px bg-white/10 my-1" />
+            <p className="px-4 pt-1 pb-1 text-[10px] uppercase tracking-wider text-slate-500">Links</p>
             <Link href="/Documentation" onClick={() => setMobileOpen(false)}
               className="px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:bg-white/5 hover:text-white transition-all duration-200 flex items-center gap-2">
               <Book className="h-4 w-4" /> Documentation
             </Link>
+            <a href="https://gtsdb-admin.vercel.app/?apiUrl=https://gtsdb-web.abby.md/" target='_blank' rel="noopener noreferrer"
+              className="px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:bg-white/5 hover:text-white transition-all duration-200 flex items-center gap-2">
+              <Monitor className="h-4 w-4" /> Admin Tool
+            </a>
+            <a href="https://gtsdb-cloud.abby.md/" target='_blank' rel="noopener noreferrer"
+              className="px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:bg-white/5 hover:text-white transition-all duration-200 flex items-center gap-2">
+              <Cloud className="h-4 w-4" /> Cloud
+            </a>
             <div className="flex gap-2 mt-2 px-2">
               <a href="https://github.com/abbychau/gtsdb" target='_blank' rel="noopener noreferrer"
                 className="flex-1 text-center py-2.5 rounded-xl bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white transition-all duration-200 text-sm font-medium">
@@ -188,6 +213,7 @@ export default function Home() {
         <DriversSection />
         <PerformanceSection />
         <AdminToolSection />
+        <CloudSection />
         <TrustedBySection />
         <CTASection />
       </main>
@@ -1906,7 +1932,7 @@ const multi = await c.multiReadBinary(
 
 function AdminToolSection() {
   return (
-    <section className="py-20 bg-white">
+    <section id="admin-tool" className="py-20 bg-white">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-4 text-center">
           <Monitor className="h-8 w-8 inline-block mr-2" />
@@ -1951,6 +1977,71 @@ function AdminToolSection() {
               View Admin Repository
               <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
             </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function CloudSection() {
+  return (
+    <section id="cloud" className="py-20 bg-white">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold mb-4 text-center">
+          <Cloud className="h-8 w-8 inline-block mr-2" />
+          GTSDB Cloud
+        </h2>
+        <p className="text-center text-gray-500 text-sm mb-10 max-w-2xl mx-auto">
+          A managed, freemium DBaaS built on the GTSDB engine — spin up a timeseries database in seconds, no
+          infrastructure to run.
+        </p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto items-center">
+          <div>
+            <LightboxImage
+              src={cloudScreenshot.src}
+              alt="GTSDB Cloud Dashboard"
+              width={800}
+              height={500}
+              className="rounded-xl shadow-2xl"
+            />
+          </div>
+          <div className="space-y-5 text-gray-700 leading-relaxed">
+            <p>
+              The <strong>GTSDB Cloud</strong> is a fully-hosted, multi-tenant control plane for GTSDB. Create a managed
+              instance on the shared server in seconds, or connect your own self-hosted GTSDB by IP or domain. Every
+              instance is an isolated tenant with token-based auth and per-user namespaces.
+            </p>
+            <p>
+              Key features include sub-millisecond reads, real-time subscriptions, downsampling &amp; aggregation, a
+              beautiful console to explore and query your series, live usage and quota tracking, and per-plan storage
+              limits (5M points free). Plans scale from Free to Pro and Team with Stripe billing — and self-hosted
+              connections never count against your managed instance quota.
+            </p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <a
+                href="https://gtsdb-cloud.abby.md/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative inline-flex items-center px-6 py-3 bg-gradient-to-r 
+                  from-slate-900 to-slate-700 text-white rounded-lg font-semibold shadow-lg 
+                  shadow-slate-900/20 hover:shadow-sm 
+                  hover:shadow-slate-900/30 hover:from-slate-800 hover:to-slate-600 transition-all duration-300"
+              >
+                <Cloud className="h-5 w-5 mr-2 transition-transform duration-300 group-hover:rotate-12" />
+                Open GTSDB Cloud
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+              </a>
+              <a
+                href="https://github.com/abbychau/gtsdb-cloud"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative inline-flex items-center px-6 py-3 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-100 transition-all duration-300"
+              >
+                <Github className="h-5 w-5 mr-2 transition-transform duration-300 group-hover:rotate-12" />
+                View Cloud Repository
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -2038,6 +2129,14 @@ function CTASection() {
             title="Admin Tool Demo"
             trailingIcon={<SquareArrowOutUpRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />}
             description="Try the web-based admin interface(BYO GTSDB server)"
+          />
+          <CTAButton
+            href="https://gtsdb-cloud.abby.md/"
+            rel="noopener noreferrer"
+            icon={<Cloud className="h-5 w-5 mr-2 transition-transform duration-300 group-hover:rotate-12" />}
+            title="GTSDB Cloud"
+            trailingIcon={<SquareArrowOutUpRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />}
+            description="Managed freemium timeseries DBaaS"
           />
         </div>
       </div>
