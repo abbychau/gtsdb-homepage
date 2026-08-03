@@ -1,7 +1,6 @@
 ﻿"use client"
 
 import { useEffect, useState, useRef, useMemo } from "react"
-import { usePathname } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
@@ -82,7 +81,6 @@ const SEARCH_INDEX: { label: string; keywords: string; href: string }[] = [
 ]
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [mobileSidebar, setMobileSidebar] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -122,8 +120,10 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
     update()
     const origPush = window.history.pushState
     const origReplace = window.history.replaceState
-    window.history.pushState = function (data: any, unused: string, url?: string | URL | null) { origPush.call(window.history, data, unused, url); update() }
-    window.history.replaceState = function (data: any, unused: string, url?: string | URL | null) { origReplace.call(window.history, data, unused, url); update() }
+    // Contextual typing from the DOM signature supplies the parameter types,
+    // so no explicit `any` annotations are needed here.
+    window.history.pushState = function (data, unused, url) { origPush.call(window.history, data, unused, url); update() }
+    window.history.replaceState = function (data, unused, url) { origReplace.call(window.history, data, unused, url); update() }
     window.addEventListener("popstate", update)
     return () => {
       window.history.pushState = origPush

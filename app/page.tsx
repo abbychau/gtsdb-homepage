@@ -3,8 +3,7 @@
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import Image from 'next/image'
-import { Button } from "@/components/ui/button"
-import { ArrowRight, Code, Cloud, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Star, Plug, SquareArrowOutUpRight, Terminal, Zap, Monitor, Container, Copy, Check, ChevronDown, Apple } from 'lucide-react'
+import { ArrowRight, Code, Cloud, Github, Globe, Download, Pencil, Book, Key, Rss, Timer, Presentation, Plug, SquareArrowOutUpRight, Terminal, Zap, Monitor, Container, Copy, Check, ChevronDown } from 'lucide-react'
 
 import { motion, useAnimation, AnimatePresence } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -205,7 +204,7 @@ export default function Home() {
       </header>
 
       <main className="flex-grow">
-        <HeroSection scrolled={scrolled} />
+        <HeroSection />
         <FeaturesSection />
         <EfficiencySection />
         <WhyNotRustSection />
@@ -223,7 +222,7 @@ export default function Home() {
   )
 }
 
-function HeroSection(_props: { scrolled: boolean }) {
+function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
@@ -566,13 +565,13 @@ function EfficiencySection() {
             Instead of maintaining a separate buffer pool and periodically flushing pages to disk, GTSDB appends every write directly to a per-key append-only file. There is no double-writing - data goes straight from the network socket to the WAL and into a ring buffer cache. This eliminates the memory amplification that comes from maintaining both a write buffer and a read cache. The ring buffer, configured per-key with up to 10,000 slots, serves recent reads directly from memory without any disk access. For a typical IoT workload where the latest readings matter most, virtually every read hits the cache.
           </p>
           <p>
-            But the real performance breakthrough is in how GTSDB handles the read path. Traditional databases serialize query results into verbose JSON, with each data point carrying repeated field names like <code className="bg-gray-200 px-1 rounded text-sm">"timestamp"</code> and <code className="bg-gray-200 px-1 rounded text-sm">"value"</code>. At 5,000 points per query, this adds up to hundreds of kilobytes of redundant text. GTSDB introduces an optional binary protocol: each data point becomes a fixed 16-byte record - an 8-byte timestamp followed by an 8-byte IEEE 754 float. No parsing, no field name repetition, no reflection-based serialization overhead. The server writes raw bytes straight to the TCP socket; the client reads them back with zero allocation. On a multi-key read of 25,000 points, this alone takes the response time from 7 milliseconds down to 260 microseconds.
+            But the real performance breakthrough is in how GTSDB handles the read path. Traditional databases serialize query results into verbose JSON, with each data point carrying repeated field names like <code className="bg-gray-200 px-1 rounded text-sm">&quot;timestamp&quot;</code> and <code className="bg-gray-200 px-1 rounded text-sm">&quot;value&quot;</code>. At 5,000 points per query, this adds up to hundreds of kilobytes of redundant text. GTSDB introduces an optional binary protocol: each data point becomes a fixed 16-byte record - an 8-byte timestamp followed by an 8-byte IEEE 754 float. No parsing, no field name repetition, no reflection-based serialization overhead. The server writes raw bytes straight to the TCP socket; the client reads them back with zero allocation. On a multi-key read of 25,000 points, this alone takes the response time from 7 milliseconds down to 260 microseconds.
           </p>
           <p>
             The JSON path is no slouch either. GTSDB uses Velox, a Go JSON library backed by a native C VM, which outperforms the standard library by an order of magnitude and even beats SIMD-based alternatives like Sonic. For writes and non-bulk reads where JSON remains the default, Velox handles marshaling in nanoseconds per operation.
           </p>
           <p>
-            Under the hood, a dirty-key async flusher ensures that only modified keys trigger disk syncs, avoiding the blanket fsync storms that plague append-only databases. When data does go to disk, Facebook's Gorilla time-series compression reduces storage by nearly 30x compared to raw JSON, making disk space a non-issue even on constrained edge devices.
+            Under the hood, a dirty-key async flusher ensures that only modified keys trigger disk syncs, avoiding the blanket fsync storms that plague append-only databases. When data does go to disk, Facebook&apos;s Gorilla time-series compression reduces storage by nearly 30x compared to raw JSON, making disk space a non-issue even on constrained edge devices.
           </p>
           <p>
             The architecture scales down as well as it scales up. At idle, GTSDB uses about 6 MB of memory - less than a single browser tab. It ships as a single statically-linked binary with no external dependencies. Deploy it on a Raspberry Pi, a cloud VM, or a Windows server; the behavior is identical. This is what makes GTSDB uniquely suited for IoT: it does not ask you to choose between durability, speed, and footprint. It gives you all three.
@@ -683,7 +682,7 @@ function WhyNotRustSection() {
           <p>
             Let&apos;s address the elephant in the room. Rust has become <em>the</em> darling of systems
             programming in the AI era—rewritten tools like <code className="bg-gray-200 px-1 rounded text-sm">uv</code>,
-            <code className="bg-gray-200 px-1 rounded text-sm">ruff</code>, <code className="bg-gray-200 px-1 rounded text-sm">polars</code>,
+            <code className="bg-gray-200 px-1 rounded text-sm">&quot;timestamp&quot;</code> and <code className="bg-gray-200 px-1 rounded text-sm">&quot;value&quot;</code>
             and <code className="bg-gray-200 px-1 rounded text-sm">tokenizers</code> dominate headlines, and
             every week a new database or framework announces a Rust rewrite promising 10x speed. The hype is
             real, and for many projects the praise is well-earned.
@@ -761,7 +760,7 @@ function WhyNotRustSection() {
             files and resolve assembly-level symbols—a unique sweet spot in Go&apos;s toolchain that
             Rust&apos;s rigid separation between <code className="bg-gray-200 px-1 rounded text-sm">unsafe</code>
             and safe code would make far more cumbersome to replicate. Rust&apos;s FFI requires
-            <code className="bg-gray-200 px-1 rounded text-sm">extern "C"</code> blocks,
+            <code className="bg-gray-200 px-1 rounded text-sm">extern &quot;C&quot;</code> blocks,
             <code className="bg-gray-200 px-1 rounded text-sm">#[no_mangle]</code> annotations, and
             <code className="bg-gray-200 px-1 rounded text-sm">unsafe</code> wrappers around every C
             call—and cross-compiling the C portion demands a C toolchain per target anyway. Velox&apos;s
@@ -1052,7 +1051,7 @@ GET /metrics`,
           {/* Vertical op nav */}
           <nav className="lg:sticky lg:top-24 self-start">
             <ul className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
-              {opMeta.map(({ id, label, icon, blurb }) => {
+              {opMeta.map(({ id, label, blurb }) => {
                 const active = op === id
                 return (
                   <li key={id} className="shrink-0 lg:shrink">
@@ -1306,7 +1305,7 @@ function PerformanceSection() {
         labelOffset={5}
         animate={true}
         motionConfig="gentle"
-        tooltip={({ id, value, color, data }) => (
+        tooltip={({ value, color, data }) => (
           <div style={{ padding: '8px 12px', background: '#fff', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '1px solid #F3F4F6', fontSize: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
               <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: color, display: 'inline-block' }} />
@@ -1669,7 +1668,7 @@ function PerformanceSection() {
 }
 
 function ResourceCharts() {
-  const res = (bm as any).resources || {}
+  const res = (bm as { resources?: Record<string, Record<string, number>> }).resources || {}
   const cpuData = [
     { db: "GTSDB", seconds: res['GTSDB']?.cpu_sec || 0 },
     { db: "VictoriaMetrics", seconds: res['VM']?.cpu_sec || 0 },
@@ -1730,7 +1729,7 @@ function ResourceCharts() {
         labelOffset={5}
         animate={true}
         motionConfig="gentle"
-        tooltip={({ id, value, color, data }) => (
+        tooltip={({ value, color, data }) => (
           <div style={{ padding: '8px 12px', background: '#fff', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '1px solid #F3F4F6', fontSize: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
               <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: color, display: 'inline-block' }} />

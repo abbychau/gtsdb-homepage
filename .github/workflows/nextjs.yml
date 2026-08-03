@@ -75,6 +75,8 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Typecheck
         run: ${{ steps.detect-package-manager.outputs.runner }} tsc --noEmit
+      - name: Lint
+        run: ${{ steps.detect-package-manager.outputs.runner }} next lint
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Upload artifact

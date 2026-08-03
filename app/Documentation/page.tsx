@@ -3,7 +3,6 @@
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Suspense } from "react"
-import { Github, Code, Info, AlertTriangle, Terminal, FileJson, Server, Activity } from "lucide-react"
 import { ApiCard, SectionTitle, BinaryFrameSpec } from "./_components/ApiCard"
 
 /* ══════════════════════════════════════════
@@ -175,7 +174,7 @@ function AuthSection() {
       <p className="text-sm text-gray-500 mb-6">
         <strong>Transport difference:</strong> HTTP uses the{' '}
         <code className="bg-gray-100 px-1 rounded-sm text-xs font-mono">Authorization: Bearer &lt;token&gt;</code> header.
-        TCP sends <code className="bg-gray-100 px-1 rounded-sm text-xs font-mono">{"{"}operation: "auth", key: "&lt;token&gt;"{"}"}</code>{' '}
+        TCP sends <code className="bg-gray-100 px-1 rounded-sm text-xs font-mono">{"{"}operation: &quot;auth&quot;, key: &quot;&lt;token&gt;&quot;{"}"}</code>{' '}
         as the first JSON message.
       </p>
 
@@ -448,7 +447,7 @@ function BinarySection() {
       <SectionTitle>Binary Protocol</SectionTitle>
       <p className="text-gray-600 mb-6">
         Replaces JSON with a compact 16-byte-per-point frame. Each point = 8 bytes (int64 timestamp) + 8 bytes (float64 value).
-        Add <code className="bg-gray-100 px-1 rounded-sm text-xs font-mono">"response_format":"binary"</code> to any read.
+        Add <code className="bg-gray-100 px-1 rounded-sm text-xs font-mono">&quot;response_format&quot;:&quot;binary&quot;</code> to any read.
         <strong> ~27&times; faster</strong> than JSON for bulk reads.
       </p>
       <ApiCard title="Binary Read" description="Add response_format for compact binary output." transport="tcp"
