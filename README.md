@@ -5,7 +5,7 @@ A simple, efficient, and easy-to-use time series database designed for IoT and r
 ## ✨ Key Features
 
 - **Innovative Design**: Utilizes Write Ahead Log (WAL) for records, reducing IO and memory usage
-- **High Performance**: 19,172 ns/op with in-memory-like speed and WAL-class durability
+- **High Performance**: 67,504 ns/op with in-memory-like speed and WAL-class durability
 - **Memory Efficient**: As low as 6MB memory usage, perfect for IoT devices
 - **Easy Integration**: Identical HTTP API and TCP interfaces using JSON
 - **Built-in Streaming**: Real-time data subscriptions support
@@ -53,9 +53,9 @@ Uses the same JSON format as HTTP API but over TCP connection.
 ## 📊 Performance
 
 - 24 Concurrent operations
-- 311,648 operations tested
-- 19,172 ns/op
-- 4,245 B/op
+- 102,796 operations tested
+- 67,504 ns/op
+- 4,249 B/op
 - 5 allocs/op
 
 ## 📚 Documentation
